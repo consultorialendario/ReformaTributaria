@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Integrada - Impostos e Comparação de Regimes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            gap: 0;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 5px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tab-btn {
+            background: transparent;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        .tab-btn.active {
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        
+        .main-content {
+            padding: 40px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .quick-input {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border-left: 6px solid #3498db;
+        }
+        
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-field label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .input-field input, .input-field select {
+            padding: 12px;
+            border: 2px solid #e3e6f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-field input:focus, .input-field select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .auto-fill-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin-top: 20px;
+        }
+        
+        .auto-fill-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .comparison-section {
+            margin-top: 30px;
+        }
+        
+        .regime-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .regime-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .regime-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .regime-card.melhor-opcao {
+            border: 3px solid #27ae60;
+            box-shadow: 0 15px 35px rgba(39, 174, 96, 0.2);
+        }
+        
+        .regime-card.melhor-opcao::before {
+            content: "🏆 MELHOR OPÇÃO";
+            display: block;
+            background: #27ae60;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .regime-header {
+            padding: 20px;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .simples-header { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+        .presumido-header { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .real-header { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        
+        .regime-content {
+            padding: 20px;
+        }
+        
+        .tax-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tax-row:last-child {
+            border-bottom: none;
+        }
+        
+        .total-row {
+            background: #f8f9fa;
+            margin: 15px -20px -20px -20px;
+            padding: 15px 20px;
+            border-top: 2px solid #3498db;
+            font-weight: bold;
+        }
+        
+        .total-row .tax-value {
+            color: #e74c3c;
+            font-size: 1.2em;
+        }
+        
+        .economy-alert {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .economy-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #27ae60;
+            margin: 10px 0;
+        }
+        
+        .sync-indicator {
+            background: #e8f4fd;
+            border: 2px solid #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .formatMoeda {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .regime-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-navigation {
+                flex-direction: column;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 Calculadora Tributária Integrada</h1>
+            <p>Apuração detalhada + Comparação automática de regimes</p>
+            
+            <div class="tab-navigation">
+                <button class="tab-btn active" onclick="switchTab('entrada')">📊 Entrada Rápida</button>
+                <button class="tab-btn" onclick="switchTab('comparacao')">⚖️ Comparação</button>
+                <button class="tab-btn" onclick="switchTab('detalhada')">🔍 Visão Detalhada</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- TAB 1: ENTRADA RÁPIDA -->
+            <div id="tab-entrada" class="tab-content active">
+                <div class="quick-input">
+                    <h3>📋 Dados Principais da Empresa</h3>
+                    <div class="quick-grid">
+                        <div class="input-field">
+                            <label>Faturamento Mensal (R$):</label>
+                            <input type="number" id="faturamentoMensal" placeholder="100.000" oninput="atualizarDados()">
+                        </div>
+                        <div class="input-field">
+                            <label>Tipo de Atividade:</label>
+                            <select id="tipoAtividade" onchange="atualizarDados()">
+                                <option value="comercio">Comércio</option>
+                                <option value="industria">Indústria</option>
+                                <option value="servicos">Serviços</option>
+                                <option value="construcao">Construção Civil</option>
+                                <option value="transporte">Transporte</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label>Número de Funcionários:</label>
+                            <input type="number" id="numeroFuncionarios" placeholder="10" oninput="atualizarDados()">
+                        </div>
+                        <div class="input-field">
+                            <label>Estado Principal:</label>
+                            <select id="estado" onchange="atualizarDados()">
+                                <option value="SP">São Paulo</option>
+                                <option value="RJ">Rio de Janeiro</option>
+                                <option value="MG">Minas Gerais</option>
+                                <option value="RS">Rio Grande do Sul</option>
+                                <option value="PR">Paraná</option>
+                                <option value="SC">Santa Catarina</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="auto-fill-btn" onclick="preencherAutomatico()">
+                        🚀 Preencher Automaticamente & Calcular
+                    </button>
+                </div>
+                
+                <div id="quickResults" style="display: none;">
+                    <div class="sync-indicator">
+                        ✅ Dados sincronizados! Veja a comparação na aba "Comparação" →
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TAB 2: COMPARAÇÃO -->
+            <div id="tab-comparacao" class="tab-content">
+                <div class="comparison-section">
+                    <h3>⚖️ Comparação de Regimes Tributários</h3>
+                    <p style="margin-bottom: 20px; color: #666;">
+                        Baseado nos dados informados na entrada rápida. 
+                        <span id="faturamentoAnualDisplay" class="formatMoeda">Faturamento anual: R$ 0</span>
+                    </p>
+                    
+                    <div id="regimeComparison" class="regime-cards">
+                        <div style="grid-column: 1 / -1; text-align: center; color: #666; padding: 40px;">
+                            Preencha os dados na aba "Entrada Rápida" para ver a comparação
+                        </div>
+                    </div>
+                    
+                    <div id="economyInfo" class="economy-alert" style="display: none;">
+                        <h4>💰 Economia Anual Identificada</h4>
+                        <div class="economy-value" id="economyValue">R$ 0</div>
+                        <p id="economyText"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TAB 3: DETALHADA -->
+            <div id="tab-detalhada" class="tab-content">
+                <div style="text-align: center; padding: 40px;">
+                    <h3>🔍 Apuração Detalhada</h3>
+                    <p style="margin-bottom: 30px; color: #666;">
+                        Baseado nos dados da entrada rápida, aqui você pode ver todos os detalhes dos cálculos:
+                    </p>
+                    
+                    <div id="detailedView">
+                        <p style="color: #666;">Preencha os dados na entrada rápida para ver os detalhes</p>
+                    </div>
+                    
+                    <div style="margin-top: 30px;">
+                        <a href="index.html" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: 600;">
+                            🧮 Ir para Calculadora Completa
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Dados globais
+        let dadosEmpresa = {
+            faturamentoMensal: 0,
+            faturamentoAnual: 0,
+            atividade: 'comercio',
+            funcionarios: 0,
+            estado: 'SP'
+        };
+        
+        // Tabelas do Simples Nacional
+        const tabelaSimples = {
+            comercio: [
+                {limite: 180000, aliquota: 4.0, deducao: 0},
+                {limite: 360000, aliquota: 7.3, deducao: 5940},
+                {limite: 720000, aliquota: 9.5, deducao: 13860},
+                {limite: 1800000, aliquota: 10.7, deducao: 22500},
+                {limite: 3600000, aliquota: 14.3, deducao: 87300},
+                {limite: 4800000, aliquota: 19.0, deducao: 378000}
+            ],
+            industria: [
+                {limite: 180000, aliquota: 4.5, deducao: 0},
+                {limite: 360000, aliquota: 7.8, deducao: 5940},
+                {limite: 720000, aliquota: 10.0, deducao: 13860},
+                {limite: 1800000, aliquota: 11.2, deducao: 22500},
+                {limite: 3600000, aliquota: 14.7, deducao: 85500},
+                {limite: 4800000, aliquota: 30.0, deducao: 720000}
+            ],
+            servicos: [
+                {limite: 180000, aliquota: 6.0, deducao: 0},
+                {limite: 360000, aliquota: 11.2, deducao: 9360},
+                {limite: 720000, aliquota: 13.5, deducao: 17640},
+                {limite: 1800000, aliquota: 16.0, deducao: 35640},
+                {limite: 3600000, aliquota: 21.0, deducao: 125640},
+                {limite: 4800000, aliquota: 33.0, deducao: 648000}
+            ]
+        };
+        
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valor);
+        }
+        
+        function switchTab(tabName) {
+            // Remover classe active de todos os botões
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Ativar tab selecionada
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+        
+        function atualizarDados() {
+            const faturamentoMensal = parseFloat(document.getElementById('faturamentoMensal').value) || 0;
+            
+            dadosEmpresa = {
+                faturamentoMensal: faturamentoMensal,
+                faturamentoAnual: faturamentoMensal * 12,
+                atividade: document.getElementById('tipoAtividade').value,
+                funcionarios: parseInt(document.getElementById('numeroFuncionarios').value) || 0,
+                estado: document.getElementById('estado').value
+            };
+            
+            // Atualizar display do faturamento anual
+            document.getElementById('faturamentoAnualDisplay').textContent = 
+                `Faturamento anual: ${formatarMoeda(dadosEmpresa.faturamentoAnual)}`;
+            
+            if (faturamentoMensal > 0) {
+                calcularComparacao();
+            }
+        }
+        
+        function preencherAutomatico() {
+            const faturamento = parseFloat(document.getElementById('faturamentoMensal').value);
+            
+            if (!faturamento || faturamento <= 0) {
+                alert('⚠️ Digite um faturamento mensal válido!');
+                return;
+            }
+            
+            atualizarDados();
+            
+            // Mostrar indicador de sincronização
+            document.getElementById('quickResults').style.display = 'block';
+            
+            // Auto-switch para aba de comparação
+            setTimeout(() => {
+                switchTab('comparacao');
+                document.querySelector('[onclick="switchTab(\'comparacao\')"]').classList.add('active');
+            }, 1000);
+        }
+        
+        function calcularSimplesNacional(faturamento, atividade) {
+            if (faturamento > 4800000) return null;
+            
+            let tipoTabela = atividade;
+            if (['construcao', 'transporte'].includes(atividade)) {
+                tipoTabela = 'servicos';
+            }
+            
+            const tabela = tabelaSimples[tipoTabela] || tabelaSimples.comercio;
+            
+            for (let faixa of tabela) {
+                if (faturamento <= faixa.limite) {
+                    const das = Math.max(0, (faturamento * faixa.aliquota / 100) - faixa.deducao);
+                    return {
+                        das: das,
+                        total: das,
+                        aliquotaEfetiva: (das / faturamento * 100).toFixed(2)
+                    };
+                }
+            }
+            return null;
+        }
+        
+        function calcularLucroPresumido(faturamento, atividade) {
+            if (faturamento > 78000000) return null;
+            
+            const percentuais = {
+                servicos: {lucro: 32, pisCofins: 100},
+                construcao: {lucro: 32, pisCofins: 100},
+                transporte: {lucro: 16, pisCofins: 100},
+                comercio: {lucro: 8, pisCofins: 100},
+                industria: {lucro: 8, pisCofins: 100}
+            };
+            
+            const perc = percentuais[atividade] || percentuais.comercio;
+            
+            const baseIrpjCsll = faturamento * (perc.lucro / 100);
+            const basePisCofins = faturamento * (perc.pisCofins / 100);
+            
+            const irpj = baseIrpjCsll * 0.15 + Math.max(0, (baseIrpjCsll - 240000) * 0.10);
+            const csll = baseIrpjCsll * 0.09;
+            const pis = basePisCofins * 0.0065;
+            const cofins = basePisCofins * 0.03;
+            const icmsIss = faturamento * (atividade === 'servicos' ? 0.05 : 0.12);
+            
+            const total = irpj + csll + pis + cofins + icmsIss;
+            
+            return {
+                irpj, csll, pis, cofins, icmsIss, total,
+                aliquotaEfetiva: (total / faturamento * 100).toFixed(2)
+            };
+        }
+        
+        function calcularLucroReal(faturamento, atividade) {
+            const margemLucro = 0.10;
+            const lucroLiquido = faturamento * margemLucro;
+            
+            const irpj = lucroLiquido * 0.15 + Math.max(0, (lucroLiquido - 240000) * 0.10);
+            const csll = lucroLiquido * 0.09;
+            
+            const pisBase = faturamento * 0.0165;
+            const cofinsBase = faturamento * 0.076;
+            const pis = pisBase * 0.7; // Com créditos
+            const cofins = cofinsBase * 0.7; // Com créditos
+            
+            const icmsIss = faturamento * (atividade === 'servicos' ? 0.05 : 0.12);
+            
+            const total = irpj + csll + pis + cofins + icmsIss;
+            
+            return {
+                irpj, csll, pis, cofins, icmsIss, total,
+                aliquotaEfetiva: (total / faturamento * 100).toFixed(2)
+            };
+        }
+        
+        function calcularComparacao() {
+            const { faturamentoAnual, atividade, funcionarios } = dadosEmpresa;
+            
+            if (faturamentoAnual <= 0) return;
+            
+            const simples = calcularSimplesNacional(faturamentoAnual, atividade);
+            const presumido = calcularLucroPresumido(faturamentoAnual, atividade);
+            const real = calcularLucroReal(faturamentoAnual, atividade);
+            
+            // Verificar elegibilidade
+            const simplesElegivel = simples && faturamentoAnual <= 4800000 && funcionarios <= 150;
+            const presumidoElegivel = presumido && faturamentoAnual <= 78000000;
+            
+            // Determinar melhor opção
+            const opcoes = [];
+            if (simplesElegivel) opcoes.push({nome: 'Simples Nacional', valor: simples.total});
+            if (presumidoElegivel) opcoes.push({nome: 'Lucro Presumido', valor: presumido.total});
+            opcoes.push({nome: 'Lucro Real', valor: real.total});
+            
+            opcoes.sort((a, b) => a.valor - b.valor);
+            const melhorOpcao = opcoes[0]?.nome;
+            
+            // Gerar HTML
+            let html = '';
+            
+            // Simples Nacional
+            if (simplesElegivel) {
+                html += `
+                    <div class="regime-card ${melhorOpcao === 'Simples Nacional' ? 'melhor-opcao' : ''}">
+                        <div class="regime-header simples-header">🟢 Simples Nacional</div>
+                        <div class="regime-content">
+                            <div class="tax-row">
+                                <span>DAS Unificado:</span>
+                                <span class="formatMoeda">${formatarMoeda(simples.das)}</span>
+                            </div>
+                            <div class="tax-row">
+                                <span>Alíquota Efetiva:</span>
+                                <span>${simples.aliquotaEfetiva}%</span>
+                            </div>
+                            <div class="total-row">
+                                <span>TOTAL ANUAL:</span>
+                                <span class="tax-value">${formatarMoeda(simples.total)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="regime-card">
+                        <div class="regime-header simples-header">🟢 Simples Nacional</div>
+                        <div class="regime-content">
+                            <div style="text-align: center; color: #e74c3c; padding: 20px;">
+                                ❌ Não Elegível<br>
+                                ${faturamentoAnual > 4800000 ? 'Faturamento acima do limite' : ''}
+                                ${funcionarios > 150 ? 'Muitos funcionários' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Lucro Presumido
+            if (presumidoElegivel) {
+                html += `
+                    <div class="regime-card ${melhorOpcao === 'Lucro Presumido' ? 'melhor-opcao' : ''}">
+                        <div class="regime-header presumido-header">🟡 Lucro Presumido</div>
+                        <div class="regime-content">
+                            <div class="tax-row"><span>IRPJ:</span><span class="formatMoeda">${formatarMoeda(presumido.irpj)}</span></div>
+                            <div class="tax-row"><span>CSLL:</span><span class="formatMoeda">${formatarMoeda(presumido.csll)}</span></div>
+                            <div class="tax-row"><span>PIS:</span><span class="formatMoeda">${formatarMoeda(presumido.pis)}</span></div>
+                            <div class="tax-row"><span>COFINS:</span><span class="formatMoeda">${formatarMoeda(presumido.cofins)}</span></div>
+                            <div class="tax-row"><span>${atividade === 'servicos' ? 'ISS' : 'ICMS'}:</span><span class="formatMoeda">${formatarMoeda(presumido.icmsIss)}</span></div>
+                            <div class="total-row">
+                                <span>TOTAL ANUAL:</span>
+                                <span class="tax-value">${formatarMoeda(presumido.total)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="regime-card">
+                        <div class="regime-header presumido-header">🟡 Lucro Presumido</div>
+                        <div class="regime-content">
+                            <div style="text-align: center; color: #e74c3c; padding: 20px;">
+                                ❌ Não Elegível<br>Faturamento acima de R$ 78 mi
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Lucro Real
+            html += `
+                <div class="regime-card ${melhorOpcao === 'Lucro Real' ? 'melhor-opcao' : ''}">
+                    <div class="regime-header real-header">🔴 Lucro Real</div>
+                    <div class="regime-content">
+                        <div class="tax-row"><span>IRPJ:</span><span class="formatMoeda">${formatarMoeda(real.irpj)}</span></div>
+                        <div class="tax-row"><span>CSLL:</span><span class="formatMoeda">${formatarMoeda(real.csll)}</span></div>
+                        <div class="tax-row"><span>PIS:</span><span class="formatMoeda">${formatarMoeda(real.pis)}</span></div>
+                        <div class="tax-row"><span>COFINS:</span><span class="formatMoeda">${formatarMoeda(real.cofins)}</span></div>
+                        <div class="tax-row"><span>${atividade === 'servicos' ? 'ISS' : 'ICMS'}:</span><span class="formatMoeda">${formatarMoeda(real.icmsIss)}</span></div>
+                        <div class="total-row">
+                            <span>TOTAL ANUAL:</span>
+                            <span class="tax-value">${formatarMoeda(real.total)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('regimeComparison').innerHTML = html;
+            
+            // Mostrar economia
+            if (opcoes.length > 1) {
+                const economia = opcoes[1].valor - opcoes[0].valor;
+                document.getElementById('economyInfo').style.display = 'block';
+                document.getElementById('economyValue').textContent = formatarMoeda(economia);
+                document.getElementById('economyText').textContent = 
+                    `Economia anual do ${melhorOpcao} comparado ao ${opcoes[1].nome}`;
+            }
+            
+            // Atualizar visão detalhada
+            atualizarVisaoDetalhada();
+        }
+        
+        function atualizarVisaoDetalhada() {
+            const { faturamentoMensal, faturamentoAnual } = dadosEmpresa;
+            
+            if (faturamentoAnual > 0) {
+                document.getElementById('detailedView').innerHTML = `
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; text-align: left; max-width: 500px; margin: 0 auto;">
+                        <h4>📊 Resumo dos Cálculos</h4>
+                        <p><strong>Faturamento Mensal:</strong> ${formatarMoeda(faturamentoMensal)}</p>
+                        <p><strong>Faturamento Anual:</strong> ${formatarMoeda(faturamentoAnual)}</p>
+                        <p><strong>Atividade:</strong> ${dadosEmpresa.atividade}</p>
+                        <p><strong>Funcionários:</strong> ${dadosEmpresa.funcionarios}</p>
+                        <hr style="margin: 15px 0;">
+                        <p style="color: #666; font-size: 0.9em;">
+                            ℹ️ Para cálculos mais detalhados com créditos específicos, 
+                            use a calculadora completa.
+                        </p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarDados();
+        });
+    </script>
+</body>
+</html>
