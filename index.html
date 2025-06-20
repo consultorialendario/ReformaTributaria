@@ -309,6 +309,67 @@
             pointer-events: none;
         }
         
+        /* Cores inteligentes para apuração */
+        .resultado-devedor {
+            background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3) !important;
+            animation: pulse-devedor 2s infinite;
+        }
+
+        .resultado-credor {
+            background: linear-gradient(135deg, #27ae60, #229954) !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3) !important;
+            animation: pulse-credor 2s infinite;
+        }
+
+        .resultado-neutro {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d) !important;
+            color: white !important;
+        }
+
+        @keyframes pulse-devedor {
+            0%, 100% { 
+                box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes pulse-credor {
+            0%, 100% { 
+                box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 6px 20px rgba(39, 174, 96, 0.5);
+                transform: scale(1.02);
+            }
+        }
+
+        .legenda-status {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -341,6 +402,19 @@
         </div>
         
         <div class="main-content">
+            <!-- Legenda dos Status -->
+            <div class="legenda-status">
+                <div class="legenda-item" style="background: #e74c3c;">
+                    <span>📤</span><span>A Recolher</span>
+                </div>
+                <div class="legenda-item" style="background: #27ae60;">
+                    <span>📥</span><span>Saldo Credor</span>
+                </div>
+                <div class="legenda-item" style="background: #95a5a6;">
+                    <span>⚖️</span><span>Sem Movimento</span>
+                </div>
+            </div>
+            
             <div class="periodo-section">
                 <h3>📅 Configurações de Apuração</h3>
                 <div class="input-group">
@@ -489,9 +563,9 @@
                             <span>(-) Total Créditos ICMS:</span>
                             <span id="icmsTotalCreditos">R$ 0,00</span>
                         </div>
-                        <div class="calculation-row total">
+                        <div class="calculation-row total" id="icmsTotal">
                             <span><strong>ICMS a Recolher / Saldo Credor:</strong></span>
-                            <span id="icmsTotal"><strong>R$ 0,00</strong></span>
+                            <span><strong>R$ 0,00</strong></span>
                         </div>
                     </div>
                 </div>
@@ -536,9 +610,9 @@
                             <span>(-) ISS Retido na Fonte:</span>
                             <span id="issRetidoCalc">R$ 0,00</span>
                         </div>
-                        <div class="calculation-row total">
+                        <div class="calculation-row total" id="issTotal">
                             <span><strong>ISS a Recolher:</strong></span>
-                            <span id="issTotal"><strong>R$ 0,00</strong></span>
+                            <span><strong>R$ 0,00</strong></span>
                         </div>
                     </div>
                 </div>
@@ -594,9 +668,9 @@
                             <span>(-) Total Créditos IPI:</span>
                             <span id="ipiTotalCreditos">R$ 0,00</span>
                         </div>
-                        <div class="calculation-row total">
+                        <div class="calculation-row total" id="ipiTotal">
                             <span><strong>IPI a Recolher / Saldo Credor:</strong></span>
-                            <span id="ipiTotal"><strong>R$ 0,00</strong></span>
+                            <span><strong>R$ 0,00</strong></span>
                         </div>
                     </div>
                 </div>
@@ -694,9 +768,9 @@
                             <span>(-) Total Créditos PIS:</span>
                             <span id="pisTotalCreditos">R$ 0,00</span>
                         </div>
-                        <div class="calculation-row total">
+                        <div class="calculation-row total" id="pisTotal">
                             <span><strong>PIS a Recolher / Saldo Credor:</strong></span>
-                            <span id="pisTotal"><strong>R$ 0,00</strong></span>
+                            <span><strong>R$ 0,00</strong></span>
                         </div>
                     </div>
                 </div>
@@ -794,9 +868,9 @@
                             <span>(-) Total Créditos COFINS:</span>
                             <span id="cofinsTotalCreditos">R$ 0,00</span>
                         </div>
-                        <div class="calculation-row total">
+                        <div class="calculation-row total" id="cofinsTotal">
                             <span><strong>COFINS a Recolher / Saldo Credor:</strong></span>
-                            <span id="cofinsTotal"><strong>R$ 0,00</strong></span>
+                            <span><strong>R$ 0,00</strong></span>
                         </div>
                     </div>
                 </div>
@@ -848,8 +922,8 @@
                 <button class="btn" onclick="salvarDados()">💾 Salvar Apuração</button>
                 <button class="btn" onclick="compararRegimes()">⚖️ Comparar Regimes</button>
                 <a href="integrada.html" class="btn" style="background: linear-gradient(135deg, #9b59b6, #8e44ad); margin: 10px 5px;">
-    🚀 Nova Versão Integrada
-</a>
+                    🚀 Nova Versão Integrada
+                </a>
             </div>
         </div>
     </div>
@@ -860,6 +934,36 @@
                 style: 'currency',
                 currency: 'BRL'
             }).format(valor);
+        }
+        
+        // Função para aplicar cores inteligentes nos resultados
+        function aplicarCorResultado(valor, elementoId, nomeImposto) {
+            const elemento = document.getElementById(elementoId);
+            if (!elemento) return;
+            
+            // Determinar status e cores
+            let classe, texto, valorDisplay;
+            
+            if (valor > 0) {
+                classe = 'resultado-devedor';
+                texto = `📤 ${nomeImposto} a Recolher:`;
+                valorDisplay = valor;
+            } else if (valor < 0) {
+                classe = 'resultado-credor';
+                texto = `📥 Saldo Credor ${nomeImposto}:`;
+                valorDisplay = Math.abs(valor);
+            } else {
+                classe = 'resultado-neutro';
+                texto = `⚖️ ${nomeImposto} - Sem Movimento:`;
+                valorDisplay = 0;
+            }
+            
+            // Aplicar classe e atualizar conteúdo
+            elemento.className = `calculation-row total ${classe}`;
+            elemento.innerHTML = `
+                <span><strong>${texto}</strong></span>
+                <span style="font-size: 1.2em; font-weight: bold;"><strong>${formatarMoeda(valorDisplay)}</strong></span>
+            `;
         }
         
         function alterarRegime() {
@@ -962,11 +1066,12 @@
             document.getElementById('icmsOutrasCalc').textContent = formatarMoeda(icmsOutras);
             document.getElementById('icmsTotalCreditos').textContent = formatarMoeda(totalCreditos);
             
+            // Aplicar cores inteligentes
+            aplicarCorResultado(icmsLiquido, 'icmsTotal', 'ICMS');
+            
             if (icmsLiquido >= 0) {
-                document.getElementById('icmsTotal').innerHTML = `<strong>${formatarMoeda(icmsLiquido)}</strong>`;
                 document.getElementById('summaryICMS').textContent = formatarMoeda(icmsLiquido);
             } else {
-                document.getElementById('icmsTotal').innerHTML = `<strong>Saldo Credor: ${formatarMoeda(Math.abs(icmsLiquido))}</strong>`;
                 document.getElementById('summaryICMS').textContent = 'R$ 0,00';
             }
             
@@ -986,7 +1091,10 @@
             document.getElementById('issBaseCalculo').textContent = formatarMoeda(baseCalculo);
             document.getElementById('issDevido').textContent = formatarMoeda(issDevido);
             document.getElementById('issRetidoCalc').textContent = formatarMoeda(retido);
-            document.getElementById('issTotal').innerHTML = `<strong>${formatarMoeda(issTotal)}</strong>`;
+            
+            // Aplicar cores inteligentes
+            aplicarCorResultado(issTotal, 'issTotal', 'ISS');
+            
             document.getElementById('summaryISS').textContent = formatarMoeda(issTotal);
             
             atualizarTotal();
@@ -1005,11 +1113,12 @@
             document.getElementById('ipiSobreVendas').textContent = formatarMoeda(ipiSobreVendas);
             document.getElementById('ipiTotalCreditos').textContent = formatarMoeda(totalCreditos);
             
+            // Aplicar cores inteligentes
+            aplicarCorResultado(ipiLiquido, 'ipiTotal', 'IPI');
+            
             if (ipiLiquido >= 0) {
-                document.getElementById('ipiTotal').innerHTML = `<strong>${formatarMoeda(ipiLiquido)}</strong>`;
                 document.getElementById('summaryIPI').textContent = formatarMoeda(ipiLiquido);
             } else {
-                document.getElementById('ipiTotal').innerHTML = `<strong>Saldo Credor: ${formatarMoeda(Math.abs(ipiLiquido))}</strong>`;
                 document.getElementById('summaryIPI').textContent = 'R$ 0,00';
             }
             
@@ -1047,11 +1156,12 @@
             document.getElementById('pisSobreFaturamento').textContent = formatarMoeda(pisSobreFaturamento);
             document.getElementById('pisTotalCreditos').textContent = formatarMoeda(totalCreditos);
             
+            // Aplicar cores inteligentes
+            aplicarCorResultado(pisLiquido, 'pisTotal', 'PIS');
+            
             if (pisLiquido >= 0) {
-                document.getElementById('pisTotal').innerHTML = `<strong>${formatarMoeda(pisLiquido)}</strong>`;
                 document.getElementById('summaryPIS').textContent = formatarMoeda(pisLiquido);
             } else {
-                document.getElementById('pisTotal').innerHTML = `<strong>Saldo Credor: ${formatarMoeda(Math.abs(pisLiquido))}</strong>`;
                 document.getElementById('summaryPIS').textContent = 'R$ 0,00';
             }
             
@@ -1089,11 +1199,12 @@
             document.getElementById('cofinsSobreFaturamento').textContent = formatarMoeda(cofinsSobreFaturamento);
             document.getElementById('cofinsTotalCreditos').textContent = formatarMoeda(totalCreditos);
             
+            // Aplicar cores inteligentes
+            aplicarCorResultado(cofinsLiquido, 'cofinsTotal', 'COFINS');
+            
             if (cofinsLiquido >= 0) {
-                document.getElementById('cofinsTotal').innerHTML = `<strong>${formatarMoeda(cofinsLiquido)}</strong>`;
                 document.getElementById('summaryCOFINS').textContent = formatarMoeda(cofinsLiquido);
             } else {
-                document.getElementById('cofinsTotal').innerHTML = `<strong>Saldo Credor: ${formatarMoeda(Math.abs(cofinsLiquido))}</strong>`;
                 document.getElementById('summaryCOFINS').textContent = 'R$ 0,00';
             }
             
@@ -1134,7 +1245,7 @@
             alert('⚖️ Comparador de regimes seria implementado aqui.\nSimulação automática: Lucro Real vs Lucro Presumido vs Simples Nacional');
         }
         
-        // Inicializar a planilha
+        // Inicializar a calculadora
         document.addEventListener('DOMContentLoaded', function() {
             alterarRegime(); // Configurar regime inicial
             atualizarAliquotas(); // Configurar atividade inicial
