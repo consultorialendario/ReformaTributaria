@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apuração de Impostos - Brasil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .periodo-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-field label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .input-field input, .input-field select {
+            padding: 12px;
+            border: 2px solid #e3e6f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-field input:focus, .input-field select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            margin-left: 5px;
+            color: #3498db;
+        }
+        
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .tax-section {
+            background: #ffffff;
+            border: 2px solid #e3e6f0;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .tax-header {
+            padding: 20px;
+            font-weight: bold;
+            font-size: 1.3em;
+            color: white;
+            text-align: center;
+        }
+        
+        .icms-header { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .iss-header { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .ipi-header { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .pis-header { background: linear-gradient(135deg, #27ae60, #229954); }
+        .cofins-header { background: linear-gradient(135deg, #2980b9, #1f618d); }
+        
+        .tax-content {
+            padding: 25px;
+        }
+        
+        .debitos-creditos {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .debito-section, .credito-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .debito-section {
+            border-left: 5px solid #e74c3c;
+        }
+        
+        .credito-section {
+            border-left: 5px solid #27ae60;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .tax-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .calculation-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            align-items: center;
+            padding: 12px;
+            background: #ffffff;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #e3e6f0;
+        }
+        
+        .calculation-row.total {
+            background: #e8f5e8;
+            border: 2px solid #27ae60;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .calculation-row.debito {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .calculation-row.credito {
+            border-left: 4px solid #27ae60;
+        }
+        
+        .apuracao-final {
+            background: #f0f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #3498db;
+            margin-top: 20px;
+        }
+        
+        .summary-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+            border: 2px solid #3498db;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .summary-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .summary-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        .info-panel {
+            background: #e8f4fd;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .info-panel h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .debitos-creditos {
+                grid-template-columns: 1fr;
+            }
+            
+            .tax-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .calculation-row {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Apuração de Impostos - Brasil</h1>
+            <p>Sistema Completo para ICMS, ISS, IPI, PIS e COFINS com Créditos Detalhados</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="periodo-section">
+                <h3>📅 Configurações de Apuração</h3>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label>Mês/Ano:</label>
+                        <input type="month" id="periodoApuracao" value="2025-06">
+                    </div>
+                    <div class="input-field">
+                        <label>Regime Tributário:</label>
+                        <select id="regimeTributario" onchange="alterarRegime()">
+                            <option value="lucro_real">Lucro Real</option>
+                            <option value="lucro_presumido">Lucro Presumido</option>
+                            <option value="simples">Simples Nacional</option>
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <label>Estado Principal:</label>
+                        <select id="estadoPrincipal">
+                            <option value="SP">São Paulo</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="PR">Paraná</option>
+                            <option value="SC">Santa Catarina</option>
+                        </select>
+                    </div>
+                    <div class="input-field">
+                        <label>Atividade Principal:</label>
+                        <select id="atividadePrincipal" onchange="atualizarAliquotas()">
+                            <option value="comercio">Comércio</option>
+                            <option value="industria">Indústria</option>
+                            <option value="servicos">Serviços</option>
+                            <option value="misto">Atividade Mista</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="alertaRegime" class="alert alert-info" style="display: none;">
+                    <strong>Regime Selecionado:</strong> <span id="infoRegime"></span>
+                </div>
+            </div>
+            
+            <!-- ICMS Section -->
+            <div class="tax-section">
+                <div class="tax-header icms-header">
+                    🏪 ICMS - Imposto sobre Circulação de Mercadorias e Serviços
+                </div>
+                <div class="tax-content">
+                    <div class="debitos-creditos">
+                        <div class="debito-section">
+                            <div class="section-title">🔴 DÉBITOS ICMS</div>
+                            <div class="tax-grid">
+                                <div class="input-field">
+                                    <label>Vendas Internas (R$):</label>
+                                    <input type="number" id="icmsVendasInternas" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Alíquota Interna (%):</label>
+                                    <input type="number" id="icmsAliqInterna" value="18" placeholder="18%" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Vendas Interestaduais (R$):</label>
+                                    <input type="number" id="icmsVendasInterestaduais" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Alíquota Interestadual (%):</label>
+                                    <input type="number" id="icmsAliqInterestadual" value="12" placeholder="12%" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Outras Operações (R$):</label>
+                                    <input type="number" id="icmsOutrasOperacoes" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Alíquota Outras (%):</label>
+                                    <input type="number" id="icmsAliqOutras" value="18" placeholder="18%" oninput="calcularICMS()">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="credito-section">
+                            <div class="section-title">🟢 CRÉDITOS ICMS</div>
+                            <div class="tax-grid">
+                                <div class="input-field">
+                                    <label>Compras de Mercadorias (R$): 
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">ICMS sobre aquisições de mercadorias para revenda. Direito ao crédito integral.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="icmsComprasMercadorias" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Insumos de Produção (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">ICMS sobre matérias-primas, produtos intermediários e material de embalagem utilizados na produção.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="icmsInsumos" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Energia Elétrica (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">ICMS sobre energia elétrica consumida no estabelecimento industrial ou comercial.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="icmsEnergia" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Telecomunicações (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">ICMS sobre serviços de comunicação utilizados pela empresa.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="icmsTelecom" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Ativo Imobilizado (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">ICMS sobre bens do ativo imobilizado. Crédito em 48 parcelas mensais e sucessivas.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="icmsAtivo" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Saldo Credor Anterior (R$):</label>
+                                    <input type="number" id="icmsSaldoAnterior" placeholder="0,00" oninput="calcularICMS()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="apuracao-final">
+                        <h4>📊 Apuração ICMS</h4>
+                        <div class="calculation-row debito">
+                            <span>ICMS sobre Vendas Internas:</span>
+                            <span id="icmsInternoCalc">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row debito">
+                            <span>ICMS sobre Vendas Interestaduais:</span>
+                            <span id="icmsInterestadualCalc">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row debito">
+                            <span>ICMS sobre Outras Operações:</span>
+                            <span id="icmsOutrasCalc">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row credito">
+                            <span>(-) Total Créditos ICMS:</span>
+                            <span id="icmsTotalCreditos">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row total">
+                            <span><strong>ICMS a Recolher / Saldo Credor:</strong></span>
+                            <span id="icmsTotal"><strong>R$ 0,00</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ISS Section -->
+            <div class="tax-section">
+                <div class="tax-header iss-header">
+                    🏢 ISS - Imposto Sobre Serviços
+                </div>
+                <div class="tax-content">
+                    <div class="tax-grid">
+                        <div class="input-field">
+                            <label>Receita de Serviços (R$):</label>
+                            <input type="number" id="issReceitaServicos" placeholder="0,00" oninput="calcularISS()">
+                        </div>
+                        <div class="input-field">
+                            <label>Alíquota ISS (%):</label>
+                            <input type="number" id="issAliquota" value="5" placeholder="5%" oninput="calcularISS()">
+                        </div>
+                        <div class="input-field">
+                            <label>Deduções Permitidas (R$):</label>
+                            <input type="number" id="issDeducoes" placeholder="0,00" oninput="calcularISS()">
+                        </div>
+                        <div class="input-field">
+                            <label>ISS Retido na Fonte (R$):</label>
+                            <input type="number" id="issRetido" placeholder="0,00" oninput="calcularISS()">
+                        </div>
+                    </div>
+                    
+                    <div class="apuracao-final">
+                        <h4>📊 Apuração ISS</h4>
+                        <div class="calculation-row">
+                            <span>Base de Cálculo ISS:</span>
+                            <span id="issBaseCalculo">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>ISS Devido:</span>
+                            <span id="issDevido">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row">
+                            <span>(-) ISS Retido na Fonte:</span>
+                            <span id="issRetidoCalc">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row total">
+                            <span><strong>ISS a Recolher:</strong></span>
+                            <span id="issTotal"><strong>R$ 0,00</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IPI Section -->
+            <div class="tax-section" id="ipiSection">
+                <div class="tax-header ipi-header">
+                    🏭 IPI - Imposto sobre Produtos Industrializados
+                </div>
+                <div class="tax-content">
+                    <div class="debitos-creditos">
+                        <div class="debito-section">
+                            <div class="section-title">🔴 DÉBITOS IPI</div>
+                            <div class="tax-grid">
+                                <div class="input-field">
+                                    <label>Receita de Vendas (R$):</label>
+                                    <input type="number" id="ipiReceitaVendas" placeholder="0,00" oninput="calcularIPI()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Alíquota IPI (%):</label>
+                                    <input type="number" id="ipiAliquota" value="10" placeholder="10%" oninput="calcularIPI()">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="credito-section">
+                            <div class="section-title">🟢 CRÉDITOS IPI</div>
+                            <div class="tax-grid">
+                                <div class="input-field">
+                                    <label>IPI sobre Insumos (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">IPI sobre matérias-primas, produtos intermediários e material de embalagem utilizados na industrialização.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="ipiInsumos" placeholder="0,00" oninput="calcularIPI()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Saldo Credor Anterior (R$):</label>
+                                    <input type="number" id="ipiSaldoAnterior" placeholder="0,00" oninput="calcularIPI()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="apuracao-final">
+                        <h4>📊 Apuração IPI</h4>
+                        <div class="calculation-row debito">
+                            <span>IPI sobre Vendas:</span>
+                            <span id="ipiSobreVendas">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row credito">
+                            <span>(-) Total Créditos IPI:</span>
+                            <span id="ipiTotalCreditos">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row total">
+                            <span><strong>IPI a Recolher / Saldo Credor:</strong></span>
+                            <span id="ipiTotal"><strong>R$ 0,00</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PIS Section -->
+            <div class="tax-section">
+                <div class="tax-header pis-header">
+                    👥 PIS - Programa de Integração Social
+                </div>
+                <div class="tax-content">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label>Regime PIS:</label>
+                            <select id="pisRegime" onchange="alterarRegimePIS()">
+                                <option value="nao_cumulativo">Não Cumulativo (1,65%) - Lucro Real</option>
+                                <option value="cumulativo">Cumulativo (0,65%) - Lucro Presumido</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="debitos-creditos">
+                        <div class="debito-section">
+                            <div class="section-title">🔴 DÉBITOS PIS</div>
+                            <div class="tax-grid">
+                                <div class="input-field">
+                                    <label>Faturamento Bruto (R$):</label>
+                                    <input type="number" id="pisFaturamento" placeholder="0,00" oninput="calcularPIS()">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="credito-section" id="pisCreditosSection">
+                            <div class="section-title">🟢 CRÉDITOS PIS (Apenas Não Cumulativo)</div>
+                            <div class="tax-grid">
+                                <div class="input-field">
+                                    <label>Aquisições para Revenda (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Valor das aquisições de bens destinados à revenda. Crédito de 1,65%.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="pisRevenda" placeholder="0,00" oninput="calcularPIS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Insumos de Produção (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Custos de aquisição de bens e serviços utilizados como insumos na prestação de serviços e na produção ou fabricação de bens.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="pisInsumos" placeholder="0,00" oninput="calcularPIS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Energia Elétrica (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Energia elétrica consumida nos estabelecimentos da pessoa jurídica.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="pisEnergia" placeholder="0,00" oninput="calcularPIS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Aluguéis (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Valores pagos a título de aluguéis de prédios, máquinas e equipamentos utilizados na atividade da empresa.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="pisAlugueis" placeholder="0,00" oninput="calcularPIS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Ativo Imobilizado (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Valor de aquisição de máquinas, equipamentos e outros bens incorporados ao ativo imobilizado. Crédito em 48 parcelas.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="pisAtivo" placeholder="0,00" oninput="calcularPIS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Saldo Credor Anterior (R$):</label>
+                                    <input type="number" id="pisSaldoAnterior" placeholder="0,00" oninput="calcularPIS()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="apuracao-final">
+                        <h4>📊 Apuração PIS</h4>
+                        <div class="calculation-row">
+                            <span>Alíquota Aplicada:</span>
+                            <span id="pisAliquotaAplicada">1,65%</span>
+                        </div>
+                        <div class="calculation-row debito">
+                            <span>PIS sobre Faturamento:</span>
+                            <span id="pisSobreFaturamento">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row credito" id="pisCreditosCalc">
+                            <span>(-) Total Créditos PIS:</span>
+                            <span id="pisTotalCreditos">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row total">
+                            <span><strong>PIS a Recolher / Saldo Credor:</strong></span>
+                            <span id="pisTotal"><strong>R$ 0,00</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- COFINS Section -->
+            <div class="tax-section">
+                <div class="tax-header cofins-header">
+                    🏛️ COFINS - Contribuição para Financiamento da Seguridade Social
+                </div>
+                <div class="tax-content">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label>Regime COFINS:</label>
+                            <select id="cofinsRegime" onchange="alterarRegimeCOFINS()">
+                                <option value="nao_cumulativo">Não Cumulativo (7,6%) - Lucro Real</option>
+                                <option value="cumulativo">Cumulativo (3,0%) - Lucro Presumido</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="debitos-creditos">
+                        <div class="debito-section">
+                            <div class="section-title">🔴 DÉBITOS COFINS</div>
+                            <div class="tax-grid">
+                                <div class="input-field">
+                                    <label>Faturamento Bruto (R$):</label>
+                                    <input type="number" id="cofinsFaturamento" placeholder="0,00" oninput="calcularCOFINS()">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="credito-section" id="cofinsCreditosSection">
+                            <div class="section-title">🟢 CRÉDITOS COFINS (Apenas Não Cumulativo)</div>
+                            <div class="tax-grid">
+                                <div class="input-field">
+                                    <label>Aquisições para Revenda (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Valor das aquisições de bens destinados à revenda. Crédito de 7,6%.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="cofinsRevenda" placeholder="0,00" oninput="calcularCOFINS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Insumos de Produção (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Custos de aquisição de bens e serviços utilizados como insumos na prestação de serviços e na produção ou fabricação de bens.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="cofinsInsumos" placeholder="0,00" oninput="calcularCOFINS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Energia Elétrica (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Energia elétrica consumida nos estabelecimentos da pessoa jurídica.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="cofinsEnergia" placeholder="0,00" oninput="calcularCOFINS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Aluguéis (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Valores pagos a título de aluguéis de prédios, máquinas e equipamentos utilizados na atividade da empresa.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="cofinsAlugueis" placeholder="0,00" oninput="calcularCOFINS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Ativo Imobilizado (R$):
+                                        <span class="tooltip">ℹ️
+                                            <span class="tooltiptext">Valor de aquisição de máquinas, equipamentos e outros bens incorporados ao ativo imobilizado. Crédito em 48 parcelas.</span>
+                                        </span>
+                                    </label>
+                                    <input type="number" id="cofinsAtivo" placeholder="0,00" oninput="calcularCOFINS()">
+                                </div>
+                                <div class="input-field">
+                                    <label>Saldo Credor Anterior (R$):</label>
+                                    <input type="number" id="cofinsSaldoAnterior" placeholder="0,00" oninput="calcularCOFINS()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="apuracao-final">
+                        <h4>📊 Apuração COFINS</h4>
+                        <div class="calculation-row">
+                            <span>Alíquota Aplicada:</span>
+                            <span id="cofinsAliquotaAplicada">7,6%</span>
+                        </div>
+                        <div class="calculation-row debito">
+                            <span>COFINS sobre Faturamento:</span>
+                            <span id="cofinsSobreFaturamento">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row credito" id="cofinsCreditosCalc">
+                            <span>(-) Total Créditos COFINS:</span>
+                            <span id="cofinsTotalCreditos">R$ 0,00</span>
+                        </div>
+                        <div class="calculation-row total">
+                            <span><strong>COFINS a Recolher / Saldo Credor:</strong></span>
+                            <span id="cofinsTotal"><strong>R$ 0,00</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Summary Section -->
+            <div class="summary-section">
+                <h3>📈 Resumo Geral da Apuração</h3>
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h3>ICMS</h3>
+                        <div class="summary-value" id="summaryICMS">R$ 0,00</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>ISS</h3>
+                        <div class="summary-value" id="summaryISS">R$ 0,00</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>IPI</h3>
+                        <div class="summary-value" id="summaryIPI">R$ 0,00</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>PIS</h3>
+                        <div class="summary-value" id="summaryPIS">R$ 0,00</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>COFINS</h3>
+                        <div class="summary-value" id="summaryCOFINS">R$ 0,00</div>
+                    </div>
+                    <div class="summary-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #2c3e50, #3498db); color: white;">
+                        <h3>TOTAL A RECOLHER</h3>
+                        <div class="summary-value" id="summaryTotal" style="color: white; font-size: 2em;">R$ 0,00</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <h4>💡 Informações Importantes por Regime:</h4>
+                <div id="infoRegimeDetalhada">
+                    <p><strong>Lucro Real:</strong> Permite créditos de PIS/COFINS (regime não cumulativo) e todos os créditos de ICMS/IPI.</p>
+                    <p><strong>Vencimentos:</strong> Todos os impostos devem ser recolhidos até o dia 20 do mês seguinte ao da apuração.</p>
+                    <p><strong>Créditos de Ativo:</strong> ICMS, PIS e COFINS sobre ativo imobilizado são aproveitados em 48 parcelas mensais.</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-success" onclick="gerarRelatorio()">📊 Gerar Relatório</button>
+                <button class="btn btn-warning" onclick="limparDados()">🗑️ Limpar Dados</button>
+                <button class="btn" onclick="salvarDados()">💾 Salvar Apuração</button>
+                <button class="btn" onclick="compararRegimes()">⚖️ Comparar Regimes</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valor);
+        }
+        
+        function alterarRegime() {
+            const regime = document.getElementById('regimeTributario').value;
+            const alertaRegime = document.getElementById('alertaRegime');
+            const infoRegime = document.getElementById('infoRegime');
+            const pisRegime = document.getElementById('pisRegime');
+            const cofinsRegime = document.getElementById('cofinsRegime');
+            
+            alertaRegime.style.display = 'block';
+            
+            if (regime === 'lucro_real') {
+                infoRegime.textContent = 'Lucro Real - Permite créditos de PIS/COFINS não cumulativo';
+                pisRegime.value = 'nao_cumulativo';
+                cofinsRegime.value = 'nao_cumulativo';
+                document.getElementById('pisCreditosSection').classList.remove('disabled');
+                document.getElementById('cofinsCreditosSection').classList.remove('disabled');
+            } else if (regime === 'lucro_presumido') {
+                infoRegime.textContent = 'Lucro Presumido - PIS/COFINS cumulativo, sem direito a créditos';
+                pisRegime.value = 'cumulativo';
+                cofinsRegime.value = 'cumulativo';
+                document.getElementById('pisCreditosSection').classList.add('disabled');
+                document.getElementById('cofinsCreditosSection').classList.add('disabled');
+            } else {
+                infoRegime.textContent = 'Simples Nacional - Tributação unificada';
+                document.getElementById('pisCreditosSection').classList.add('disabled');
+                document.getElementById('cofinsCreditosSection').classList.add('disabled');
+            }
+            
+            alterarRegimePIS();
+            alterarRegimeCOFINS();
+        }
+        
+        function alterarRegimePIS() {
+            const regime = document.getElementById('pisRegime').value;
+            const creditosSection = document.getElementById('pisCreditosSection');
+            const creditosCalc = document.getElementById('pisCreditosCalc');
+            
+            if (regime === 'cumulativo') {
+                creditosSection.classList.add('disabled');
+                creditosCalc.style.display = 'none';
+            } else {
+                creditosSection.classList.remove('disabled');
+                creditosCalc.style.display = 'grid';
+            }
+            calcularPIS();
+        }
+        
+        function alterarRegimeCOFINS() {
+            const regime = document.getElementById('cofinsRegime').value;
+            const creditosSection = document.getElementById('cofinsCreditosSection');
+            const creditosCalc = document.getElementById('cofinsCreditosCalc');
+            
+            if (regime === 'cumulativo') {
+                creditosSection.classList.add('disabled');
+                creditosCalc.style.display = 'none';
+            } else {
+                creditosSection.classList.remove('disabled');
+                creditosCalc.style.display = 'grid';
+            }
+            calcularCOFINS();
+        }
+        
+        function atualizarAliquotas() {
+            const atividade = document.getElementById('atividadePrincipal').value;
+            const ipiSection = document.getElementById('ipiSection');
+            
+            if (atividade === 'industria') {
+                ipiSection.style.display = 'block';
+            } else {
+                ipiSection.style.display = 'none';
+            }
+        }
+        
+        function calcularICMS() {
+            const vendasInternas = parseFloat(document.getElementById('icmsVendasInternas').value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('icmsVendasInterestaduais').value) || 0;
+            const outrasOperacoes = parseFloat(document.getElementById('icmsOutrasOperacoes').value) || 0;
+            const aliqInterna = parseFloat(document.getElementById('icmsAliqInterna').value) || 0;
+            const aliqInterestadual = parseFloat(document.getElementById('icmsAliqInterestadual').value) || 0;
+            const aliqOutras = parseFloat(document.getElementById('icmsAliqOutras').value) || 0;
+            
+            const comprasMercadorias = parseFloat(document.getElementById('icmsComprasMercadorias').value) || 0;
+            const insumos = parseFloat(document.getElementById('icmsInsumos').value) || 0;
+            const energia = parseFloat(document.getElementById('icmsEnergia').value) || 0;
+            const telecom = parseFloat(document.getElementById('icmsTelecom').value) || 0;
+            const ativo = parseFloat(document.getElementById('icmsAtivo').value) || 0;
+            const saldoAnterior = parseFloat(document.getElementById('icmsSaldoAnterior').value) || 0;
+            
+            const icmsInterno = vendasInternas * (aliqInterna / 100);
+            const icmsInterestadual = vendasInterestaduais * (aliqInterestadual / 100);
+            const icmsOutras = outrasOperacoes * (aliqOutras / 100);
+            
+            const totalCreditos = comprasMercadorias + insumos + energia + telecom + ativo + saldoAnterior;
+            const totalDebitos = icmsInterno + icmsInterestadual + icmsOutras;
+            const icmsLiquido = totalDebitos - totalCreditos;
+            
+            document.getElementById('icmsInternoCalc').textContent = formatarMoeda(icmsInterno);
+            document.getElementById('icmsInterestadualCalc').textContent = formatarMoeda(icmsInterestadual);
+            document.getElementById('icmsOutrasCalc').textContent = formatarMoeda(icmsOutras);
+            document.getElementById('icmsTotalCreditos').textContent = formatarMoeda(totalCreditos);
+            
+            if (icmsLiquido >= 0) {
+                document.getElementById('icmsTotal').innerHTML = `<strong>${formatarMoeda(icmsLiquido)}</strong>`;
+                document.getElementById('summaryICMS').textContent = formatarMoeda(icmsLiquido);
+            } else {
+                document.getElementById('icmsTotal').innerHTML = `<strong>Saldo Credor: ${formatarMoeda(Math.abs(icmsLiquido))}</strong>`;
+                document.getElementById('summaryICMS').textContent = 'R$ 0,00';
+            }
+            
+            atualizarTotal();
+        }
+        
+        function calcularISS() {
+            const receitaServicos = parseFloat(document.getElementById('issReceitaServicos').value) || 0;
+            const aliquota = parseFloat(document.getElementById('issAliquota').value) || 0;
+            const deducoes = parseFloat(document.getElementById('issDeducoes').value) || 0;
+            const retido = parseFloat(document.getElementById('issRetido').value) || 0;
+            
+            const baseCalculo = receitaServicos - deducoes;
+            const issDevido = baseCalculo * (aliquota / 100);
+            const issTotal = Math.max(0, issDevido - retido);
+            
+            document.getElementById('issBaseCalculo').textContent = formatarMoeda(baseCalculo);
+            document.getElementById('issDevido').textContent = formatarMoeda(issDevido);
+            document.getElementById('issRetidoCalc').textContent = formatarMoeda(retido);
+            document.getElementById('issTotal').innerHTML = `<strong>${formatarMoeda(issTotal)}</strong>`;
+            document.getElementById('summaryISS').textContent = formatarMoeda(issTotal);
+            
+            atualizarTotal();
+        }
+        
+        function calcularIPI() {
+            const receitaVendas = parseFloat(document.getElementById('ipiReceitaVendas').value) || 0;
+            const aliquota = parseFloat(document.getElementById('ipiAliquota').value) || 0;
+            const insumos = parseFloat(document.getElementById('ipiInsumos').value) || 0;
+            const saldoAnterior = parseFloat(document.getElementById('ipiSaldoAnterior').value) || 0;
+            
+            const ipiSobreVendas = receitaVendas * (aliquota / 100);
+            const totalCreditos = insumos + saldoAnterior;
+            const ipiLiquido = ipiSobreVendas - totalCreditos;
+            
+            document.getElementById('ipiSobreVendas').textContent = formatarMoeda(ipiSobreVendas);
+            document.getElementById('ipiTotalCreditos').textContent = formatarMoeda(totalCreditos);
+            
+            if (ipiLiquido >= 0) {
+                document.getElementById('ipiTotal').innerHTML = `<strong>${formatarMoeda(ipiLiquido)}</strong>`;
+                document.getElementById('summaryIPI').textContent = formatarMoeda(ipiLiquido);
+            } else {
+                document.getElementById('ipiTotal').innerHTML = `<strong>Saldo Credor: ${formatarMoeda(Math.abs(ipiLiquido))}</strong>`;
+                document.getElementById('summaryIPI').textContent = 'R$ 0,00';
+            }
+            
+            atualizarTotal();
+        }
+        
+        function calcularPIS() {
+            const faturamento = parseFloat(document.getElementById('pisFaturamento').value) || 0;
+            const regime = document.getElementById('pisRegime').value;
+            
+            const aliquota = regime === 'nao_cumulativo' ? 1.65 : 0.65;
+            const pisSobreFaturamento = faturamento * (aliquota / 100);
+            
+            let totalCreditos = 0;
+            if (regime === 'nao_cumulativo') {
+                const revenda = parseFloat(document.getElementById('pisRevenda').value) || 0;
+                const insumos = parseFloat(document.getElementById('pisInsumos').value) || 0;
+                const energia = parseFloat(document.getElementById('pisEnergia').value) || 0;
+                const alugueis = parseFloat(document.getElementById('pisAlugueis').value) || 0;
+                const ativo = parseFloat(document.getElementById('pisAtivo').value) || 0;
+                const saldoAnterior = parseFloat(document.getElementById('pisSaldoAnterior').value) || 0;
+                
+                const creditoRevenda = revenda * 0.0165;
+                const creditoInsumos = insumos * 0.0165;
+                const creditoEnergia = energia * 0.0165;
+                const creditoAlugueis = alugueis * 0.0165;
+                const creditoAtivo = ativo * 0.0165;
+                
+                totalCreditos = creditoRevenda + creditoInsumos + creditoEnergia + creditoAlugueis + creditoAtivo + saldoAnterior;
+            }
+            
+            const pisLiquido = pisSobreFaturamento - totalCreditos;
+            
+            document.getElementById('pisAliquotaAplicada').textContent = aliquota + '%';
+            document.getElementById('pisSobreFaturamento').textContent = formatarMoeda(pisSobreFaturamento);
+            document.getElementById('pisTotalCreditos').textContent = formatarMoeda(totalCreditos);
+            
+            if (pisLiquido >= 0) {
+                document.getElementById('pisTotal').innerHTML = `<strong>${formatarMoeda(pisLiquido)}</strong>`;
+                document.getElementById('summaryPIS').textContent = formatarMoeda(pisLiquido);
+            } else {
+                document.getElementById('pisTotal').innerHTML = `<strong>Saldo Credor: ${formatarMoeda(Math.abs(pisLiquido))}</strong>`;
+                document.getElementById('summaryPIS').textContent = 'R$ 0,00';
+            }
+            
+            atualizarTotal();
+        }
+        
+        function calcularCOFINS() {
+            const faturamento = parseFloat(document.getElementById('cofinsFaturamento').value) || 0;
+            const regime = document.getElementById('cofinsRegime').value;
+            
+            const aliquota = regime === 'nao_cumulativo' ? 7.6 : 3.0;
+            const cofinsSobreFaturamento = faturamento * (aliquota / 100);
+            
+            let totalCreditos = 0;
+            if (regime === 'nao_cumulativo') {
+                const revenda = parseFloat(document.getElementById('cofinsRevenda').value) || 0;
+                const insumos = parseFloat(document.getElementById('cofinsInsumos').value) || 0;
+                const energia = parseFloat(document.getElementById('cofinsEnergia').value) || 0;
+                const alugueis = parseFloat(document.getElementById('cofinsAlugueis').value) || 0;
+                const ativo = parseFloat(document.getElementById('cofinsAtivo').value) || 0;
+                const saldoAnterior = parseFloat(document.getElementById('cofinsSaldoAnterior').value) || 0;
+                
+                const creditoRevenda = revenda * 0.076;
+                const creditoInsumos = insumos * 0.076;
+                const creditoEnergia = energia * 0.076;
+                const creditoAlugueis = alugueis * 0.076;
+                const creditoAtivo = ativo * 0.076;
+                
+                totalCreditos = creditoRevenda + creditoInsumos + creditoEnergia + creditoAlugueis + creditoAtivo + saldoAnterior;
+            }
+            
+            const cofinsLiquido = cofinsSobreFaturamento - totalCreditos;
+            
+            document.getElementById('cofinsAliquotaAplicada').textContent = aliquota + '%';
+            document.getElementById('cofinsSobreFaturamento').textContent = formatarMoeda(cofinsSobreFaturamento);
+            document.getElementById('cofinsTotalCreditos').textContent = formatarMoeda(totalCreditos);
+            
+            if (cofinsLiquido >= 0) {
+                document.getElementById('cofinsTotal').innerHTML = `<strong>${formatarMoeda(cofinsLiquido)}</strong>`;
+                document.getElementById('summaryCOFINS').textContent = formatarMoeda(cofinsLiquido);
+            } else {
+                document.getElementById('cofinsTotal').innerHTML = `<strong>Saldo Credor: ${formatarMoeda(Math.abs(cofinsLiquido))}</strong>`;
+                document.getElementById('summaryCOFINS').textContent = 'R$ 0,00';
+            }
+            
+            atualizarTotal();
+        }
+        
+        function atualizarTotal() {
+            const icms = parseFloat(document.getElementById('summaryICMS').textContent.replace(/[R$.\s]/g, '').replace(',', '.')) || 0;
+            const iss = parseFloat(document.getElementById('summaryISS').textContent.replace(/[R$.\s]/g, '').replace(',', '.')) || 0;
+            const ipi = parseFloat(document.getElementById('summaryIPI').textContent.replace(/[R$.\s]/g, '').replace(',', '.')) || 0;
+            const pis = parseFloat(document.getElementById('summaryPIS').textContent.replace(/[R$.\s]/g, '').replace(',', '.')) || 0;
+            const cofins = parseFloat(document.getElementById('summaryCOFINS').textContent.replace(/[R$.\s]/g, '').replace(',', '.')) || 0;
+            
+            const total = icms + iss + ipi + pis + cofins;
+            document.getElementById('summaryTotal').textContent = formatarMoeda(total);
+        }
+        
+        function gerarRelatorio() {
+            alert('📊 Relatório detalhado seria gerado aqui com:\n\n• Memória de cálculo completa\n• Demonstrativo de créditos utilizados\n• Dados para preenchimento das guias\n• Comparativo com períodos anteriores');
+        }
+        
+        function limparDados() {
+            if (confirm('⚠️ Tem certeza que deseja limpar todos os dados da apuração?')) {
+                document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+                calcularICMS();
+                calcularISS();
+                calcularIPI();
+                calcularPIS();
+                calcularCOFINS();
+            }
+        }
+        
+        function salvarDados() {
+            alert('💾 Funcionalidade de salvamento seria implementada aqui.\nDados salvos com identificação do período e regime tributário!');
+        }
+        
+        function compararRegimes() {
+            alert('⚖️ Comparador de regimes seria implementado aqui.\nSimulação automática: Lucro Real vs Lucro Presumido vs Simples Nacional');
+        }
+        
+        // Inicializar a planilha
+        document.addEventListener('DOMContentLoaded', function() {
+            alterarRegime(); // Configurar regime inicial
+            atualizarAliquotas(); // Configurar atividade inicial
+            calcularICMS();
+            calcularISS();
+            calcularIPI();
+            calcularPIS();
+            calcularCOFINS();
+        });
+    </script>
+</body>
+</html>
