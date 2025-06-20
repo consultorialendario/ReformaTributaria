@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Inteligente de Impostos - Brasil</title>
+    <title>Calculadora Inteligente de Impostos - Brasil (com Reforma Tributária)</title>
     <style>
         * {
             margin: 0;
@@ -55,7 +55,7 @@
         .progress-fill {
             background: #27ae60;
             height: 100%;
-            width: 25%;
+            width: 20%;
             transition: width 0.3s ease;
             border-radius: 4px;
         }
@@ -129,6 +129,7 @@
         .receitas-header { background: linear-gradient(135deg, #27ae60, #229954); }
         .custos-header { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .resultados-header { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .reforma-header { background: linear-gradient(135deg, #8e44ad, #3498db); }
         
         .section-content {
             padding: 25px;
@@ -348,6 +349,77 @@
             color: #155724;
         }
 
+        .comparativo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .regime-card {
+            border: 2px solid #e3e6f0;
+            border-radius: 10px;
+            padding: 20px;
+            background: white;
+        }
+
+        .regime-atual {
+            border-left: 5px solid #e74c3c;
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), rgba(255, 255, 255, 1));
+        }
+
+        .regime-novo {
+            border-left: 5px solid #27ae60;
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.05), rgba(255, 255, 255, 1));
+        }
+
+        .regime-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .regime-atual .regime-title { color: #e74c3c; }
+        .regime-novo .regime-title { color: #27ae60; }
+
+        .diferenca-card {
+            background: linear-gradient(135deg, #8e44ad, #3498db);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .diferenca-positiva { background: linear-gradient(135deg, #27ae60, #229954); }
+        .diferenca-negativa { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+
+        .timeline-transicao {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .timeline-year {
+            font-weight: bold;
+            color: #3498db;
+            margin-right: 15px;
+            min-width: 80px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -370,6 +442,10 @@
                 flex-direction: column;
                 gap: 10px;
             }
+
+            .comparativo-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -377,7 +453,7 @@
     <div class="container">
         <div class="header">
             <h1>🧠 Calculadora Inteligente de Impostos</h1>
-            <p>Sistema Unificado - Digite Uma Vez, Calcule Todos os Impostos</p>
+            <p>Sistema Unificado - Atual vs. Reforma Tributária (EC 132/2023)</p>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
@@ -397,6 +473,9 @@
                 </div>
                 <div class="step pending" id="step4">
                     <span>4️⃣ Resultados</span>
+                </div>
+                <div class="step pending" id="step5">
+                    <span>🔄 Reforma</span>
                 </div>
             </div>
 
@@ -536,27 +615,6 @@
                             </div>
                         </div>
                         
-                        <div class="alert alert-warning" style="margin-top: 15px;">
-                            <strong>⚠️ IMPORTANTE - Alíquota do ISS:</strong><br>
-                            • A alíquota varia por município (2% a 5%)<br>
-                            • Alguns serviços têm alíquotas específicas<br>
-                            • Consulte sempre a legislação municipal atual<br><br>
-                            
-                            <strong>📍 Principais Capitais (Alíquotas Gerais):</strong><br>
-                            • <strong>São Paulo/SP:</strong> 2% a 5% (por tipo de serviço)<br>
-                            • <strong>Rio de Janeiro/RJ:</strong> 2% a 5% (por atividade)<br>
-                            • <strong>Brasília/DF:</strong> 2% a 5% (conforme lista)<br>
-                            • <strong>Belo Horizonte/MG:</strong> 2% a 5%<br>
-                            • <strong>Salvador/BA:</strong> 2% a 5%<br>
-                            • <strong>Curitiba/PR:</strong> 2,9% a 5%<br><br>
-                            
-                            <strong>🔍 Onde Consultar:</strong><br>
-                            • Site da Prefeitura Municipal<br>
-                            • Código Tributário Municipal<br>
-                            • Contador da empresa<br>
-                            • Secretaria de Fazenda Municipal
-                        </div>
-                        
                         <div class="auto-calc">
                             <div class="label">📊 Total Prestação de Serviços:</div>
                             <div class="value" id="totalServicos">R$ 0,00</div>
@@ -673,7 +731,7 @@
             <!-- SEÇÃO 4: RESULTADOS -->
             <div class="section" id="secao4">
                 <div class="section-header resultados-header">
-                    📊 Apuração Automática - Todos os Impostos
+                    📊 Apuração Automática - Sistema Atual
                 </div>
                 <div class="section-content">
                     
@@ -682,7 +740,7 @@
                     </div>
 
                     <div class="summary-total">
-                        <h3>💰 TOTAL GERAL A RECOLHER</h3>
+                        <h3>💰 TOTAL GERAL A RECOLHER (Sistema Atual)</h3>
                         <div class="valor" id="totalRecolher">R$ 0,00</div>
                         <p style="margin-top: 10px; opacity: 0.9;">
                             Soma de todos os impostos a recolher no período
@@ -697,6 +755,112 @@
                         <br>• Gerar guias de recolhimento
                         <br>• Registrar nos livros fiscais
                         <br>• Efetuar pagamentos até dia 20
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEÇÃO 5: REFORMA TRIBUTÁRIA -->
+            <div class="section" id="secao5">
+                <div class="section-header reforma-header">
+                    🔄 Comparativo com a Reforma Tributária (EC 132/2023)
+                </div>
+                <div class="section-content">
+                    
+                    <div class="alert alert-info">
+                        <strong>🏛️ Sobre a Reforma Tributária:</strong><br>
+                        A Emenda Constitucional 132/2023 criará dois novos impostos unificados:<br>
+                        • <strong>IBS</strong> (Imposto sobre Bens e Serviços) - substitui ICMS e ISS<br>
+                        • <strong>CBS</strong> (Contribuição sobre Bens e Serviços) - substitui PIS e COFINS<br>
+                        • <strong>Período de transição:</strong> 2026 a 2033 (sistema dual)<br>
+                        • <strong>Implementação completa:</strong> a partir de 2034
+                    </div>
+
+                    <div class="timeline-transicao">
+                        <h3 style="margin-bottom: 15px; text-align: center; color: #2c3e50;">📅 Cronograma da Transição</h3>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2025</div>
+                            <div>Sistema atual em vigor (último ano)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2026</div>
+                            <div>Início da cobrança da CBS (50% da alíquota) + PIS/COFINS (50%)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2027</div>
+                            <div>CBS (100%) + ICMS/ISS (100%) + Início do IBS (10%)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2029</div>
+                            <div>CBS (100%) + IBS (60%) + ICMS/ISS (40%)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2033</div>
+                            <div>CBS (100%) + IBS (90%) + ICMS/ISS (10%)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2034</div>
+                            <div>Sistema novo em vigor: CBS (100%) + IBS (100%)</div>
+                        </div>
+                    </div>
+
+                    <div class="comparativo-container">
+                        <div class="regime-card regime-atual">
+                            <div class="regime-title">🏛️ Sistema Atual (2025)</div>
+                            <div id="resultadosAtual">
+                                <!-- Resultados do sistema atual -->
+                            </div>
+                        </div>
+
+                        <div class="regime-card regime-novo">
+                            <div class="regime-title">🔄 Reforma Tributária (2034)</div>
+                            <div id="resultadosReforma">
+                                <!-- Resultados da reforma -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="diferenca-card" id="diferencaCard">
+                        <h3>💰 DIFERENÇA TOTAL</h3>
+                        <div class="valor" id="diferencaValor">Calculando...</div>
+                        <p style="margin-top: 10px; opacity: 0.9;" id="diferencaTexto">
+                            Economia ou acréscimo com a reforma
+                        </p>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ IMPORTANTE - Estimativas:</strong><br>
+                        • Alíquotas da reforma ainda não foram definitivamente regulamentadas<br>
+                        • Estimativa inicial: IBS + CBS = 26,5% (pode variar entre 24% e 28%)<br>
+                        • Podem haver alíquotas diferenciadas por setor<br>
+                        • Cesta básica e alguns serviços essenciais podem ter alíquota zero<br>
+                        • Sistema de créditos será mantido e aprimorado<br><br>
+                        
+                        <strong>📊 Principais Mudanças:</strong><br>
+                        • Unificação de ICMS + ISS = IBS<br>
+                        • Unificação de PIS + COFINS = CBS<br>
+                        • Fim da "guerra fiscal" entre estados<br>
+                        • Simplificação das obrigações acessórias<br>
+                        • Tributação no destino (não mais na origem)<br>
+                        • Regime unificado para o país todo
+                    </div>
+
+                    <div class="input-group" style="margin-top: 20px;">
+                        <div class="input-field">
+                            <label>🎯 Alíquota IBS + CBS Estimada (%):</label>
+                            <input type="number" id="aliquotaReforma" value="26.5" min="20" max="35" step="0.1" placeholder="26,5%" oninput="calcularReforma()">
+                            <small style="color: #6c757d; margin-top: 5px;">💡 Estimativa inicial: 26,5% (pode variar entre 24% e 28%)</small>
+                        </div>
+                        <div class="input-field">
+                            <label>📅 Ano de Análise da Transição:</label>
+                            <select id="anoTransicao" onchange="calcularReforma()">
+                                <option value="2025">2025 - Sistema Atual (100%)</option>
+                                <option value="2026">2026 - Início da CBS (50%/50%)</option>
+                                <option value="2027">2027 - CBS Total + IBS 10%</option>
+                                <option value="2029">2029 - Meio da Transição</option>
+                                <option value="2033">2033 - Quase Completa</option>
+                                <option value="2034" selected>2034 - Reforma Completa (100%)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -722,7 +886,9 @@
     <script>
         // Variáveis globais
         let etapaAtual = 1;
-        const totalEtapas = 4;
+        const totalEtapas = 5;
+        let resultadosAtualCalculados = [];
+        let totalAtual = 0;
 
         // Alíquotas fixas (apenas PIS/COFINS que são federais)
         const aliquotas = {
@@ -842,6 +1008,9 @@
             // Calcular impostos se estivermos na última etapa
             if (etapaAtual === 4) {
                 calcularTodosImpostos();
+            } else if (etapaAtual === 5) {
+                calcularTodosImpostos();
+                calcularReforma();
             }
         }
 
@@ -885,7 +1054,7 @@
                 const icmsInterestaduais = vendasInterestaduais * (aliquotaInter / 100);
                 const icmsDebito = icmsInternas + icmsInterestaduais;
                 
-                const icmsCredito = aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + ativoImobilizado + saldoICMS;
+                const icmsCredito = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + ativoImobilizado) * 0.18 + saldoICMS;
                 const icmsAPagar = icmsDebito - icmsCredito;
                 
                 resultados.push({
@@ -901,7 +1070,7 @@
                 const ipiDebito = vendasIPI * (aliquotaIPI / 100);
                 
                 // IPI sobre insumos (crédito presumido sobre matérias-primas) + saldo anterior
-                const ipiCredito = (materiasPrimas * (aliquotaIPI / 100) * 0.1) + saldoIPI; // Estimativa de crédito
+                const ipiCredito = (materiasPrimas * (aliquotaIPI / 100) * 0.5) + saldoIPI; // Estimativa de crédito
                 const ipiAPagar = ipiDebito - ipiCredito;
                 
                 resultados.push({
@@ -963,13 +1132,14 @@
                 });
             }
 
+            resultadosAtualCalculados = resultados;
             exibirResultados(resultados);
         }
 
         function exibirResultados(resultados) {
             const container = document.getElementById('resultadosImpostos');
             let html = '';
-            let totalAPagar = 0;
+            totalAtual = 0;
 
             resultados.forEach(resultado => {
                 let classe, status, icon;
@@ -978,7 +1148,7 @@
                     classe = 'devedor';
                     status = 'devedor';
                     icon = '📤';
-                    totalAPagar += resultado.valor;
+                    totalAtual += resultado.valor;
                 } else if (resultado.valor < 0) {
                     classe = 'credor';
                     status = 'credor';
@@ -1004,7 +1174,189 @@
             });
 
             container.innerHTML = html;
-            document.getElementById('totalRecolher').textContent = formatarMoeda(totalAPagar);
+            document.getElementById('totalRecolher').textContent = formatarMoeda(totalAtual);
+        }
+
+        function calcularReforma() {
+            // Dados básicos
+            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+            
+            const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
+            
+            // Créditos
+            const aquisicoesRevenda = parseFloat(document.getElementById('aquisicoesRevenda')?.value) || 0;
+            const materiasPrimas = parseFloat(document.getElementById('materiasPrimas')?.value) || 0;
+            const energiaEletrica = parseFloat(document.getElementById('energiaEletrica')?.value) || 0;
+            const telecomunicacoes = parseFloat(document.getElementById('telecomunicacoes')?.value) || 0;
+            const alugueis = parseFloat(document.getElementById('alugueis')?.value) || 0;
+            const ativoImobilizado = parseFloat(document.getElementById('ativoImobilizado')?.value) || 0;
+            
+            const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 26.5;
+            const anoTransicao = document.getElementById('anoTransicao')?.value || '2034';
+            
+            // Cálculo da alíquota efetiva baseada no ano de transição
+            let aliquotaEfetiva = aliquotaReforma;
+            let percentualNovo = 1;
+            
+            switch(anoTransicao) {
+                case '2025':
+                    percentualNovo = 0;
+                    break;
+                case '2026':
+                    percentualNovo = 0.5;
+                    break;
+                case '2027':
+                    percentualNovo = 0.6;
+                    break;
+                case '2029':
+                    percentualNovo = 0.8;
+                    break;
+                case '2033':
+                    percentualNovo = 0.95;
+                    break;
+                case '2034':
+                default:
+                    percentualNovo = 1;
+                    break;
+            }
+            
+            // Na reforma, teremos IBS + CBS unificados
+            const debito = baseReforma * (aliquotaReforma / 100) * percentualNovo;
+            
+            // Créditos da reforma (mantém o mesmo princípio)
+            const creditos = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + alugueis + ativoImobilizado) * (aliquotaReforma / 100) * percentualNovo;
+            
+            const impostoReforma = debito - creditos;
+            
+            // IPI residual (apenas para produtos específicos na reforma)
+            let ipiResidual = 0;
+            if (vendasIPI > 0) {
+                const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
+                // Na reforma, IPI terá escopo muito reduzido (estimativa: 10% do atual)
+                ipiResidual = (vendasIPI * (aliquotaIPI / 100) * 0.1) * percentualNovo;
+            }
+            
+            const totalReforma = impostoReforma + ipiResidual;
+            
+            // Se estamos na transição, adicionar parte do sistema antigo
+            let totalSistemaAntigo = 0;
+            if (percentualNovo < 1) {
+                totalSistemaAntigo = totalAtual * (1 - percentualNovo);
+            }
+            
+            const totalFinalReforma = totalReforma + totalSistemaAntigo;
+            
+            // Exibir resultados da reforma
+            exibirResultadosReforma(impostoReforma, ipiResidual, totalFinalReforma, anoTransicao, percentualNovo);
+            
+            // Calcular diferença
+            const diferenca = totalFinalReforma - totalAtual;
+            exibirDiferenca(diferenca);
+        }
+
+        function exibirResultadosReforma(impostoUnificado, ipiResidual, totalReforma, ano, percentual) {
+            const container = document.getElementById('resultadosReforma');
+            let html = '';
+            
+            // Card do imposto unificado
+            let classe = impostoUnificado > 0 ? 'devedor' : impostoUnificado < 0 ? 'credor' : 'neutro';
+            let status = impostoUnificado > 0 ? 'devedor' : impostoUnificado < 0 ? 'credor' : 'neutro';
+            let icon = impostoUnificado > 0 ? '📤' : impostoUnificado < 0 ? '📥' : '⚖️';
+            let nomeImposto = ano === '2034' ? 'IBS + CBS' : `Sistema Misto (${Math.round(percentual * 100)}% Novo)`;
+            
+            html += `
+                <div class="imposto-card ${classe}">
+                    <div class="imposto-header">
+                        <div class="imposto-nome">${icon} ${nomeImposto}</div>
+                        <div class="imposto-valor ${status}">${formatarMoeda(Math.abs(impostoUnificado))}</div>
+                    </div>
+                    <div class="calculo-detalhes">Imposto unificado sobre bens e serviços - ${formatarMoeda(impostoUnificado)}</div>
+                </div>
+            `;
+            
+            // IPI residual se houver
+            if (ipiResidual > 0) {
+                html += `
+                    <div class="imposto-card devedor">
+                        <div class="imposto-header">
+                            <div class="imposto-nome">🏭 IPI Residual</div>
+                            <div class="imposto-valor devedor">${formatarMoeda(ipiResidual)}</div>
+                        </div>
+                        <div class="calculo-detalhes">IPI com escopo reduzido (produtos específicos)</div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                <div class="summary-total" style="margin-top: 20px;">
+                    <h3>💰 TOTAL REFORMA (${ano})</h3>
+                    <div class="valor">${formatarMoeda(totalReforma)}</div>
+                    <p style="margin-top: 10px; opacity: 0.9;">
+                        Carga tributária unificada
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            
+            // Atualizar também o resumo do sistema atual na comparação
+            exibirResumoAtual();
+        }
+
+        function exibirResumoAtual() {
+            const container = document.getElementById('resultadosAtual');
+            let html = '';
+            
+            resultadosAtualCalculados.forEach(resultado => {
+                if (resultado.valor > 0) {
+                    html += `
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <span>${resultado.nome}</span>
+                            <span style="font-weight: bold;">${formatarMoeda(resultado.valor)}</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            html += `
+                <div class="summary-total" style="margin-top: 15px;">
+                    <h3>💰 TOTAL ATUAL</h3>
+                    <div class="valor">${formatarMoeda(totalAtual)}</div>
+                    <p style="margin-top: 10px; opacity: 0.9;">
+                        Sistema tributário vigente
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function exibirDiferenca(diferenca) {
+            const card = document.getElementById('diferencaCard');
+            const valor = document.getElementById('diferencaValor');
+            const texto = document.getElementById('diferencaTexto');
+            
+            if (diferenca > 0) {
+                card.className = 'diferenca-card diferenca-negativa';
+                valor.textContent = `+ ${formatarMoeda(diferenca)}`;
+                texto.textContent = 'Acréscimo na carga tributária com a reforma';
+            } else if (diferenca < 0) {
+                card.className = 'diferenca-card diferenca-positiva';
+                valor.textContent = `- ${formatarMoeda(Math.abs(diferenca))}`;
+                texto.textContent = 'Economia na carga tributária com a reforma';
+            } else {
+                card.className = 'diferenca-card';
+                valor.textContent = formatarMoeda(0);
+                texto.textContent = 'Carga tributária equivalente';
+            }
+            
+            // Calcular percentual
+            const percentual = totalAtual > 0 ? (diferenca / totalAtual * 100).toFixed(1) : 0;
+            texto.textContent += ` (${Math.abs(percentual)}%)`;
         }
 
         function proximaEtapa() {
@@ -1032,10 +1384,16 @@
                     document.getElementById('btnProximo').textContent = '✅ Finalizar';
                     document.getElementById('btnProximo').onclick = finalizarApuracao;
                     calcularTodosImpostos();
+                    calcularReforma();
                 }
 
                 if (etapaAtual === 2 || etapaAtual === 3) {
                     calcularAutomatico();
+                } else if (etapaAtual === 4) {
+                    calcularTodosImpostos();
+                } else if (etapaAtual === 5) {
+                    calcularTodosImpostos();
+                    calcularReforma();
                 }
             }
         }
@@ -1070,7 +1428,7 @@
         }
 
         function finalizarApuracao() {
-            alert('🎉 Apuração finalizada com sucesso!\n\n📊 Todos os impostos foram calculados automaticamente.\n💾 Dados salvos para geração de guias e relatórios.');
+            alert('🎉 Análise completa finalizada!\n\n📊 Sistema Atual: ' + formatarMoeda(totalAtual) + '\n🔄 Com Reforma: Veja os resultados no comparativo\n\n💡 Use essas informações para planejamento tributário estratégico.');
         }
 
         function limparTudo() {
@@ -1087,7 +1445,7 @@
                 document.getElementById('step1').className = 'step active';
                 
                 // Reset do progresso
-                document.getElementById('progressFill').style.width = '25%';
+                document.getElementById('progressFill').style.width = '20%';
                 
                 // Reset dos botões
                 document.getElementById('btnAnterior').disabled = true;
@@ -1099,13 +1457,14 @@
         }
 
         function gerarRelatorio() {
-            alert('📊 Relatório Completo\n\n' +
-                  '✅ Memória de cálculo detalhada\n' +
-                  '✅ Guias de recolhimento pré-preenchidas\n' +
-                  '✅ Demonstrativo de créditos utilizados\n' +
-                  '✅ Livro de apuração automático\n' +
-                  '✅ Análise de otimização tributária\n\n' +
-                  '💾 Funcionalidade será implementada na versão completa.');
+            const diferenca = document.getElementById('diferencaValor').textContent;
+            alert('📊 Relatório Comparativo Completo\n\n' +
+                  '✅ Apuração sistema atual: ' + formatarMoeda(totalAtual) + '\n' +
+                  '✅ Simulação reforma tributária\n' +
+                  '✅ Análise de impacto: ' + diferenca + '\n' +
+                  '✅ Cronograma de transição detalhado\n' +
+                  '✅ Recomendações estratégicas\n\n' +
+                  '💾 Funcionalidade completa será implementada na versão final.');
         }
 
         // Inicialização
