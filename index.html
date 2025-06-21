@@ -951,6 +951,14 @@
                         • Sistema de créditos será mantido e aprimorado<br>
                         • <strong>Simples Nacional:</strong> Pode manter regime simplificado na reforma<br><br>
                         
+                        <strong>🏭 IPI Residual - O que é:</strong><br>
+                        • O IPI não desaparecerá completamente na reforma tributária<br>
+                        • Será mantido apenas para produtos específicos: <strong>cigarros, bebidas alcoólicas, automóveis, produtos de luxo</strong><br>
+                        • Escopo muito reduzido comparado ao atual (estimativa: 90% de redução)<br>
+                        • <strong>Para sua empresa:</strong> Se produz esses produtos, continuará recolhendo IPI residual<br>
+                        • <strong>Créditos:</strong> Mantém direito a créditos nas aquisições relacionadas a esses produtos<br>
+                        • <strong>Finalidade:</strong> Desestimular consumo de produtos com externalidades negativas<br><br>
+                        
                         <strong>📊 Principais Mudanças:</strong><br>
                         • Unificação de ICMS + ISS = IBS<br>
                         • Unificação de PIS + COFINS = CBS<br>
@@ -958,6 +966,17 @@
                         • Simplificação das obrigações acessórias<br>
                         • Tributação no destino (não mais na origem)<br>
                         • Regime unificado para o país todo
+                    </div>
+
+                    <!-- Indicador Dinâmico do Ano de Transição -->
+                    <div id="indicadorTransicao" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center;">
+                        <h3 style="margin-bottom: 15px;">📅 <span id="anoSelecionado">2034</span> - <span id="statusTransicao">Sistema Novo Completo</span></h3>
+                        <div id="detalhesAno" style="font-size: 1.1em; line-height: 1.6;">
+                            IBS (100%) + CBS (100%) - Reforma tributária implementada completamente
+                        </div>
+                        <div id="impactoVisual" style="margin-top: 15px; font-size: 0.9em; opacity: 0.9;">
+                            💡 Todos os impostos atuais (ICMS, ISS, PIS, COFINS) substituídos pelo sistema unificado
+                        </div>
                     </div>
 
                     <div class="input-group" style="margin-top: 20px;">
@@ -976,6 +995,7 @@
                                 <option value="2033">2033 - Quase Completa</option>
                                 <option value="2034" selected>2034 - Reforma Completa (100%)</option>
                             </select>
+                            <small style="color: #6c757d; margin-top: 5px;">💡 Veja acima como fica a legislação em cada ano selecionado</small>
                         </div>
                     </div>
                 </div>
@@ -1600,12 +1620,76 @@
             
             const totalFinalReforma = totalReforma + totalSistemaAntigo;
             
+            // Atualizar indicador de transição
+            atualizarIndicadorTransicao(anoTransicao, percentualNovo);
+            
             // Exibir resultados
             exibirResultadosReforma(impostoUnificado, ipiResidual, totalFinalReforma, anoTransicao, percentualNovo);
             exibirDiferenca(totalFinalReforma - totalAtual);
             
             // Atualizar resumo executivo
             atualizarResumoExecutivo(totalFinalReforma);
+        }
+
+        function atualizarIndicadorTransicao(ano, percentual) {
+            const anoElement = document.getElementById('anoSelecionado');
+            const statusElement = document.getElementById('statusTransicao');
+            const detalhesElement = document.getElementById('detalhesAno');
+            const impactoElement = document.getElementById('impactoVisual');
+            const indicadorElement = document.getElementById('indicadorTransicao');
+            
+            let status, detalhes, impacto, cor;
+            
+            switch(ano) {
+                case '2025':
+                    status = 'Sistema Atual (Último Ano)';
+                    detalhes = 'ICMS + ISS + PIS + COFINS + IPI conforme legislação vigente';
+                    impacto = '⚠️ Último ano do sistema tributário atual - prepare-se para a transição';
+                    cor = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                    break;
+                    
+                case '2026':
+                    status = 'Início da Transição';
+                    detalhes = 'CBS (50%) + PIS/COFINS (50%) | ICMS + ISS + IPI (100%)';
+                    impacto = '🔄 Primeiro ano da reforma - CBS substitui gradualmente PIS/COFINS';
+                    cor = 'linear-gradient(135deg, #f39c12, #e67e22)';
+                    break;
+                    
+                case '2027':
+                    status = 'CBS Completa + IBS Inicial';
+                    detalhes = 'CBS (100%) + IBS (10%) + ICMS/ISS (100%) + IPI (100%)';
+                    impacto = '📈 CBS já substituiu PIS/COFINS - IBS começa a substituir ICMS/ISS';
+                    cor = 'linear-gradient(135deg, #f39c12, #d68910)';
+                    break;
+                    
+                case '2029':
+                    status = 'Meio da Transição';
+                    detalhes = 'CBS (100%) + IBS (60%) + ICMS/ISS (40%) + IPI (residual)';
+                    impacto = '⚖️ Ponto médio da transição - maior parte já no novo sistema';
+                    cor = 'linear-gradient(135deg, #8e44ad, #7d3c98)';
+                    break;
+                    
+                case '2033':
+                    status = 'Transição Quase Completa';
+                    detalhes = 'CBS (100%) + IBS (90%) + ICMS/ISS (10%) + IPI (residual)';
+                    impacto = '🎯 Quase no sistema final - últimos ajustes da transição';
+                    cor = 'linear-gradient(135deg, #27ae60, #229954)';
+                    break;
+                    
+                case '2034':
+                default:
+                    status = 'Sistema Novo Completo';
+                    detalhes = 'IBS (100%) + CBS (100%) + IPI (apenas produtos específicos)';
+                    impacto = '✅ Reforma completamente implementada - sistema tributário unificado';
+                    cor = 'linear-gradient(135deg, #3498db, #2980b9)';
+                    break;
+            }
+            
+            if (anoElement) anoElement.textContent = ano;
+            if (statusElement) statusElement.textContent = status;
+            if (detalhesElement) detalhesElement.textContent = detalhes;
+            if (impactoElement) impactoElement.textContent = impacto;
+            if (indicadorElement) indicadorElement.style.background = cor;
         }
 
         function atualizarResumoExecutivo(totalReforma) {
@@ -2025,6 +2109,11 @@
             // Inicializar resumo executivo com valores padrão
             if (document.getElementById('resumoFaturamento')) {
                 atualizarResumoExecutivo(0);
+            }
+            
+            // Inicializar indicador de transição
+            if (document.getElementById('indicadorTransicao')) {
+                atualizarIndicadorTransicao('2034', 1);
             }
         });
     </script>
