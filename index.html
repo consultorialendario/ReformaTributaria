@@ -240,6 +240,11 @@
             background: linear-gradient(135deg, rgba(149, 165, 166, 0.1), rgba(127, 140, 141, 0.05));
         }
 
+        .imposto-card.simples {
+            border-left: 5px solid #9b59b6;
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.05));
+        }
+
         .imposto-header {
             display: flex;
             justify-content: space-between;
@@ -261,6 +266,7 @@
         .imposto-valor.devedor { color: #e74c3c; }
         .imposto-valor.credor { color: #27ae60; }
         .imposto-valor.neutro { color: #95a5a6; }
+        .imposto-valor.simples { color: #9b59b6; }
 
         .calculo-detalhes {
             font-size: 0.9em;
@@ -420,6 +426,36 @@
             min-width: 80px;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
+        .simples-config {
+            background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.05));
+            border: 2px solid #9b59b6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .composicao-das {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .composicao-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .composicao-item:last-child {
+            border-bottom: none;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -488,6 +524,13 @@
                     <div class="input-group">
                         <div class="input-field">
                             <label>📅 Período de Apuração:</label>
+                            <select id="tipoPeriodo" onchange="atualizarPeriodo()">
+                                <option value="mensal">Mensal</option>
+                                <option value="anual">Anual</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label>📆 <span id="labelPeriodo">Mês/Ano:</span></label>
                             <input type="month" id="periodo" value="2025-06">
                         </div>
                         <div class="input-field">
@@ -520,6 +563,20 @@
                         </div>
                     </div>
 
+                    <!-- Configuração específica do Simples Nacional -->
+                    <div class="simples-config hidden" id="simplesConfig">
+                        <div class="group-title">
+                            📊 Configuração Simples Nacional
+                        </div>
+                        <div class="input-group">
+                            <div class="input-field">
+                                <label>💰 Faturamento Últimos 12 Meses:</label>
+                                <input type="number" id="faturamento12Meses" placeholder="0,00" oninput="calcularAutomatico()">
+                                <small style="color: #6c757d; margin-top: 5px;">⚠️ Essencial para determinar a faixa de tributação</small>
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="infoRegime" class="alert alert-info">
                         <strong>🎯 Regime Selecionado:</strong> <span id="regimeInfo">Lucro Real - Permite créditos de PIS/COFINS não cumulativo</span>
                     </div>
@@ -542,7 +599,7 @@
                                 <label>💼 Vendas Internas (dentro do estado):</label>
                                 <input type="number" id="vendasInternas" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
-                            <div class="input-field">
+                            <div class="input-field icms-fields">
                                 <label>📊 Alíquota ICMS Interna (%):</label>
                                 <input type="number" id="aliquotaICMSInterna" value="18" min="7" max="25" step="0.01" placeholder="18%" oninput="validarAliquotaICMS(); calcularAutomatico()">
                                 <small style="color: #6c757d; margin-top: 5px;">⚠️ Varia por estado (7% a 25%)</small>
@@ -551,7 +608,7 @@
                                 <label>📦 Vendas Interestaduais:</label>
                                 <input type="number" id="vendasInterestaduais" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
-                            <div class="input-field">
+                            <div class="input-field icms-fields">
                                 <label>📊 Alíquota ICMS Interestadual (%):</label>
                                 <input type="number" id="aliquotaICMSInter" value="12" min="4" max="12" step="0.01" placeholder="12%" oninput="validarAliquotaICMSInter(); calcularAutomatico()">
                                 <small style="color: #6c757d; margin-top: 5px;">⚠️ Geralmente 4%, 7% ou 12%</small>
@@ -565,7 +622,7 @@
                                 <input type="number" id="vendasIPI" placeholder="0,00" oninput="calcularAutomatico()">
                                 <small style="color: #6c757d; margin-top: 5px;">💡 Apenas produtos industrializados</small>
                             </div>
-                            <div class="input-field">
+                            <div class="input-field ipi-fields">
                                 <label>📊 Alíquota IPI (%):</label>
                                 <input type="number" id="aliquotaIPI" value="10" min="0" max="300" step="0.01" placeholder="10%" oninput="calcularAutomatico()">
                                 <small style="color: #6c757d; margin-top: 5px;">⚠️ Consulte TIPI (0% a 300%+)</small>
@@ -575,19 +632,6 @@
                         <div class="auto-calc">
                             <div class="label">📊 Total Vendas de Produtos:</div>
                             <div class="value" id="totalProdutos">R$ 0,00</div>
-                        </div>
-                        
-                        <div class="alert alert-info" style="margin-top: 15px;">
-                            <strong>ℹ️ Alíquotas ICMS por Estado:</strong><br>
-                            • <strong>Internas:</strong> Variam de 7% a 25% conforme produto e estado<br>
-                            • <strong>Interestaduais:</strong> 4% (Norte/Nordeste/Centro-Oeste), 7% ou 12% (Sul/Sudeste)<br>
-                            • Consulte a SEFAZ do seu estado para alíquotas específicas<br><br>
-                            
-                            <strong>🏭 Alíquotas IPI (TIPI):</strong><br>
-                            • Variam de 0% a 300%+ conforme NCM do produto<br>
-                            • Consulte a Tabela TIPI no site da Receita Federal<br>
-                            • Produtos essenciais: geralmente 0% ou alíquotas baixas<br>
-                            • Produtos supérfluos: alíquotas mais altas
                         </div>
                     </div>
 
@@ -600,7 +644,7 @@
                                 <label>🏪 Serviços no Município:</label>
                                 <input type="number" id="servicosMunicipio" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
-                            <div class="input-field">
+                            <div class="input-field iss-fields">
                                 <label>📊 Alíquota ISS do Município (%):</label>
                                 <input type="number" id="aliquotaISS" value="5" min="2" max="5" step="0.01" placeholder="5,00%" oninput="validarAliquotaISS(); calcularAutomatico()">
                                 <small style="color: #6c757d; margin-top: 5px;">⚠️ Consulte a legislação do seu município (2% a 5%)</small>
@@ -641,7 +685,7 @@
                         <h3>💯 FATURAMENTO TOTAL DO PERÍODO</h3>
                         <div class="valor" id="faturamentoTotal">R$ 0,00</div>
                         <p style="margin-top: 10px; opacity: 0.9;">
-                            Base automática para PIS/COFINS = <span id="basePisCofins">R$ 0,00</span>
+                            <span id="basePisCofinslabel">Base automática para PIS/COFINS</span> = <span id="basePisCofins">R$ 0,00</span>
                         </p>
                     </div>
                 </div>
@@ -654,7 +698,7 @@
                 </div>
                 <div class="section-content">
                     
-                    <div class="custo-group">
+                    <div class="custo-group creditos-fields">
                         <div class="group-title">
                             🔄 Créditos de ICMS/IPI/PIS/COFINS
                         </div>
@@ -686,24 +730,24 @@
                         </div>
                     </div>
 
-                    <div class="custo-group">
+                    <div class="custo-group saldos-fields">
                         <div class="group-title">
                             💾 Saldos Credores de Períodos Anteriores
                         </div>
                         <div class="input-group">
-                            <div class="input-field">
+                            <div class="input-field icms-saldo">
                                 <label>ICMS Saldo Credor Anterior:</label>
                                 <input type="number" id="saldoICMS" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
-                            <div class="input-field">
+                            <div class="input-field ipi-saldo">
                                 <label>IPI Saldo Credor Anterior:</label>
                                 <input type="number" id="saldoIPI" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
-                            <div class="input-field">
+                            <div class="input-field pis-saldo">
                                 <label>PIS Saldo Credor Anterior:</label>
                                 <input type="number" id="saldoPIS" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
-                            <div class="input-field">
+                            <div class="input-field cofins-saldo">
                                 <label>COFINS Saldo Credor Anterior:</label>
                                 <input type="number" id="saldoCOFINS" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
@@ -715,15 +759,21 @@
                             📑 Deduções Específicas
                         </div>
                         <div class="input-group">
-                            <div class="input-field">
+                            <div class="input-field iss-deducoes">
                                 <label>ISS Retido na Fonte:</label>
                                 <input type="number" id="issRetido" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
-                            <div class="input-field">
+                            <div class="input-field iss-deducoes">
                                 <label>Deduções Permitidas no ISS:</label>
                                 <input type="number" id="deducoesISS" placeholder="0,00" oninput="calcularAutomatico()">
                             </div>
                         </div>
+                    </div>
+
+                    <div class="alert alert-warning simples-aviso hidden">
+                        <strong>💡 Simples Nacional:</strong><br>
+                        No regime do Simples Nacional, os créditos de ICMS, IPI, PIS e COFINS não são permitidos.<br>
+                        O recolhimento é feito através do DAS (Documento de Arrecadação do Simples Nacional) com alíquota unificada.
                     </div>
                 </div>
             </div>
@@ -743,7 +793,7 @@
                         <h3>💰 TOTAL GERAL A RECOLHER (Sistema Atual)</h3>
                         <div class="valor" id="totalRecolher">R$ 0,00</div>
                         <p style="margin-top: 10px; opacity: 0.9;">
-                            Soma de todos os impostos a recolher no período
+                            <span id="textoTotalRecolher">Soma de todos os impostos a recolher no período</span>
                         </p>
                     </div>
 
@@ -752,7 +802,7 @@
                         Todos os cálculos foram realizados automaticamente com base nos dados informados.
                         <br><br>
                         <strong>📋 Próximos Passos:</strong>
-                        <br>• Gerar guias de recolhimento
+                        <br>• <span id="proximosPassos">Gerar guias de recolhimento</span>
                         <br>• Registrar nos livros fiscais
                         <br>• Efetuar pagamentos até dia 20
                     </div>
@@ -902,6 +952,55 @@
             }
         };
 
+        // Tabelas do Simples Nacional (2024/2025)
+        const tabelasSimples = {
+            anexo1: [ // Comércio
+                {min: 0, max: 180000, aliquota: 4.0},
+                {min: 180000.01, max: 360000, aliquota: 7.3},
+                {min: 360000.01, max: 720000, aliquota: 9.5},
+                {min: 720000.01, max: 1800000, aliquota: 10.7},
+                {min: 1800000.01, max: 3600000, aliquota: 14.3},
+                {min: 3600000.01, max: 4800000, aliquota: 19.0}
+            ],
+            anexo2: [ // Indústria
+                {min: 0, max: 180000, aliquota: 4.5},
+                {min: 180000.01, max: 360000, aliquota: 7.8},
+                {min: 360000.01, max: 720000, aliquota: 10.0},
+                {min: 720000.01, max: 1800000, aliquota: 11.2},
+                {min: 1800000.01, max: 3600000, aliquota: 14.7},
+                {min: 3600000.01, max: 4800000, aliquota: 30.0}
+            ],
+            anexo3: [ // Serviços
+                {min: 0, max: 180000, aliquota: 6.0},
+                {min: 180000.01, max: 360000, aliquota: 11.2},
+                {min: 360000.01, max: 720000, aliquota: 13.5},
+                {min: 720000.01, max: 1800000, aliquota: 16.0},
+                {min: 1800000.01, max: 3600000, aliquota: 21.0},
+                {min: 3600000.01, max: 4800000, aliquota: 33.0}
+            ]
+        };
+
+        function atualizarPeriodo() {
+            const tipoPeriodo = document.getElementById('tipoPeriodo').value;
+            const labelPeriodo = document.getElementById('labelPeriodo');
+            const inputPeriodo = document.getElementById('periodo');
+            
+            if (tipoPeriodo === 'anual') {
+                labelPeriodo.textContent = 'Ano:';
+                inputPeriodo.type = 'number';
+                inputPeriodo.value = '2025';
+                inputPeriodo.min = '2020';
+                inputPeriodo.max = '2030';
+            } else {
+                labelPeriodo.textContent = 'Mês/Ano:';
+                inputPeriodo.type = 'month';
+                inputPeriodo.value = '2025-06';
+                inputPeriodo.removeAttribute('min');
+                inputPeriodo.removeAttribute('max');
+            }
+            calcularAutomatico();
+        }
+
         function validarAliquotaISS() {
             const aliquotaInput = document.getElementById('aliquotaISS');
             const valor = parseFloat(aliquotaInput.value);
@@ -948,24 +1047,81 @@
             }).format(valor || 0);
         }
 
+        function obterAliquotaSimples(faturamento12Meses, anexo) {
+            const tabela = tabelasSimples[anexo];
+            if (!tabela) return 0;
+            
+            for (let faixa of tabela) {
+                if (faturamento12Meses >= faixa.min && faturamento12Meses <= faixa.max) {
+                    return faixa.aliquota;
+                }
+            }
+            return 0; // Acima do limite do Simples
+        }
+
         function atualizarRegime() {
             const regime = document.getElementById('regime').value;
             const infoElement = document.getElementById('regimeInfo');
+            
+            // Mostrar/ocultar campos conforme regime
+            const simplesConfig = document.getElementById('simplesConfig');
+            const creditosFields = document.querySelectorAll('.creditos-fields');
+            const saldosFields = document.querySelectorAll('.saldos-fields');
+            const simplesAviso = document.querySelector('.simples-aviso');
+            const icmsFields = document.querySelectorAll('.icms-fields');
+            const ipiFields = document.querySelectorAll('.ipi-fields');
+            const issFields = document.querySelectorAll('.iss-fields');
+            const pisSaldo = document.querySelectorAll('.pis-saldo');
+            const cofinsSaldo = document.querySelectorAll('.cofins-saldo');
             
             let info = '';
             switch(regime) {
                 case 'lucro_real':
                     info = 'Lucro Real - Permite créditos de PIS/COFINS não cumulativo (1,65% e 7,6%)';
+                    simplesConfig.classList.add('hidden');
+                    creditosFields.forEach(el => el.classList.remove('hidden'));
+                    saldosFields.forEach(el => el.classList.remove('hidden'));
+                    simplesAviso.classList.add('hidden');
+                    icmsFields.forEach(el => el.classList.remove('hidden'));
+                    ipiFields.forEach(el => el.classList.remove('hidden'));
+                    issFields.forEach(el => el.classList.remove('hidden'));
+                    pisSaldo.forEach(el => el.classList.remove('hidden'));
+                    cofinsSaldo.forEach(el => el.classList.remove('hidden'));
                     break;
                 case 'lucro_presumido':
-                    info = 'Lucro Presumido - PIS/COFINS cumulativo (0,65% e 3,0%), sem direito a créditos';
+                    info = 'Lucro Presumido - PIS/COFINS cumulativo (0,65% e 3,0%), sem direito a créditos PIS/COFINS';
+                    simplesConfig.classList.add('hidden');
+                    creditosFields.forEach(el => el.classList.remove('hidden'));
+                    saldosFields.forEach(el => el.classList.remove('hidden'));
+                    simplesAviso.classList.add('hidden');
+                    icmsFields.forEach(el => el.classList.remove('hidden'));
+                    ipiFields.forEach(el => el.classList.remove('hidden'));
+                    issFields.forEach(el => el.classList.remove('hidden'));
+                    pisSaldo.forEach(el => el.classList.add('hidden'));
+                    cofinsSaldo.forEach(el => el.classList.add('hidden'));
                     break;
                 case 'simples':
-                    info = 'Simples Nacional - Tributação unificada com alíquotas reduzidas';
+                    info = 'Simples Nacional - DAS unificado com alíquotas baseadas no faturamento dos últimos 12 meses';
+                    simplesConfig.classList.remove('hidden');
+                    creditosFields.forEach(el => el.classList.add('hidden'));
+                    saldosFields.forEach(el => el.classList.add('hidden'));
+                    simplesAviso.classList.remove('hidden');
+                    icmsFields.forEach(el => el.classList.add('hidden'));
+                    ipiFields.forEach(el => el.classList.add('hidden'));
+                    issFields.forEach(el => el.classList.add('hidden'));
                     break;
             }
             
-            infoElement.textContent = info;
+            infoElement.innerHTML = `<strong>🎯 Regime Selecionado:</strong> ${info}`;
+            
+            // Atualizar labels conforme regime
+            const basePisCofinslabel = document.getElementById('basePisCofinslabel');
+            if (regime === 'simples') {
+                basePisCofinslabel.textContent = 'Base para DAS do Simples Nacional';
+            } else {
+                basePisCofinslabel.textContent = 'Base automática para PIS/COFINS';
+            }
+            
             calcularAutomatico();
         }
 
@@ -1015,6 +1171,94 @@
         }
 
         function calcularTodosImpostos() {
+            const regime = document.getElementById('regime').value;
+            
+            if (regime === 'simples') {
+                calcularSimplesNacional();
+            } else {
+                calcularRegimeTradicional();
+            }
+        }
+
+        function calcularSimplesNacional() {
+            const atividade = document.getElementById('atividade').value;
+            const faturamento12Meses = parseFloat(document.getElementById('faturamento12Meses')?.value) || 0;
+            
+            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+            
+            const totalComercio = vendasInternas + vendasInterestaduais;
+            const totalIndustria = vendasIPI;
+            const totalServicos = servicosMunicipio + servicosOutros;
+            const faturamentoPeriodo = totalComercio + totalIndustria + totalServicos;
+            
+            let resultados = [];
+            let dasTotal = 0;
+            let composicaoDetalhada = '';
+            
+            if (faturamento12Meses === 0) {
+                resultados.push({
+                    nome: 'Aviso',
+                    valor: 0,
+                    detalhes: 'Informe o faturamento dos últimos 12 meses para calcular o DAS'
+                });
+            } else {
+                // Para empresa mista, calcular cada atividade separadamente
+                if (atividade === 'misto') {
+                    let composicao = [];
+                    
+                    if (totalComercio > 0) {
+                        const aliquotaComercio = obterAliquotaSimples(faturamento12Meses, 'anexo1');
+                        const dasComercio = totalComercio * (aliquotaComercio / 100);
+                        dasTotal += dasComercio;
+                        composicao.push(`Comércio: ${formatarMoeda(dasComercio)} (${aliquotaComercio}%)`);
+                    }
+                    
+                    if (totalIndustria > 0) {
+                        const aliquotaIndustria = obterAliquotaSimples(faturamento12Meses, 'anexo2');
+                        const dasIndustria = totalIndustria * (aliquotaIndustria / 100);
+                        dasTotal += dasIndustria;
+                        composicao.push(`Indústria: ${formatarMoeda(dasIndustria)} (${aliquotaIndustria}%)`);
+                    }
+                    
+                    if (totalServicos > 0) {
+                        const aliquotaServicos = obterAliquotaSimples(faturamento12Meses, 'anexo3');
+                        const dasServicos = totalServicos * (aliquotaServicos / 100);
+                        dasTotal += dasServicos;
+                        composicao.push(`Serviços: ${formatarMoeda(dasServicos)} (${aliquotaServicos}%)`);
+                    }
+                    
+                    composicaoDetalhada = composicao.join(' | ');
+                } else {
+                    // Atividade única
+                    let anexo = '';
+                    switch(atividade) {
+                        case 'comercio': anexo = 'anexo1'; break;
+                        case 'industria': anexo = 'anexo2'; break;
+                        case 'servicos': anexo = 'anexo3'; break;
+                    }
+                    
+                    const aliquota = obterAliquotaSimples(faturamento12Meses, anexo);
+                    dasTotal = faturamentoPeriodo * (aliquota / 100);
+                    composicaoDetalhada = `Alíquota: ${aliquota}% | Base: ${formatarMoeda(faturamentoPeriodo)}`;
+                }
+                
+                resultados.push({
+                    nome: 'DAS - Simples Nacional',
+                    valor: dasTotal,
+                    detalhes: `Faturamento 12 meses: ${formatarMoeda(faturamento12Meses)} | ${composicaoDetalhada}`,
+                    simples: true
+                });
+            }
+            
+            resultadosAtualCalculados = resultados;
+            exibirResultadosSimples(resultados);
+        }
+
+        function calcularRegimeTradicional() {
             const regime = document.getElementById('regime').value;
             
             // Coletar dados das receitas
@@ -1069,8 +1313,7 @@
                 const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
                 const ipiDebito = vendasIPI * (aliquotaIPI / 100);
                 
-                // IPI sobre insumos (crédito presumido sobre matérias-primas) + saldo anterior
-                const ipiCredito = (materiasPrimas * (aliquotaIPI / 100) * 0.5) + saldoIPI; // Estimativa de crédito
+                const ipiCredito = (materiasPrimas * (aliquotaIPI / 100) * 0.5) + saldoIPI;
                 const ipiAPagar = ipiDebito - ipiCredito;
                 
                 resultados.push({
@@ -1095,11 +1338,11 @@
             }
 
             // PIS
-            if (basePisCofins > 0 && regime !== 'simples') {
+            if (basePisCofins > 0) {
                 const aliqPIS = regime === 'lucro_real' ? aliquotas.pis.nao_cumulativo : aliquotas.pis.cumulativo;
                 const pisDebito = basePisCofins * (aliqPIS / 100);
                 
-                let pisCredito = saldoPIS;
+                let pisCredito = regime === 'lucro_real' ? saldoPIS : 0;
                 if (regime === 'lucro_real') {
                     pisCredito += (aquisicoesRevenda + materiasPrimas + energiaEletrica + alugueis + ativoImobilizado) * 0.0165;
                 }
@@ -1114,11 +1357,11 @@
             }
 
             // COFINS
-            if (basePisCofins > 0 && regime !== 'simples') {
+            if (basePisCofins > 0) {
                 const aliqCOFINS = regime === 'lucro_real' ? aliquotas.cofins.nao_cumulativo : aliquotas.cofins.cumulativo;
                 const cofinsDebito = basePisCofins * (aliqCOFINS / 100);
                 
-                let cofinsCredito = saldoCOFINS;
+                let cofinsCredito = regime === 'lucro_real' ? saldoCOFINS : 0;
                 if (regime === 'lucro_real') {
                     cofinsCredito += (aquisicoesRevenda + materiasPrimas + energiaEletrica + alugueis + ativoImobilizado) * 0.076;
                 }
@@ -1177,7 +1420,90 @@
             document.getElementById('totalRecolher').textContent = formatarMoeda(totalAtual);
         }
 
+        function exibirResultadosSimples(resultados) {
+            const container = document.getElementById('resultadosImpostos');
+            let html = '';
+            totalAtual = 0;
+
+            resultados.forEach(resultado => {
+                if (resultado.simples) {
+                    totalAtual += resultado.valor;
+                    
+                    html += `
+                        <div class="imposto-card simples">
+                            <div class="imposto-header">
+                                <div class="imposto-nome">📋 ${resultado.nome}</div>
+                                <div class="imposto-valor simples">${formatarMoeda(resultado.valor)}</div>
+                            </div>
+                            <div class="calculo-detalhes">${resultado.detalhes}</div>
+                            <div class="composicao-das">
+                                <strong>📊 Composição do DAS:</strong><br>
+                                <small>IRPJ, CSLL, PIS, COFINS, IPI, ICMS, ISS e CPP unificados</small>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="imposto-card neutro">
+                            <div class="imposto-header">
+                                <div class="imposto-nome">⚠️ ${resultado.nome}</div>
+                                <div class="imposto-valor neutro">-</div>
+                            </div>
+                            <div class="calculo-detalhes">${resultado.detalhes}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+            document.getElementById('totalRecolher').textContent = formatarMoeda(totalAtual);
+            
+            // Atualizar textos específicos do Simples
+            const textoTotalRecolher = document.getElementById('textoTotalRecolher');
+            const proximosPassos = document.getElementById('proximosPassos');
+            
+            if (document.getElementById('regime').value === 'simples') {
+                textoTotalRecolher.textContent = 'Valor total do DAS a recolher no período';
+                proximosPassos.textContent = 'Gerar DAS via Portal do Simples Nacional';
+            } else {
+                textoTotalRecolher.textContent = 'Soma de todos os impostos a recolher no período';
+                proximosPassos.textContent = 'Gerar guias de recolhimento';
+            }
+        }
+
         function calcularReforma() {
+            // Para o Simples Nacional, a reforma manterá um regime simplificado
+            const regime = document.getElementById('regime').value;
+            
+            if (regime === 'simples') {
+                calcularReformaSimples();
+            } else {
+                calcularReformaTradicional();
+            }
+        }
+
+        function calcularReformaSimples() {
+            // No Simples Nacional da reforma, mantém-se um regime simplificado
+            // mas com alíquotas potencialmente diferentes
+            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+            
+            const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
+            const faturamento12Meses = parseFloat(document.getElementById('faturamento12Meses')?.value) || 0;
+            
+            // Estimativa: Simples Nacional na reforma pode ter redução de ~10-15%
+            const fatorReducao = 0.9; // 10% de redução estimada
+            const dasAtual = totalAtual;
+            const dasReforma = dasAtual * fatorReducao;
+            
+            exibirResultadosReformaSimples(dasReforma);
+            exibirDiferenca(dasReforma - totalAtual);
+        }
+
+        function calcularReformaTradicional() {
             // Dados básicos
             const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
             const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
@@ -1199,29 +1525,15 @@
             const anoTransicao = document.getElementById('anoTransicao')?.value || '2034';
             
             // Cálculo da alíquota efetiva baseada no ano de transição
-            let aliquotaEfetiva = aliquotaReforma;
             let percentualNovo = 1;
             
             switch(anoTransicao) {
-                case '2025':
-                    percentualNovo = 0;
-                    break;
-                case '2026':
-                    percentualNovo = 0.5;
-                    break;
-                case '2027':
-                    percentualNovo = 0.6;
-                    break;
-                case '2029':
-                    percentualNovo = 0.8;
-                    break;
-                case '2033':
-                    percentualNovo = 0.95;
-                    break;
-                case '2034':
-                default:
-                    percentualNovo = 1;
-                    break;
+                case '2025': percentualNovo = 0; break;
+                case '2026': percentualNovo = 0.5; break;
+                case '2027': percentualNovo = 0.6; break;
+                case '2029': percentualNovo = 0.8; break;
+                case '2033': percentualNovo = 0.95; break;
+                case '2034': default: percentualNovo = 1; break;
             }
             
             // Na reforma, teremos IBS + CBS unificados
@@ -1236,7 +1548,6 @@
             let ipiResidual = 0;
             if (vendasIPI > 0) {
                 const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
-                // Na reforma, IPI terá escopo muito reduzido (estimativa: 10% do atual)
                 ipiResidual = (vendasIPI * (aliquotaIPI / 100) * 0.1) * percentualNovo;
             }
             
@@ -1250,12 +1561,33 @@
             
             const totalFinalReforma = totalReforma + totalSistemaAntigo;
             
-            // Exibir resultados da reforma
             exibirResultadosReforma(impostoReforma, ipiResidual, totalFinalReforma, anoTransicao, percentualNovo);
+            exibirDiferenca(totalFinalReforma - totalAtual);
+        }
+
+        function exibirResultadosReformaSimples(dasReforma) {
+            const container = document.getElementById('resultadosReforma');
             
-            // Calcular diferença
-            const diferenca = totalFinalReforma - totalAtual;
-            exibirDiferenca(diferenca);
+            let html = `
+                <div class="imposto-card simples">
+                    <div class="imposto-header">
+                        <div class="imposto-nome">📋 DAS Simplificado (Reforma)</div>
+                        <div class="imposto-valor simples">${formatarMoeda(dasReforma)}</div>
+                    </div>
+                    <div class="calculo-detalhes">Sistema unificado simplificado mantido na reforma</div>
+                </div>
+                
+                <div class="summary-total" style="margin-top: 20px;">
+                    <h3>💰 TOTAL REFORMA</h3>
+                    <div class="valor">${formatarMoeda(dasReforma)}</div>
+                    <p style="margin-top: 10px; opacity: 0.9;">
+                        Simples Nacional reformulado
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            exibirResumoAtual();
         }
 
         function exibirResultadosReforma(impostoUnificado, ipiResidual, totalReforma, ano, percentual) {
@@ -1302,32 +1634,40 @@
             `;
             
             container.innerHTML = html;
-            
-            // Atualizar também o resumo do sistema atual na comparação
             exibirResumoAtual();
         }
 
         function exibirResumoAtual() {
             const container = document.getElementById('resultadosAtual');
+            const regime = document.getElementById('regime').value;
             let html = '';
             
-            resultadosAtualCalculados.forEach(resultado => {
-                if (resultado.valor > 0) {
-                    html += `
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
-                            <span>${resultado.nome}</span>
-                            <span style="font-weight: bold;">${formatarMoeda(resultado.valor)}</span>
-                        </div>
-                    `;
-                }
-            });
+            if (regime === 'simples') {
+                html = `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <span>DAS Simples Nacional</span>
+                        <span style="font-weight: bold;">${formatarMoeda(totalAtual)}</span>
+                    </div>
+                `;
+            } else {
+                resultadosAtualCalculados.forEach(resultado => {
+                    if (resultado.valor > 0) {
+                        html += `
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <span>${resultado.nome}</span>
+                                <span style="font-weight: bold;">${formatarMoeda(resultado.valor)}</span>
+                            </div>
+                        `;
+                    }
+                });
+            }
             
             html += `
                 <div class="summary-total" style="margin-top: 15px;">
                     <h3>💰 TOTAL ATUAL</h3>
                     <div class="valor">${formatarMoeda(totalAtual)}</div>
                     <p style="margin-top: 10px; opacity: 0.9;">
-                        Sistema tributário vigente
+                        ${regime === 'simples' ? 'DAS Simples Nacional' : 'Sistema tributário vigente'}
                     </p>
                 </div>
             `;
@@ -1428,12 +1768,29 @@
         }
 
         function finalizarApuracao() {
-            alert('🎉 Análise completa finalizada!\n\n📊 Sistema Atual: ' + formatarMoeda(totalAtual) + '\n🔄 Com Reforma: Veja os resultados no comparativo\n\n💡 Use essas informações para planejamento tributário estratégico.');
+            const regime = document.getElementById('regime').value;
+            let mensagem = '🎉 Análise completa finalizada!\n\n';
+            
+            if (regime === 'simples') {
+                mensagem += `📋 DAS Simples Nacional: ${formatarMoeda(totalAtual)}\n`;
+                mensagem += '🔄 Compare com a reforma tributária\n\n';
+                mensagem += '💡 Simples Nacional: Sistema unificado mantido com possíveis melhorias.';
+            } else {
+                mensagem += `📊 Sistema Atual: ${formatarMoeda(totalAtual)}\n`;
+                mensagem += '🔄 Com Reforma: Veja os resultados no comparativo\n\n';
+                mensagem += '💡 Use essas informações para planejamento tributário estratégico.';
+            }
+            
+            alert(mensagem);
         }
 
         function limparTudo() {
             if (confirm('⚠️ Tem certeza que deseja limpar todos os dados?')) {
                 document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+                document.getElementById('tipoPeriodo').value = 'mensal';
+                document.getElementById('regime').value = 'lucro_real';
+                document.getElementById('atividade').value = 'comercio';
+                
                 etapaAtual = 1;
                 
                 // Reset das seções
@@ -1452,23 +1809,37 @@
                 document.getElementById('btnProximo').textContent = 'Próximo ➡️';
                 document.getElementById('btnProximo').onclick = proximaEtapa;
                 
+                atualizarPeriodo();
+                atualizarRegime();
                 calcularAutomatico();
             }
         }
 
         function gerarRelatorio() {
+            const regime = document.getElementById('regime').value;
             const diferenca = document.getElementById('diferencaValor').textContent;
-            alert('📊 Relatório Comparativo Completo\n\n' +
-                  '✅ Apuração sistema atual: ' + formatarMoeda(totalAtual) + '\n' +
-                  '✅ Simulação reforma tributária\n' +
-                  '✅ Análise de impacto: ' + diferenca + '\n' +
-                  '✅ Cronograma de transição detalhado\n' +
-                  '✅ Recomendações estratégicas\n\n' +
-                  '💾 Funcionalidade completa será implementada na versão final.');
+            
+            let relatorio = '📊 Relatório Comparativo Completo\n\n';
+            
+            if (regime === 'simples') {
+                relatorio += `✅ DAS Simples Nacional: ${formatarMoeda(totalAtual)}\n`;
+                relatorio += '✅ Simulação regime simplificado da reforma\n';
+            } else {
+                relatorio += `✅ Apuração sistema atual: ${formatarMoeda(totalAtual)}\n`;
+                relatorio += '✅ Simulação reforma tributária completa\n';
+            }
+            
+            relatorio += `✅ Análise de impacto: ${diferenca}\n`;
+            relatorio += '✅ Cronograma de transição detalhado\n';
+            relatorio += '✅ Recomendações estratégicas\n\n';
+            relatorio += '💾 Funcionalidade completa será implementada na versão final.';
+            
+            alert(relatorio);
         }
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
+            atualizarPeriodo();
             atualizarRegime();
             calcularAutomatico();
         });
