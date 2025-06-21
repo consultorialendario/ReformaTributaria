@@ -245,6 +245,11 @@
             background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.05));
         }
 
+        .imposto-card.reforma {
+            border-left: 5px solid #3498db;
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(41, 128, 185, 0.05));
+        }
+
         .imposto-header {
             display: flex;
             justify-content: space-between;
@@ -267,6 +272,7 @@
         .imposto-valor.credor { color: #27ae60; }
         .imposto-valor.neutro { color: #95a5a6; }
         .imposto-valor.simples { color: #9b59b6; }
+        .imposto-valor.reforma { color: #3498db; }
 
         .calculo-detalhes {
             font-size: 0.9em;
@@ -822,7 +828,10 @@
                         • <strong>IBS</strong> (Imposto sobre Bens e Serviços) - substitui ICMS e ISS<br>
                         • <strong>CBS</strong> (Contribuição sobre Bens e Serviços) - substitui PIS e COFINS<br>
                         • <strong>Período de transição:</strong> 2026 a 2033 (sistema dual)<br>
-                        • <strong>Implementação completa:</strong> a partir de 2034
+                        • <strong>Implementação completa:</strong> a partir de 2034<br><br>
+                        
+                        <strong>💡 Importante:</strong> O comparativo abaixo considera sua empresa no <strong>regime geral da reforma (IBS + CBS)</strong>, 
+                        independente do regime atual, para análise real do impacto da mudança.
                     </div>
 
                     <div class="timeline-transicao">
@@ -855,14 +864,14 @@
 
                     <div class="comparativo-container">
                         <div class="regime-card regime-atual">
-                            <div class="regime-title">🏛️ Sistema Atual (2025)</div>
+                            <div class="regime-title">🏛️ Sistema Atual (<span id="regimeAtualNome">2025</span>)</div>
                             <div id="resultadosAtual">
                                 <!-- Resultados do sistema atual -->
                             </div>
                         </div>
 
                         <div class="regime-card regime-novo">
-                            <div class="regime-title">🔄 Reforma Tributária (2034)</div>
+                            <div class="regime-title">🔄 Reforma Tributária (<span id="anoReformaNome">2034</span>)</div>
                             <div id="resultadosReforma">
                                 <!-- Resultados da reforma -->
                             </div>
@@ -883,7 +892,8 @@
                         • Estimativa inicial: IBS + CBS = 26,5% (pode variar entre 24% e 28%)<br>
                         • Podem haver alíquotas diferenciadas por setor<br>
                         • Cesta básica e alguns serviços essenciais podem ter alíquota zero<br>
-                        • Sistema de créditos será mantido e aprimorado<br><br>
+                        • Sistema de créditos será mantido e aprimorado<br>
+                        • <strong>Simples Nacional:</strong> Pode manter regime simplificado na reforma<br><br>
                         
                         <strong>📊 Principais Mudanças:</strong><br>
                         • Unificação de ICMS + ISS = IBS<br>
@@ -1472,48 +1482,20 @@
         }
 
         function calcularReforma() {
-            // Para o Simples Nacional, a reforma manterá um regime simplificado
-            const regime = document.getElementById('regime').value;
+            // IMPORTANTE: Na reforma, SEMPRE calcular IBS + CBS independente do regime atual
+            // Isso permite comparar como ficaria a empresa no sistema unificado da reforma
             
-            if (regime === 'simples') {
-                calcularReformaSimples();
-            } else {
-                calcularReformaTradicional();
-            }
-        }
-
-        function calcularReformaSimples() {
-            // No Simples Nacional da reforma, mantém-se um regime simplificado
-            // mas com alíquotas potencialmente diferentes
+            // Dados básicos para IBS + CBS
             const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
             const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
             const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
             const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
             const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
             
-            const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
-            const faturamento12Meses = parseFloat(document.getElementById('faturamento12Meses')?.value) || 0;
-            
-            // Estimativa: Simples Nacional na reforma pode ter redução de ~10-15%
-            const fatorReducao = 0.9; // 10% de redução estimada
-            const dasAtual = totalAtual;
-            const dasReforma = dasAtual * fatorReducao;
-            
-            exibirResultadosReformaSimples(dasReforma);
-            exibirDiferenca(dasReforma - totalAtual);
-        }
-
-        function calcularReformaTradicional() {
-            // Dados básicos
-            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
-            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
-            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
-            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
-            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
-            
+            // Base total para IBS + CBS (produtos e serviços)
             const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
             
-            // Créditos
+            // Créditos na reforma (mantém sistema não cumulativo)
             const aquisicoesRevenda = parseFloat(document.getElementById('aquisicoesRevenda')?.value) || 0;
             const materiasPrimas = parseFloat(document.getElementById('materiasPrimas')?.value) || 0;
             const energiaEletrica = parseFloat(document.getElementById('energiaEletrica')?.value) || 0;
@@ -1536,22 +1518,23 @@
                 case '2034': default: percentualNovo = 1; break;
             }
             
-            // Na reforma, teremos IBS + CBS unificados
+            // Cálculo IBS + CBS unificado
             const debito = baseReforma * (aliquotaReforma / 100) * percentualNovo;
             
-            // Créditos da reforma (mantém o mesmo princípio)
+            // Créditos da reforma (sistema não cumulativo mantido)
             const creditos = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + alugueis + ativoImobilizado) * (aliquotaReforma / 100) * percentualNovo;
             
-            const impostoReforma = debito - creditos;
+            const impostoUnificado = debito - creditos;
             
-            // IPI residual (apenas para produtos específicos na reforma)
+            // IPI residual (escopo muito reduzido na reforma)
             let ipiResidual = 0;
             if (vendasIPI > 0) {
                 const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
+                // Na reforma, IPI terá escopo muito reduzido (estimativa: 10% do atual)
                 ipiResidual = (vendasIPI * (aliquotaIPI / 100) * 0.1) * percentualNovo;
             }
             
-            const totalReforma = impostoReforma + ipiResidual;
+            const totalReforma = impostoUnificado + ipiResidual;
             
             // Se estamos na transição, adicionar parte do sistema antigo
             let totalSistemaAntigo = 0;
@@ -1561,33 +1544,9 @@
             
             const totalFinalReforma = totalReforma + totalSistemaAntigo;
             
-            exibirResultadosReforma(impostoReforma, ipiResidual, totalFinalReforma, anoTransicao, percentualNovo);
+            // Exibir resultados
+            exibirResultadosReforma(impostoUnificado, ipiResidual, totalFinalReforma, anoTransicao, percentualNovo);
             exibirDiferenca(totalFinalReforma - totalAtual);
-        }
-
-        function exibirResultadosReformaSimples(dasReforma) {
-            const container = document.getElementById('resultadosReforma');
-            
-            let html = `
-                <div class="imposto-card simples">
-                    <div class="imposto-header">
-                        <div class="imposto-nome">📋 DAS Simplificado (Reforma)</div>
-                        <div class="imposto-valor simples">${formatarMoeda(dasReforma)}</div>
-                    </div>
-                    <div class="calculo-detalhes">Sistema unificado simplificado mantido na reforma</div>
-                </div>
-                
-                <div class="summary-total" style="margin-top: 20px;">
-                    <h3>💰 TOTAL REFORMA</h3>
-                    <div class="valor">${formatarMoeda(dasReforma)}</div>
-                    <p style="margin-top: 10px; opacity: 0.9;">
-                        Simples Nacional reformulado
-                    </p>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-            exibirResumoAtual();
         }
 
         function exibirResultadosReforma(impostoUnificado, ipiResidual, totalReforma, ano, percentual) {
@@ -1595,10 +1554,10 @@
             let html = '';
             
             // Card do imposto unificado
-            let classe = impostoUnificado > 0 ? 'devedor' : impostoUnificado < 0 ? 'credor' : 'neutro';
-            let status = impostoUnificado > 0 ? 'devedor' : impostoUnificado < 0 ? 'credor' : 'neutro';
-            let icon = impostoUnificado > 0 ? '📤' : impostoUnificado < 0 ? '📥' : '⚖️';
-            let nomeImposto = ano === '2034' ? 'IBS + CBS' : `Sistema Misto (${Math.round(percentual * 100)}% Novo)`;
+            let classe = impostoUnificado > 0 ? 'reforma' : impostoUnificado < 0 ? 'credor' : 'neutro';
+            let status = impostoUnificado > 0 ? 'reforma' : impostoUnificado < 0 ? 'credor' : 'neutro';
+            let icon = impostoUnificado > 0 ? '🔄' : impostoUnificado < 0 ? '📥' : '⚖️';
+            let nomeImposto = ano === '2034' ? 'IBS + CBS (Unificado)' : `Sistema Misto (${Math.round(percentual * 100)}% Novo)`;
             
             html += `
                 <div class="imposto-card ${classe}">
@@ -1606,7 +1565,7 @@
                         <div class="imposto-nome">${icon} ${nomeImposto}</div>
                         <div class="imposto-valor ${status}">${formatarMoeda(Math.abs(impostoUnificado))}</div>
                     </div>
-                    <div class="calculo-detalhes">Imposto unificado sobre bens e serviços - ${formatarMoeda(impostoUnificado)}</div>
+                    <div class="calculo-detalhes">Substitui ICMS + ISS + PIS + COFINS em imposto único - ${formatarMoeda(impostoUnificado)}</div>
                 </div>
             `;
             
@@ -1618,7 +1577,7 @@
                             <div class="imposto-nome">🏭 IPI Residual</div>
                             <div class="imposto-valor devedor">${formatarMoeda(ipiResidual)}</div>
                         </div>
-                        <div class="calculo-detalhes">IPI com escopo reduzido (produtos específicos)</div>
+                        <div class="calculo-detalhes">IPI com escopo muito reduzido (apenas produtos específicos)</div>
                     </div>
                 `;
             }
@@ -1628,12 +1587,16 @@
                     <h3>💰 TOTAL REFORMA (${ano})</h3>
                     <div class="valor">${formatarMoeda(totalReforma)}</div>
                     <p style="margin-top: 10px; opacity: 0.9;">
-                        Carga tributária unificada
+                        Carga tributária unificada (IBS + CBS)
                     </p>
                 </div>
             `;
             
             container.innerHTML = html;
+            
+            // Atualizar nome do ano na comparação
+            document.getElementById('anoReformaNome').textContent = ano;
+            
             exibirResumoAtual();
         }
 
@@ -1641,6 +1604,15 @@
             const container = document.getElementById('resultadosAtual');
             const regime = document.getElementById('regime').value;
             let html = '';
+            
+            // Atualizar nome do regime atual
+            let nomeRegime = '';
+            switch(regime) {
+                case 'simples': nomeRegime = 'Simples Nacional'; break;
+                case 'lucro_presumido': nomeRegime = 'Lucro Presumido'; break;
+                case 'lucro_real': nomeRegime = 'Lucro Real'; break;
+            }
+            document.getElementById('regimeAtualNome').textContent = nomeRegime;
             
             if (regime === 'simples') {
                 html = `
@@ -1667,7 +1639,7 @@
                     <h3>💰 TOTAL ATUAL</h3>
                     <div class="valor">${formatarMoeda(totalAtual)}</div>
                     <p style="margin-top: 10px; opacity: 0.9;">
-                        ${regime === 'simples' ? 'DAS Simples Nacional' : 'Sistema tributário vigente'}
+                        ${nomeRegime}
                     </p>
                 </div>
             `;
@@ -1773,11 +1745,11 @@
             
             if (regime === 'simples') {
                 mensagem += `📋 DAS Simples Nacional: ${formatarMoeda(totalAtual)}\n`;
-                mensagem += '🔄 Compare com a reforma tributária\n\n';
-                mensagem += '💡 Simples Nacional: Sistema unificado mantido com possíveis melhorias.';
+                mensagem += '🔄 Compare com o sistema unificado da reforma (IBS + CBS)\n\n';
+                mensagem += '💡 A reforma mantém opção simplificada, mas com sistema IBS + CBS como alternativa.';
             } else {
                 mensagem += `📊 Sistema Atual: ${formatarMoeda(totalAtual)}\n`;
-                mensagem += '🔄 Com Reforma: Veja os resultados no comparativo\n\n';
+                mensagem += '🔄 Sistema Reforma: Veja o comparativo IBS + CBS\n\n';
                 mensagem += '💡 Use essas informações para planejamento tributário estratégico.';
             }
             
@@ -1823,10 +1795,10 @@
             
             if (regime === 'simples') {
                 relatorio += `✅ DAS Simples Nacional: ${formatarMoeda(totalAtual)}\n`;
-                relatorio += '✅ Simulação regime simplificado da reforma\n';
+                relatorio += '✅ Simulação IBS + CBS (regime geral da reforma)\n';
             } else {
                 relatorio += `✅ Apuração sistema atual: ${formatarMoeda(totalAtual)}\n`;
-                relatorio += '✅ Simulação reforma tributária completa\n';
+                relatorio += '✅ Simulação IBS + CBS (reforma tributária)\n';
             }
             
             relatorio += `✅ Análise de impacto: ${diferenca}\n`;
