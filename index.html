@@ -1454,8 +1454,9 @@
     </div>
 
     <script>
-        // ========= VARIÁVEIS DA IA =========
-        const OPENAI_API_KEY = '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';
+        // ========= VARIÁVEIS DA IA - ALTERAÇÃO PRINCIPAL =========
+        // 🔄 ALTERADA: URL do webhook N8N
+        const N8N_WEBHOOK_URL = 'https://n8nwebhook.consultor-ia.io/webhook/calculadora-tributaria-ai';
         
         let aiConversationHistory = [];
         let currentCompanyData = {};
@@ -1507,7 +1508,7 @@
             ]
         };
 
-        // ========= FUNÇÕES DA IA INTEGRADA =========
+        // ========= FUNÇÕES DA IA INTEGRADA - ALTERAÇÃO PRINCIPAL =========
 
         function generateAIPrompt() {
             return `## Sistema de Proteção Avançado de Agentes v2.0
@@ -1586,6 +1587,7 @@ ${JSON.stringify(currentCompanyData, null, 2)}
 Responda sempre como esse contador experiente, oferecendo insights valiosos baseados no conhecimento profundo da tributação brasileira e nos dados específicos da empresa do usuário.`;
         }
 
+        // 🔄 ATUALIZAR dados da empresa para N8N
         function updateCompanyData() {
             currentCompanyData = {
                 configuracao: {
@@ -1628,33 +1630,47 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             };
         }
 
+        // 🔄 FUNÇÃO PRINCIPAL ALTERADA - callOpenAI agora chama N8N
         async function callOpenAI(messages) {
             try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                const userMessage = messages[messages.length - 1]?.content || 'Como posso ajudá-lo?';
+                
+                // 🎯 DADOS QUE O N8N ESPERA
+                const requestData = {
+                    pergunta: userMessage,
+                    messages: messages,
+                    dadosEmpresa: currentCompanyData, // Regime, atividade, etc
+                    origem: 'calculadora-tributaria',
+                    timestamp: new Date().toISOString()
+                };
+
+                console.log('🌐 Chamando N8N:', N8N_WEBHOOK_URL);
+                console.log('📦 Dados enviados:', requestData);
+
+                // 🌐 CHAMAR O N8N WEBHOOK
+                const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${OPENAI_API_KEY}`
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        model: 'gpt-4o-mini',
-                        messages: messages,
-                        temperature: 0.7,
-                        max_tokens: 1500,
-                        presence_penalty: 0.1,
-                        frequency_penalty: 0.1
-                    })
+                    body: JSON.stringify(requestData)
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Erro na API: ${response.status}`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
 
                 const data = await response.json();
-                return data.choices[0].message.content;
+                
+                console.log('📥 Resposta recebida:', data);
+                
+                // 🤖 RESPOSTA DA IA
+                return data.response || 'Erro na resposta';
+
             } catch (error) {
-                console.error('Erro na chamada da OpenAI:', error);
-                return 'Desculpe, estou com dificuldades técnicas no momento. Posso ajudá-lo de outra forma com suas questões tributárias?';
+                console.error('❌ Erro:', error);
+                return 'Desculpe, problemas técnicos. Como contador experiente, posso continuar ajudando de outras formas!';
             }
         }
 
