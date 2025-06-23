@@ -462,7 +462,7 @@
             border-bottom: none;
         }
 
-        /* ========= ESTILOS DA IA INTEGRADA ========= */
+        /* ========= ESTILOS DA IA CORRIGIDOS ========= */
         
         .ai-assistant {
             position: fixed;
@@ -1398,7 +1398,7 @@
         </div>
     </div>
 
-    <!-- ========= ASSISTENTE DE IA ========= -->
+    <!-- ========= ASSISTENTE DE IA CORRIGIDO ========= -->
     <div class="ai-assistant">
         <button class="ai-toggle" id="aiToggle" onclick="toggleAI()" title="Assistente IA Tributária">
             🤖
@@ -1408,7 +1408,7 @@
             <div class="ai-header">
                 <div>
                     <h3>🤖 Contador IA Especialista</h3>
-                    <div class="ai-status" id="aiStatus">Online • Resultados & Reforma</div>
+                    <div class="ai-status" id="aiStatus">Híbrido • Online/Offline</div>
                 </div>
                 <button class="ai-close" onclick="toggleAI()">✕</button>
             </div>
@@ -1463,15 +1463,13 @@
     </div>
 
     <script>
-        // ========= VARIÁVEIS DA IA - OTIMIZADA =========
+        // ========= VARIÁVEIS GLOBAIS CORRIGIDAS =========
         const N8N_WEBHOOK_URL = 'https://n8nwebhook.consultor-ia.io/webhook/calculadora-tributaria-ai';
         
         let aiConversationHistory = [];
         let currentCompanyData = {};
         let isAIProcessing = false;
         let debugMode = false;
-
-        // Variáveis globais
         let etapaAtual = 1;
         const totalEtapas = 5;
         let resultadosAtualCalculados = [];
@@ -1517,7 +1515,7 @@
             ]
         };
 
-        // ========= FUNÇÕES DE DEBUG =========
+        // ========= FUNÇÕES DE DEBUG CORRIGIDAS =========
         function debugLog(message, type = 'info') {
             const timestamp = new Date().toLocaleTimeString();
             const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '📝';
@@ -1534,10 +1532,21 @@
             }
         }
 
-        // ========= BOTÃO DE TESTE MANUAL =========
+        function toggleDebug() {
+            debugMode = !debugMode;
+            const panel = document.getElementById('debugPanel');
+            if (panel) {
+                panel.classList.toggle('active', debugMode);
+                if (debugMode) {
+                    debugLog('Debug mode ativado', 'success');
+                    adicionarBotaoTeste();
+                }
+            }
+        }
+
         function adicionarBotaoTeste() {
-            const debugConsole = document.getElementById('debugConsole');
-            if (debugConsole && !document.getElementById('btnTesteConectividade')) {
+            const debugLog = document.getElementById('debugLog');
+            if (debugLog && !document.getElementById('btnTesteConectividade')) {
                 const btnTeste = document.createElement('button');
                 btnTeste.id = 'btnTesteConectividade';
                 btnTeste.innerHTML = '🧪 Testar N8N';
@@ -1575,20 +1584,11 @@
                     }, 3000);
                 };
                 
-                debugConsole.appendChild(btnTeste);
-            }
-        }
-            debugMode = !debugMode;
-            const panel = document.getElementById('debugPanel');
-            if (panel) {
-                panel.classList.toggle('active', debugMode);
-                if (debugMode) {
-                    debugLog('Debug mode ativado', 'success');
-                }
+                debugLog.appendChild(btnTeste);
             }
         }
 
-        // ========= FUNÇÕES DA IA OTIMIZADA COM DEBUG =========
+        // ========= FUNÇÕES DA IA CORRIGIDAS =========
 
         function generateAIPrompt() {
             return `## Sistema de Proteção Avançado de Agentes v2.0
@@ -1679,40 +1679,18 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             debugLog('Dados da empresa atualizados');
         }
 
-        // ========= TESTE DE CONECTIVIDADE =========
+        // ========= TESTE DE CONECTIVIDADE CORRIGIDO =========
         async function testarConectividade() {
             debugLog('🔗 Iniciando teste de conectividade...', 'info');
             
             try {
-                // Teste 1: OPTIONS request
-                debugLog('🧪 Teste 1: Verificando CORS OPTIONS...', 'info');
-                const optionsResponse = await fetch(N8N_WEBHOOK_URL, {
-                    method: 'OPTIONS',
-                    headers: {
-                        'Origin': window.location.origin,
-                        'Access-Control-Request-Method': 'POST',
-                        'Access-Control-Request-Headers': 'Content-Type'
-                    }
-                });
-                
-                debugLog(`✅ OPTIONS Status: ${optionsResponse.status}`, optionsResponse.ok ? 'success' : 'error');
-                debugLog(`✅ OPTIONS Headers: ${JSON.stringify([...optionsResponse.headers.entries()])}`, 'info');
-                
-            } catch (error) {
-                debugLog(`❌ Erro no teste OPTIONS: ${error.message}`, 'error');
-            }
-            
-            try {
-                // Teste 2: POST simples
-                debugLog('🧪 Teste 2: POST de conectividade...', 'info');
+                debugLog('🧪 Teste: POST de conectividade...', 'info');
                 const testResponse = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     mode: 'cors',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'Origin': window.location.origin,
-                        'User-Agent': 'Mozilla/5.0 Calculadora-Tributaria'
                     },
                     body: JSON.stringify({
                         test: true,
@@ -1723,13 +1701,12 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 debugLog(`✅ POST Status: ${testResponse.status}`, testResponse.ok ? 'success' : 'error');
                 
                 if (testResponse.ok) {
-                    const responseText = await testResponse.text();
-                    debugLog(`✅ Conectividade OK! Response: ${responseText.substring(0, 200)}`, 'success');
+                    debugLog(`✅ Conectividade OK!`, 'success');
                     return true;
                 }
                 
             } catch (error) {
-                debugLog(`❌ Erro no teste POST: ${error.message}`, 'error');
+                debugLog(`❌ Erro no teste: ${error.message}`, 'error');
             }
             
             debugLog(`❌ Falha na conectividade com N8N`, 'error');
@@ -1755,164 +1732,48 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                     messages: messages,
                     dadosEmpresa: currentCompanyData,
                     origem: 'calculadora-tributaria',
-                    timestamp: new Date().toISOString(),
-                    userAgent: navigator.userAgent,
-                    referer: window.location.href
+                    timestamp: new Date().toISOString()
                 };
 
-                debugLog(`Chamando N8N: ${N8N_WEBHOOK_URL}`, 'info');
-                debugLog(`Dados enviados: ${JSON.stringify(requestData, null, 2)}`, 'info');
+                debugLog(`Chamando N8N com dados: ${JSON.stringify(requestData)}`, 'info');
 
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     mode: 'cors',
-                    credentials: 'omit',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json, text/plain, */*',
-                        'Origin': window.location.origin,
-                        'Referer': window.location.href,
-                        'User-Agent': 'Mozilla/5.0 Calculadora-Tributaria',
-                        'Cache-Control': 'no-cache',
-                        'Pragma': 'no-cache'
+                        'Accept': 'application/json',
                     },
                     body: JSON.stringify(requestData)
                 });
 
                 debugLog(`Response Status: ${response.status}`, response.ok ? 'success' : 'error');
-                debugLog(`Response Headers: ${JSON.stringify([...response.headers.entries()])}`, 'info');
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    debugLog(`Erro HTTP: ${response.status} ${response.statusText}`, 'error');
-                    debugLog(`Erro Body: ${errorText}`, 'error');
-                    
-                    // Fallback para erro HTTP
-                    debugLog('🔄 Usando fallback local devido a erro HTTP', 'info');
-                    return gerarRespostaLocal(userMessage);
-                }
-
-                const contentType = response.headers.get('content-type');
-                debugLog(`Content-Type: ${contentType}`, 'info');
-
-                if (!contentType || !contentType.includes('application/json')) {
-                    const textResponse = await response.text();
-                    debugLog(`Resposta não é JSON: ${textResponse}`, 'error');
-                    
-                    // Se a resposta parece válida mas não é JSON, tentar processar
-                    if (textResponse.length > 0) {
-                        debugLog('🔄 Tentando processar resposta não-JSON', 'info');
-                        return textResponse;
-                    }
-                    
-                    debugLog('🔄 Usando fallback local devido a resposta inválida', 'info');
+                    debugLog(`Erro HTTP: ${response.status}`, 'error');
                     return gerarRespostaLocal(userMessage);
                 }
 
                 const data = await response.json();
+                debugLog(`Resposta recebida: ${JSON.stringify(data)}`, 'success');
                 
-                debugLog(`Resposta completa recebida: ${JSON.stringify(data, null, 2)}`, 'success');
-                
-                // Verificar se a resposta tem a estrutura esperada
-                if (!data || typeof data !== 'object') {
-                    debugLog(`Estrutura de resposta inválida: ${JSON.stringify(data)}`, 'error');
-                    debugLog('🔄 Usando fallback local devido a estrutura inválida', 'info');
-                    return gerarRespostaLocal(userMessage);
-                }
-
-                if (data.success === false) {
-                    debugLog(`API retornou erro: ${JSON.stringify(data)}`, 'error');
-                    debugLog('🔄 Usando fallback local devido a erro da API', 'info');
-                    return gerarRespostaLocal(userMessage);
-                }
-
-                // 🔥 PARSING ROBUSTO - MÚLTIPLAS TENTATIVAS
+                // Processar resposta
                 let responseText = '';
-                
-                // Tentativa 1: Estrutura normal
                 if (data.response && typeof data.response === 'string') {
                     responseText = data.response;
-                    debugLog(`✅ Resposta extraída (método 1): ${responseText.substring(0, 100)}...`, 'success');
-                }
-                // Tentativa 2: Estrutura malformada do N8N
-                else if (data["="] && typeof data["="] === 'object') {
-                    const nestedData = data["="];
-                    
-                    // Navegar na estrutura malformada
-                    for (const key in nestedData) {
-                        if (nestedData[key] && typeof nestedData[key] === 'object') {
-                            for (const innerKey in nestedData[key]) {
-                                if (nestedData[key][innerKey] && nestedData[key][innerKey].response) {
-                                    responseText = nestedData[key][innerKey].response;
-                                    debugLog(`✅ Resposta extraída (método 2): ${responseText.substring(0, 100)}...`, 'success');
-                                    break;
-                                }
-                            }
-                            if (responseText) break;
-                        }
-                    }
-                }
-                // Tentativa 3: Buscar em qualquer lugar do objeto
-                else {
-                    const findResponse = (obj, depth = 0) => {
-                        if (depth > 5) return null; // Evitar recursão infinita
-                        
-                        if (obj && typeof obj === 'object') {
-                            if (obj.response && typeof obj.response === 'string') {
-                                return obj.response;
-                            }
-                            
-                            for (const key in obj) {
-                                const found = findResponse(obj[key], depth + 1);
-                                if (found) return found;
-                            }
-                        }
-                        return null;
-                    };
-                    
-                    const found = findResponse(data);
-                    if (found) {
-                        responseText = found;
-                        debugLog(`✅ Resposta extraída (método 3): ${responseText.substring(0, 100)}...`, 'success');
-                    }
-                }
-                
-                // Tentativa 4: Verificar outros campos comuns
-                if (!responseText) {
-                    responseText = data.message || data.text || data.content || '';
-                    if (responseText) {
-                        debugLog(`✅ Resposta extraída (método 4): ${responseText.substring(0, 100)}...`, 'success');
-                    }
-                }
-                
-                // Se ainda não encontrou, usar fallback
-                if (!responseText) {
-                    debugLog(`❌ NENHUMA RESPOSTA ENCONTRADA!`, 'error');
-                    debugLog(`🔍 Estrutura completa: ${JSON.stringify(data, null, 2)}`, 'error');
-                    debugLog(`🔍 Chaves disponíveis: ${Object.keys(data)}`, 'error');
-                    
-                    debugLog('🔄 Usando fallback local', 'info');
+                } else if (data.message) {
+                    responseText = data.message;
+                } else {
+                    debugLog('Estrutura de resposta não reconhecida', 'error');
                     return gerarRespostaLocal(userMessage);
                 }
                 
-                debugLog(`🎯 Response final extraído: ${responseText}`, 'success');
+                debugLog(`Response final: ${responseText}`, 'success');
                 return responseText;
 
             } catch (error) {
-                debugLog(`Erro completo: ${error.message}`, 'error');
-                debugLog(`Stack trace: ${error.stack}`, 'error');
-                
-                // Verificar tipos específicos de erro
-                if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    debugLog('🔄 Erro de fetch - usando fallback local', 'info');
-                    return gerarRespostaLocal(messages[messages.length - 1]?.content || '');
-                } else if (error.message.includes('JSON')) {
-                    debugLog('🔄 Erro de JSON - usando fallback local', 'info');
-                    return gerarRespostaLocal(messages[messages.length - 1]?.content || '');
-                } else {
-                    debugLog('🔄 Erro genérico - usando fallback local', 'info');
-                    return gerarRespostaLocal(messages[messages.length - 1]?.content || '');
-                }
+                debugLog(`Erro: ${error.message}`, 'error');
+                return gerarRespostaLocal(messages[messages.length - 1]?.content || '');
             }
         }
 
@@ -1960,7 +1821,7 @@ Como contador com 30+ anos de experiência, posso explicar o cronograma oficial:
 • IPI apenas para produtos específicos
 • Simplicidade total
 
-**💡 IMPACTO PARA SUA EMPRESA (Comércio/Lucro Real/SP):**
+**💡 IMPACTO PARA SUA EMPRESA:**
 • ✅ Simplificação significativa de obrigações
 • ✅ Créditos mais amplos e unificados  
 • ✅ Redução de complexidade operacional
@@ -1975,13 +1836,13 @@ Como contador com 30+ anos de experiência, posso explicar o cronograma oficial:
             }
             
             // Otimização tributária
-            if (perguntaLower.includes('otimizar') && perguntaLower.includes('carga')) {
+            if (perguntaLower.includes('otimizar') || perguntaLower.includes('reduzir')) {
                 const regime = currentCompanyData.configuracao?.regime || 'lucro_real';
                 const atividade = currentCompanyData.configuracao?.atividade || 'comercio';
                 
                 return `💰 **Estratégias de Otimização Tributária**
 
-Como contador especialista, recomendo para sua empresa (${atividade.toUpperCase()}/${regime.replace('_', ' ').toUpperCase()}):
+Como contador especialista, recomendo para sua empresa:
 
 **🎯 OTIMIZAÇÃO ATUAL (2025):**
 • **PIS/COFINS**: Maximizar créditos não cumulativo (1,65% + 7,6%)
@@ -2001,7 +1862,7 @@ Como contador especialista, recomendo para sua empresa (${atividade.toUpperCase(
 • **Menos obrigações**: Redução significativa de declarações
 
 **💡 DICA EXPERT:**
-Com a reforma, empresas como a sua (comércio) terão:
+Com a reforma, empresas como a sua terão:
 - Crédito integral em compras para revenda
 - Sistema de débito/crédito mais simples
 - Menos risk compliance tributário
@@ -2016,12 +1877,7 @@ Com a reforma, empresas como a sua (comércio) terão:
             
             // Melhor regime
             if (perguntaLower.includes('regime') && perguntaLower.includes('melhor')) {
-                const atividade = currentCompanyData.configuracao?.atividade || 'comercio';
-                const estado = currentCompanyData.configuracao?.estado || 'SP';
-                
                 return `🏢 **Escolha do Melhor Regime Tributário**
-
-Análise para sua empresa (${atividade.toUpperCase()}/${estado}):
 
 **📈 LUCRO REAL** (Recomendado para margem alta)
 ✅ **PIS/COFINS**: Créditos não cumulativo (1,65% + 7,6%)
@@ -2054,21 +1910,12 @@ Análise para sua empresa (${atividade.toUpperCase()}/${estado}):
 • Simples Nacional terá opção IBS/CBS
 • Presumido pode perder atratividade
 
-**🚀 PRÓXIMOS PASSOS:**
-1. Informe faturamento e custos na calculadora
-2. Simule os 3 regimes
-3. Compare cenário atual vs reforma
-
 *Para simulação precisa, complete os dados da empresa.*`;
             }
             
             // Impacto da reforma
             if (perguntaLower.includes('impacto') && perguntaLower.includes('reforma')) {
-                const atividade = currentCompanyData.configuracao?.atividade || 'comercio';
-                
                 return `🔄 **Impacto da Reforma Tributária na Sua Empresa**
-
-Análise específica para ${atividade.toUpperCase()}:
 
 **📊 MUDANÇAS ESTRUTURAIS:**
 
@@ -2117,62 +1964,8 @@ Análise específica para ${atividade.toUpperCase()}:
 *Complete os dados da calculadora para análise quantitativa personalizada.*`;
             }
             
-            // Planejamento fiscal
-            if (perguntaLower.includes('planejamento') && perguntaLower.includes('fiscal')) {
-                return `📋 **Estratégias de Planejamento Fiscal**
-
-Como contador com 30+ anos, recomendo:
-
-**🎯 PLANEJAMENTO ATUAL (2025):**
-
-**CURTO PRAZO (Próximos 12 meses):**
-• Revisão trimestral de regime tributário
-• Otimização de créditos PIS/COFINS/ICMS
-• Planejamento de compras para maximizar créditos
-• Análise mensal de IRPJ/CSLL
-
-**MÉDIO PRAZO (2026-2029):**
-• Preparação para CBS (substitui PIS/COFINS)
-• Adaptação gradual ao IBS
-• Investimento em sistemas integrados
-• Capacitação da equipe contábil
-
-**LONGO PRAZO (2030-2034):**
-• Aproveitamento pleno do sistema unificado
-• Estratégias para economia de escala
-• Foco em crescimento com menor carga tributária
-
-**💰 ESTRATÉGIAS ESPECÍFICAS:**
-
-**Elisão Fiscal Legal:**
-• Timing de reconhecimento de receitas
-• Otimização de estrutura societária
-• Planejamento sucessório empresarial
-• Aproveitamento de incentivos fiscais
-
-**Controles Essenciais:**
-• Conciliação mensal de tributos
-• Acompanhamento de alíquotas por produto
-• Gestão de créditos acumulados
-• Monitoramento de compliance
-
-**🔄 TRANSIÇÃO PARA REFORMA:**
-• Mapear impactos por linha de produto
-• Preparar equipe para novo sistema
-• Investir em automação tributária
-• Criar reservas para adaptação
-
-**🚀 CRONOGRAMA SUGERIDO:**
-• **T1/2025**: Otimização sistema atual
-• **T2/2025**: Preparação para CBS
-• **T3/2025**: Testes de sistema híbrido
-• **T4/2025**: Implementação gradual
-
-*Para estratégias específicas da sua empresa, informe dados nas próximas etapas.*`;
-            }
-            
             // Resposta genérica melhorada
-            return `🤖 **Contador IA Especialista** (Modo Offline)
+            return `🤖 **Contador IA Especialista** (Modo Híbrido)
 
 Olá! Sou especialista em tributação brasileira com 30+ anos de experiência.
 
@@ -2182,7 +1975,7 @@ Olá! Sou especialista em tributação brasileira com 30+ anos de experiência.
 • **Estado**: ${currentCompanyData.configuracao?.estado || 'Não informado'}
 • **Período**: ${currentCompanyData.configuracao?.periodo || 'Não informado'}
 
-**🔧 STATUS:** Sistema IA temporariamente offline - respostas via base de conhecimento local
+**🔧 STATUS:** Sistema híbrido - respostas especializadas sempre disponíveis
 
 **📋 POSSO AJUDAR COM:**
 • **Cronograma da Reforma Tributária** (EC 132/2023)
@@ -2315,6 +2108,7 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
             element.innerHTML = html;
         }
 
+        // ========= FUNÇÕES DA IA INTERFACE =========
         function toggleAI() {
             const container = document.getElementById('aiChatContainer');
             const toggle = document.getElementById('aiToggle');
@@ -2419,7 +2213,7 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
 
             } catch (error) {
                 typing.classList.remove('active');
-                addAIMessage('ai', 'Desculpe, houve um erro. Como contador experiente, posso continuar ajudando você com suas questões tributárias. Poderia reformular sua pergunta?');
+                addAIMessage('ai', 'Erro técnico: ' + error.message + '. Como contador experiente, posso continuar ajudando de outras formas!');
                 debugLog(`Erro na comunicação com IA: ${error.message}`, 'error');
             } finally {
                 isAIProcessing = false;
@@ -2446,17 +2240,6 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
             messages.appendChild(messageDiv);
             messages.scrollTop = messages.scrollHeight;
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const aiInput = document.getElementById('aiInput');
-            const aiSend = document.getElementById('aiSend');
-            
-            if (aiInput && aiSend) {
-                aiInput.addEventListener('input', function() {
-                    aiSend.disabled = this.value.trim().length === 0 || isAIProcessing;
-                });
-            }
-        });
 
         // ========= FUNÇÕES ORIGINAIS DA CALCULADORA =========
 
@@ -3517,7 +3300,18 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
             }
         }
 
+        // ========= INICIALIZAÇÃO =========
         document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar input habilitado/desabilitado
+            const aiInput = document.getElementById('aiInput');
+            const aiSend = document.getElementById('aiSend');
+            
+            if (aiInput && aiSend) {
+                aiInput.addEventListener('input', function() {
+                    aiSend.disabled = this.value.trim().length === 0 || isAIProcessing;
+                });
+            }
+
             atualizarPeriodo();
             atualizarRegime();
             calcularAutomatico();
@@ -3528,12 +3322,6 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
             
             if (document.getElementById('indicadorTransicao')) {
                 atualizarIndicadorTransicao('2034', 1);
-            }
-            
-            // Atualizar status da IA
-            const aiStatus = document.getElementById('aiStatus');
-            if (aiStatus) {
-                aiStatus.textContent = 'Híbrido • Online/Offline';
             }
             
             debugLog('Sistema inicializado com sucesso', 'success');
