@@ -462,7 +462,7 @@
             border-bottom: none;
         }
 
-        /* ========= ESTILOS DA IA CORRIGIDOS ========= */
+        /* ========= ESTILOS DA IA MELHORADOS ========= */
         
         .ai-assistant {
             position: fixed;
@@ -658,10 +658,16 @@
             transform: none;
         }
 
+        /* ========= SUGESTÕES MELHORADAS - ESCONDEM APÓS PRIMEIRA INTERAÇÃO ========= */
         .ai-suggestions {
             padding: 15px 20px 0;
             border-top: 1px solid #e9ecef;
             background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .ai-suggestions.hidden {
+            display: none;
         }
 
         .ai-suggestion-btn {
@@ -682,6 +688,7 @@
             border-color: #667eea;
         }
 
+        /* ========= INSIGHTS SIMPLIFICADOS - MÁXIMO 4 ========= */
         .ai-insights-panel {
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.05));
             border: 2px solid #667eea;
@@ -721,16 +728,76 @@
             border-left: 4px solid #667eea;
         }
 
-        .ai-insight-type {
-            font-size: 0.9em;
-            color: #667eea;
-            font-weight: 600;
-            margin-bottom: 5px;
+        .ai-insight-card.urgente {
+            border-left-color: #dc3545;
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.05), white);
         }
 
-        .ai-insight-text {
+        .ai-insight-card.importante {
+            border-left-color: #fd7e14;
+            background: linear-gradient(135deg, rgba(253, 126, 20, 0.05), white);
+        }
+
+        .ai-insight-card.vantagem {
+            border-left-color: #198754;
+            background: linear-gradient(135deg, rgba(25, 135, 84, 0.05), white);
+        }
+
+        .ai-insight-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .ai-insight-icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        .ai-insight-title {
+            font-weight: bold;
+            color: #2c3e50;
+            flex: 1;
+        }
+
+        .urgency-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .urgency-badge.urgente {
+            background: #dc3545;
+            color: white;
+        }
+
+        .urgency-badge.importante {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .urgency-badge.vantagem {
+            background: #198754;
+            color: white;
+        }
+
+        .ai-insight-content {
             color: #2c3e50;
             line-height: 1.5;
+            margin-top: 5px;
+        }
+
+        .ai-insight-value {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            color: #495057;
         }
 
         .ai-loading {
@@ -1176,15 +1243,15 @@
                         <br>• Efetuar pagamentos até dia 20
                     </div>
 
-                    <!-- AI Insights Panel -->
+                    <!-- AI Insights Panel SIMPLIFICADO - MÁXIMO 4 INSIGHTS -->
                     <div class="ai-insights-panel" id="aiInsights4">
                         <div class="ai-insights-header">
                             <div class="ai-insights-title">
-                                🤖 Análise IA: Resultados e Estratégias
+                                🤖 Análise IA: Impacto dos Resultados
                             </div>
                         </div>
                         <div id="aiInsightsContent4">
-                            <!-- Insights serão inseridos aqui -->
+                            <!-- Máximo 4 insights específicos serão inseridos aqui -->
                         </div>
                     </div>
                 </div>
@@ -1366,7 +1433,7 @@
                         </div>
                     </div>
 
-                    <!-- AI Insights Panel -->
+                    <!-- AI Insights Panel SIMPLIFICADO - MÁXIMO 4 INSIGHTS -->
                     <div class="ai-insights-panel" id="aiInsights5">
                         <div class="ai-insights-header">
                             <div class="ai-insights-title">
@@ -1374,7 +1441,7 @@
                             </div>
                         </div>
                         <div id="aiInsightsContent5">
-                            <!-- Insights serão inseridos aqui -->
+                            <!-- Máximo 4 insights específicos serão inseridos aqui -->
                         </div>
                     </div>
                 </div>
@@ -1398,7 +1465,7 @@
         </div>
     </div>
 
-    <!-- ========= ASSISTENTE DE IA CORRIGIDO ========= -->
+    <!-- ========= ASSISTENTE DE IA MELHORADO ========= -->
     <div class="ai-assistant">
         <button class="ai-toggle" id="aiToggle" onclick="toggleAI()" title="Assistente IA Tributária">
             🤖
@@ -1408,7 +1475,7 @@
             <div class="ai-header">
                 <div>
                     <h3>🤖 Contador IA Especialista</h3>
-                    <div class="ai-status" id="aiStatus">Híbrido • Online/Offline</div>
+                    <div class="ai-status" id="aiStatus">Sistema Híbrido • Online/Offline</div>
                 </div>
                 <button class="ai-close" onclick="toggleAI()">✕</button>
             </div>
@@ -1431,11 +1498,12 @@
                 🤖 Analisando os dados da sua empresa...
             </div>
             
+            <!-- SUGESTÕES QUE ESCONDEM APÓS PRIMEIRA INTERAÇÃO -->
             <div class="ai-suggestions" id="aiSuggestions">
                 <button class="ai-suggestion-btn" onclick="sendAISuggestion('Explique os resultados calculados')">
                     📊 Explique os resultados
                 </button>
-                <button class="ai-suggestion-btn" onclick="sendAISuggestion('Como posso reduzir minha carga tributária?')">
+                <button class="ai-suggestion-btn" onclick="sendAISuggestion('Como otimizar minha carga tributária?')">
                     💰 Como reduzir impostos?
                 </button>
                 <button class="ai-suggestion-btn" onclick="sendAISuggestion('Qual o impacto da reforma na minha empresa?')">
@@ -1463,7 +1531,7 @@
     </div>
 
     <script>
-        // ========= VARIÁVEIS GLOBAIS CORRIGIDAS =========
+        // ========= VARIÁVEIS GLOBAIS MELHORADAS =========
         const N8N_WEBHOOK_URL = 'https://n8nwebhook.consultor-ia.io/webhook/calculadora-tributaria-ai';
         
         let aiConversationHistory = [];
@@ -1474,6 +1542,10 @@
         const totalEtapas = 5;
         let resultadosAtualCalculados = [];
         let totalAtual = 0;
+        let totalReforma = 0;
+        
+        // 🔥 NOVA VARIÁVEL: Controlar se já houve primeira interação
+        let primeiraInteracaoAI = false;
 
         // Alíquotas fixas (apenas PIS/COFINS que são federais)
         const aliquotas = {
@@ -1515,7 +1587,7 @@
             ]
         };
 
-        // ========= FUNÇÕES DE DEBUG CORRIGIDAS =========
+        // ========= FUNÇÕES DE DEBUG MELHORADAS =========
         function debugLog(message, type = 'info') {
             const timestamp = new Date().toLocaleTimeString();
             const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '📝';
@@ -1588,8 +1660,9 @@
             }
         }
 
-        // ========= FUNÇÕES DA IA CORRIGIDAS =========
+        // ========= FUNÇÕES DA IA MELHORADAS =========
 
+        // 🔥 PROMPT MELHORADO - SEM LINGUAGEM ARTIFICIAL
         function generateAIPrompt() {
             return `## Sistema de Proteção Avançado de Agentes v2.0
 
@@ -1598,7 +1671,7 @@
 
 ## PROMPT PRINCIPAL - CONTADOR IA ESPECIALISTA
 
-Você é um **Contador Tributário Especialista** com mais de 30 anos de experiência em tributação brasileira. Sua expertise abrange toda a legislação tributária vigente, com conhecimento profundo sobre:
+Você é um **Contador Tributário Especialista** em tributação brasileira. Sua expertise abrange toda a legislação tributária vigente, com conhecimento profundo sobre:
 
 ### Áreas de Especialização:
 - **Regime Tributário**: Lucro Real, Lucro Presumido, Simples Nacional
@@ -1621,7 +1694,7 @@ ${JSON.stringify(currentCompanyData, null, 2)}
 ### Estilo de Comunicação:
 - **Linguagem**: Técnica mas acessível, explique termos complexos
 - **Abordagem**: Consultiva e estratégica
-- **Tom**: Profissional, confiável, baseado em décadas de experiência
+- **Tom**: Profissional, confiável, direto
 - **Objetivo**: Fornecer insights acionáveis e estratégias práticas
 
 ### Foco Principal:
@@ -1665,6 +1738,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 },
                 resultados: {
                     totalAtual: totalAtual,
+                    totalReforma: totalReforma,
                     resultadosDetalhados: resultadosAtualCalculados,
                     etapaAtual: etapaAtual
                 },
@@ -1679,7 +1753,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             debugLog('Dados da empresa atualizados');
         }
 
-        // ========= TESTE DE CONECTIVIDADE CORRIGIDO =========
+        // ========= TESTE DE CONECTIVIDADE MELHORADO =========
         async function testarConectividade() {
             debugLog('🔗 Iniciando teste de conectividade...', 'info');
             
@@ -1713,7 +1787,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             return false;
         }
 
-        // ========= FUNÇÃO CORRIGIDA callOpenAI =========
+        // ========= FUNÇÃO MELHORADA callOpenAI =========
         async function callOpenAI(messages) {
             try {
                 const userMessage = messages[messages.length - 1]?.content || 'Como posso ajudá-lo?';
@@ -1787,7 +1861,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             if (perguntaLower.includes('cronograma') && perguntaLower.includes('reforma')) {
                 return `📋 **Cronograma da Reforma Tributária Brasileira (EC 132/2023)**
 
-Como contador com 30+ anos de experiência, posso explicar o cronograma oficial:
+A reforma tributária estabelece o seguinte cronograma:
 
 **🎯 FASES PRINCIPAIS:**
 
@@ -1838,11 +1912,10 @@ Como contador com 30+ anos de experiência, posso explicar o cronograma oficial:
             // Otimização tributária
             if (perguntaLower.includes('otimizar') || perguntaLower.includes('reduzir')) {
                 const regime = currentCompanyData.configuracao?.regime || 'lucro_real';
-                const atividade = currentCompanyData.configuracao?.atividade || 'comercio';
                 
                 return `💰 **Estratégias de Otimização Tributária**
 
-Como contador especialista, recomendo para sua empresa:
+Recomendo para sua empresa:
 
 **🎯 OTIMIZAÇÃO ATUAL (2025):**
 • **PIS/COFINS**: Maximizar créditos não cumulativo (1,65% + 7,6%)
@@ -1861,11 +1934,11 @@ Como contador especialista, recomendo para sua empresa:
 • **Créditos ampliados**: Mais itens darão direito a crédito
 • **Menos obrigações**: Redução significativa de declarações
 
-**💡 DICA EXPERT:**
+**💡 INSIGHT IMPORTANTE:**
 Com a reforma, empresas como a sua terão:
 - Crédito integral em compras para revenda
 - Sistema de débito/crédito mais simples
-- Menos risk compliance tributário
+- Menos risco de compliance tributário
 
 **🚀 AÇÃO IMEDIATA:**
 1. Informe receitas nas próximas etapas da calculadora
@@ -1967,7 +2040,7 @@ Com a reforma, empresas como a sua terão:
             // Resposta genérica melhorada
             return `🤖 **Contador IA Especialista** (Modo Híbrido)
 
-Olá! Sou especialista em tributação brasileira com 30+ anos de experiência.
+Olá! Sou especialista em tributação brasileira.
 
 **📊 SITUAÇÃO ATUAL DA SUA EMPRESA:**
 • **Regime**: ${currentCompanyData.configuracao?.regime?.replace('_', ' ').toUpperCase() || 'Não informado'}
@@ -1999,7 +2072,7 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
 *Digite uma pergunta específica ou use as etapas da calculadora para análise completa!*`;
         }
 
-        // ========= FUNÇÃO DE INSIGHTS OTIMIZADA - APENAS ETAPAS 4 E 5 =========
+        // ========= FUNÇÃO DE INSIGHTS MELHORADA - MÁXIMO 4 INSIGHTS =========
         async function generateAIInsights(step) {
             // 🔥 MUDANÇA: Só gerar insights para etapas 4 e 5
             if (step !== 4 && step !== 5) {
@@ -2013,22 +2086,24 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
 
             switch(step) {
                 case 4:
-                    insightPrompt = `Com base nos resultados calculados (total: R$ ${formatarMoeda(totalAtual).replace('R$ ', '')}), analise:
+                    insightPrompt = `Com base nos resultados calculados (total: R$ ${formatarMoeda(totalAtual).replace('R$ ', '')}), gere EXATAMENTE 4 insights específicos:
                     1. Se a carga tributária está dentro do esperado para o setor
-                    2. Principais oportunidades de redução identificadas
-                    3. Próximos passos estratégicos recomendados
+                    2. Principal oportunidade de redução identificada
+                    3. Próximo passo estratégico mais importante
+                    4. Recomendação específica para o regime atual
                     
-                    Seja específico sobre os impostos calculados.`;
+                    Use dados reais dos cálculos. Seja objetivo e acionável.`;
                     targetElement = 'aiInsightsContent4';
                     break;
 
                 case 5:
-                    insightPrompt = `Analisando o impacto da reforma tributária para esta empresa:
-                    1. Principais benefícios e riscos da transição
-                    2. Estratégias de preparação recomendadas
-                    3. Timeline de ações até 2034
+                    insightPrompt = `Analisando o impacto da reforma tributária para esta empresa, gere EXATAMENTE 4 insights específicos:
+                    1. Principal benefício ou risco da transição
+                    2. Estratégia de preparação mais importante
+                    3. Timing ideal para ações específicas
+                    4. Oportunidade única da reforma para esta empresa
                     
-                    Foque no impacto específico para o perfil da empresa.`;
+                    Foque no impacto específico dos dados calculados.`;
                     targetElement = 'aiInsightsContent5';
                     break;
             }
@@ -2077,38 +2152,161 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
             }
         }
 
+        // 🔥 FUNÇÃO MELHORADA - MÁXIMO 4 INSIGHTS INTELIGENTES
         function displayAIInsights(insights, targetElement) {
             const element = document.getElementById(targetElement);
             if (!element) return;
 
-            const points = insights.split('\n').filter(point => point.trim().length > 0);
+            // Parsear insights e criar exatamente 4 cards
+            const lines = insights.split('\n').filter(line => line.trim().length > 0);
+            const insightCards = [];
             
-            let html = '';
-            points.forEach((point, index) => {
-                if (point.trim()) {
-                    const isTitle = point.includes(':') && !point.startsWith(' ');
-                    if (isTitle) {
-                        html += `
-                            <div class="ai-insight-card">
-                                <div class="ai-insight-type">💡 Insight ${index + 1}</div>
-                                <div class="ai-insight-text">${point.trim()}</div>
-                            </div>
-                        `;
-                    } else if (point.trim().length > 20) {
-                        html += `
-                            <div class="ai-insight-card">
-                                <div class="ai-insight-type">📊 Análise</div>
-                                <div class="ai-insight-text">${point.trim()}</div>
-                            </div>
-                        `;
+            let currentInsight = null;
+            
+            for (let line of lines) {
+                const cleanLine = line.trim();
+                
+                // Detectar início de novo insight
+                if (cleanLine.match(/^\d+\.|^[•\-\*]|impacto|estratégia|timing|oportunidade|benefício|risco/i)) {
+                    if (currentInsight) {
+                        insightCards.push(currentInsight);
                     }
+                    
+                    // Determinar tipo e urgência do insight
+                    let type = 'info';
+                    let urgency = '';
+                    let icon = '📊';
+                    
+                    if (cleanLine.includes('crítico') || cleanLine.includes('urgente') || cleanLine.includes('alto impacto')) {
+                        type = 'urgente';
+                        urgency = 'URGENTE';
+                        icon = '🚨';
+                    } else if (cleanLine.includes('importante') || cleanLine.includes('recomendo') || cleanLine.includes('estratégia')) {
+                        type = 'importante';
+                        urgency = 'IMPORTANTE';
+                        icon = '⚠️';
+                    } else if (cleanLine.includes('oportunidade') || cleanLine.includes('vantagem') || cleanLine.includes('benefício')) {
+                        type = 'vantagem';
+                        urgency = 'VANTAGEM';
+                        icon = '✅';
+                    }
+                    
+                    // Extrair título
+                    let title = cleanLine.replace(/^\d+\.\s*/, '').replace(/^[•\-\*]\s*/, '');
+                    if (title.includes(':')) {
+                        title = title.split(':')[0];
+                    }
+                    
+                    currentInsight = {
+                        type: type,
+                        urgency: urgency,
+                        icon: icon,
+                        title: title.substring(0, 50) + (title.length > 50 ? '...' : ''),
+                        content: cleanLine
+                    };
+                } else if (currentInsight && cleanLine.length > 10) {
+                    // Adicionar conteúdo ao insight atual
+                    currentInsight.content += ' ' + cleanLine;
                 }
+            }
+            
+            // Adicionar último insight
+            if (currentInsight) {
+                insightCards.push(currentInsight);
+            }
+            
+            // Limitar a exatamente 4 insights
+            const finalInsights = insightCards.slice(0, 4);
+            
+            // Gerar HTML
+            let html = '';
+            finalInsights.forEach((insight, index) => {
+                html += `
+                    <div class="ai-insight-card ${insight.type}">
+                        <div class="ai-insight-header">
+                            <span class="ai-insight-icon">${insight.icon}</span>
+                            <div class="ai-insight-title">${insight.title}</div>
+                            ${insight.urgency ? `<span class="urgency-badge ${insight.type}">${insight.urgency}</span>` : ''}
+                        </div>
+                        <div class="ai-insight-content">${insight.content}</div>
+                    </div>
+                `;
             });
+
+            // Se não temos 4 insights, adicionar genéricos baseados nos dados
+            while (finalInsights.length < 4) {
+                const genericInsight = generateGenericInsight(finalInsights.length, targetElement === 'aiInsightsContent5');
+                html += genericInsight;
+                finalInsights.push({});
+            }
 
             element.innerHTML = html;
         }
 
-        // ========= FUNÇÕES DA IA INTERFACE =========
+        function generateGenericInsight(index, isReforma) {
+            const genericInsights = {
+                4: [ // Insights para resultados
+                    {
+                        icon: '📊',
+                        title: 'Monitoramento Tributário',
+                        content: 'Acompanhe mensalmente os resultados para identificar variações e oportunidades de otimização.',
+                        type: 'info'
+                    },
+                    {
+                        icon: '💰',
+                        title: 'Gestão de Créditos',
+                        content: 'Certifique-se de aproveitar todos os créditos tributários disponíveis no seu regime.',
+                        type: 'importante'
+                    },
+                    {
+                        icon: '📅',
+                        title: 'Planejamento 2025',
+                        content: 'Use 2025 para otimizar ao máximo o sistema atual antes da reforma.',
+                        type: 'importante'
+                    }
+                ],
+                5: [ // Insights para reforma
+                    {
+                        icon: '🔄',
+                        title: 'Adaptação Gradual',
+                        content: 'A transição será gradual. Prepare-se para cada fase do cronograma da reforma.',
+                        type: 'info'
+                    },
+                    {
+                        icon: '💡',
+                        title: 'Sistema Unificado',
+                        content: 'O sistema unificado IBS + CBS trará simplicidade operacional significativa.',
+                        type: 'vantagem'
+                    },
+                    {
+                        icon: '📋',
+                        title: 'Menos Burocracia',
+                        content: 'Espere redução de até 80% nas obrigações acessórias com a reforma.',
+                        type: 'vantagem'
+                    }
+                ]
+            };
+
+            const step = isReforma ? 5 : 4;
+            const insights = genericInsights[step];
+            
+            if (index < insights.length) {
+                const insight = insights[index];
+                return `
+                    <div class="ai-insight-card ${insight.type}">
+                        <div class="ai-insight-header">
+                            <span class="ai-insight-icon">${insight.icon}</span>
+                            <div class="ai-insight-title">${insight.title}</div>
+                        </div>
+                        <div class="ai-insight-content">${insight.content}</div>
+                    </div>
+                `;
+            }
+            
+            return '';
+        }
+
+        // ========= FUNÇÕES DA IA INTERFACE MELHORADAS =========
         function toggleAI() {
             const container = document.getElementById('aiChatContainer');
             const toggle = document.getElementById('aiToggle');
@@ -2126,30 +2324,61 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
             }
         }
 
-        // ========= SUGESTÕES OTIMIZADAS - FOCO EM RESULTADOS E REFORMA =========
+        // ========= SUGESTÕES CONTEXTUAIS MELHORADAS =========
         function updateAISuggestions() {
             const suggestions = document.getElementById('aiSuggestions');
             if (!suggestions) return;
 
+            // 🔥 ESCONDER SUGESTÕES SE JÁ HOUVE PRIMEIRA INTERAÇÃO
+            if (primeiraInteracaoAI) {
+                suggestions.classList.add('hidden');
+                return;
+            }
+
             let contextualSuggestions = [];
 
-            // 🔥 MUDANÇA: Focar apenas em etapas 4 e 5
+            // Sugestões contextuais baseadas na etapa
             if (etapaAtual === 4) {
-                contextualSuggestions = [
-                    'Minha carga tributária está alta?',
-                    'Como reduzir os impostos calculados?',
-                    'Estratégias de planejamento tributário',
-                    'Próximos passos recomendados'
-                ];
+                // Etapa 4: Focar nos resultados calculados
+                if (totalAtual > 0) {
+                    const percFaturamento = currentCompanyData.receitas ? 
+                        ((totalAtual / (Object.values(currentCompanyData.receitas).reduce((a, b) => a + b, 0))) * 100).toFixed(1) : 0;
+                    
+                    contextualSuggestions = [
+                        `Minha carga de ${percFaturamento}% está alta?`,
+                        'Como reduzir os impostos calculados?',
+                        'Estratégias de otimização imediata',
+                        'Próximos passos recomendados'
+                    ];
+                } else {
+                    contextualSuggestions = [
+                        'Analisar os resultados calculados',
+                        'Como otimizar minha carga tributária?',
+                        'Estratégias de planejamento tributário',
+                        'Próximos passos recomendados'
+                    ];
+                }
             } else if (etapaAtual === 5) {
-                contextualSuggestions = [
-                    'Como a reforma afeta minha empresa?',
-                    'Devo me preparar para a transição?',
-                    'Vantagens e riscos da reforma',
-                    'Cronograma de implementação'
-                ];
+                // Etapa 5: Focar na reforma tributária
+                const impacto = totalReforma - totalAtual;
+                if (Math.abs(impacto) > 1000) {
+                    const tipoImpacto = impacto > 0 ? 'aumento' : 'redução';
+                    contextualSuggestions = [
+                        `Como preparar para ${tipoImpacto} tributário?`,
+                        'Estratégias para a transição',
+                        'Vantagens e riscos da reforma',
+                        'Cronograma de implementação'
+                    ];
+                } else {
+                    contextualSuggestions = [
+                        'Como a reforma afeta minha empresa?',
+                        'Devo me preparar para a transição?',
+                        'Vantagens e riscos da reforma',
+                        'Cronograma de implementação'
+                    ];
+                }
             } else {
-                // Para etapas 1-3: sugestões genéricas focadas em resultados
+                // Etapas 1-3: Sugestões gerais focadas em resultados e reforma
                 contextualSuggestions = [
                     'Como otimizar minha carga tributária?',
                     'Qual o melhor regime para minha empresa?',
@@ -2188,6 +2417,16 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
 
             updateCompanyData();
 
+            // 🔥 MARCAR PRIMEIRA INTERAÇÃO E ESCONDER SUGESTÕES
+            if (!primeiraInteracaoAI) {
+                primeiraInteracaoAI = true;
+                const suggestions = document.getElementById('aiSuggestions');
+                if (suggestions) {
+                    suggestions.classList.add('hidden');
+                }
+                debugLog('Primeira interação IA - sugestões escondidas', 'info');
+            }
+
             addAIMessage('user', userMessage);
             input.value = '';
             sendBtn.disabled = true;
@@ -2213,7 +2452,7 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
 
             } catch (error) {
                 typing.classList.remove('active');
-                addAIMessage('ai', 'Erro técnico: ' + error.message + '. Como contador experiente, posso continuar ajudando de outras formas!');
+                addAIMessage('ai', 'Erro técnico: ' + error.message + '. Posso continuar ajudando de outras formas!');
                 debugLog(`Erro na comunicação com IA: ${error.message}`, 'error');
             } finally {
                 isAIProcessing = false;
@@ -2770,7 +3009,7 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
                 ipiResidual = (vendasIPI * (aliquotaIPI / 100) * 0.1) * percentualNovo;
             }
             
-            const totalReforma = impostoUnificado + ipiResidual;
+            totalReforma = impostoUnificado + ipiResidual;
             
             let totalSistemaAntigo = 0;
             if (percentualNovo < 1) {
@@ -3170,12 +3409,12 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
             if (regime === 'simples') {
                 mensagem += `📋 DAS Simples Nacional: ${formatarMoeda(totalAtual)}\n`;
                 mensagem += '🔄 Compare com o sistema unificado da reforma (IBS + CBS)\n\n';
-                mensagem += '💡 A reforma mantém opção simplificada, mas com sistema IBS + CBS como alternativa.\n\n';
+                mensagem += 'A reforma mantém opção simplificada, mas com sistema IBS + CBS como alternativa.\n\n';
                 mensagem += '🤖 Use o Assistente IA para estratégias personalizadas!';
             } else {
                 mensagem += `📊 Sistema Atual: ${formatarMoeda(totalAtual)}\n`;
                 mensagem += '🔄 Sistema Reforma: Veja o comparativo IBS + CBS\n\n';
-                mensagem += '💡 Use essas informações para planejamento tributário estratégico.\n\n';
+                mensagem += 'Use essas informações para planejamento tributário estratégico.\n\n';
                 mensagem += '🤖 Consulte o Contador IA para insights especializados!';
             }
             
@@ -3208,7 +3447,11 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
                     panel.classList.remove('active');
                 });
                 
+                // 🔥 RESETAR ESTADO DA IA
+                primeiraInteracaoAI = false;
                 aiConversationHistory = [];
+                
+                // Resetar mensagens do chat
                 document.getElementById('aiMessages').innerHTML = `
                     <div class="ai-message ai">
                         <strong>👋 Olá!</strong> Sou seu Contador IA Especialista em tributação brasileira.
@@ -3223,6 +3466,12 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
                     </div>
                 `;
                 
+                // Mostrar sugestões novamente
+                const suggestions = document.getElementById('aiSuggestions');
+                if (suggestions) {
+                    suggestions.classList.remove('hidden');
+                }
+                
                 atualizarPeriodo();
                 atualizarRegime();
                 calcularAutomatico();
@@ -3231,20 +3480,42 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
             }
         }
 
+        // 🔥 FUNÇÃO MELHORADA: RELATÓRIO BASEADO EM DADOS REAIS
         async function gerarRelatorio() {
             updateCompanyData();
             
+            // Verificar se há dados suficientes
+            const temDadosSuficientes = totalAtual > 0 || Object.values(currentCompanyData.receitas).some(v => v > 0);
+            
+            if (!temDadosSuficientes) {
+                alert('⚠️ Por favor, complete os dados nas etapas 2 e 3 antes de gerar o relatório.');
+                return;
+            }
+            
+            const impactoReforma = totalReforma - totalAtual;
+            const percentualImpacto = totalAtual > 0 ? (impactoReforma / totalAtual * 100).toFixed(1) : 0;
+            
             const messages = [
                 { role: 'system', content: generateAIPrompt() },
-                { role: 'user', content: `Gere um relatório executivo completo baseado nos dados da empresa analisada. O relatório deve incluir:
+                { role: 'user', content: `Gere um relatório executivo completo baseado nos dados REAIS da empresa analisada. 
 
-1. **Resumo Executivo** - Situação atual da empresa
-2. **Análise Tributária Atual** - Breakdown detalhado dos impostos
-3. **Impacto da Reforma Tributária** - Comparativo e projeções
-4. **Recomendações Estratégicas** - Ações práticas e cronograma
-5. **Próximos Passos** - Planejamento tributário
+DADOS REAIS DA EMPRESA:
+- Faturamento Total: R$ ${Object.values(currentCompanyData.receitas).reduce((a, b) => a + b, 0).toLocaleString('pt-BR')}
+- Sistema Atual: R$ ${totalAtual.toLocaleString('pt-BR')} 
+- Reforma Tributária: R$ ${totalReforma.toLocaleString('pt-BR')}
+- Impacto: ${impactoReforma >= 0 ? '+' : ''}R$ ${impactoReforma.toLocaleString('pt-BR')} (${percentualImpacto}%)
+- Regime: ${currentCompanyData.configuracao.regime}
+- Atividade: ${currentCompanyData.configuracao.atividade}
 
-Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseados na sua experiência de 30+ anos.` }
+O relatório deve incluir:
+
+1. **Resumo Executivo** - Situação atual da empresa com dados específicos
+2. **Análise Tributária Atual** - Breakdown detalhado dos impostos calculados
+3. **Impacto da Reforma Tributária** - Comparativo quantitativo real
+4. **Recomendações Estratégicas** - Ações práticas baseadas no impacto real
+5. **Próximos Passos** - Cronograma específico para esta empresa
+
+Seja específico, use os dados reais calculados, e forneça insights acionáveis. Não use frases como "Como contador com 30+ anos de experiência".` }
             ];
 
             try {
@@ -3252,7 +3523,7 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
                 document.querySelector('.btn-success').textContent = '⏳ Gerando...';
                 document.querySelector('.btn-success').disabled = true;
 
-                debugLog('Iniciando geração de relatório', 'info');
+                debugLog('Iniciando geração de relatório baseado em dados reais', 'info');
                 const relatorio = await callOpenAI(messages);
                 
                 document.querySelector('.btn-success').textContent = originalText;
@@ -3271,6 +3542,9 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
                                 .highlight { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; }
                                 .data-box { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 10px 0; }
                                 .warning { background: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 15px 0; }
+                                .impacto-positivo { color: #28a745; font-weight: bold; }
+                                .impacto-negativo { color: #dc3545; font-weight: bold; }
+                                .dados-reais { background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0; }
                                 @media print { body { margin: 0; } }
                             </style>
                         </head>
@@ -3281,15 +3555,24 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
                                 <strong>Data:</strong> ${new Date().toLocaleDateString('pt-BR')}<br>
                                 <strong>Empresa:</strong> ${currentCompanyData.configuracao?.regime || 'Não informado'} - ${currentCompanyData.configuracao?.atividade || 'Não informado'}
                             </div>
+                            
+                            <div class="dados-reais">
+                                <h3>📈 Dados Calculados da Empresa</h3>
+                                <strong>Faturamento Total:</strong> R$ ${Object.values(currentCompanyData.receitas).reduce((a, b) => a + b, 0).toLocaleString('pt-BR')}<br>
+                                <strong>Sistema Atual:</strong> R$ ${totalAtual.toLocaleString('pt-BR')}<br>
+                                <strong>Reforma Tributária:</strong> R$ ${totalReforma.toLocaleString('pt-BR')}<br>
+                                <strong>Impacto:</strong> <span class="${impactoReforma >= 0 ? 'impacto-negativo' : 'impacto-positivo'}">${impactoReforma >= 0 ? '+' : ''}R$ ${impactoReforma.toLocaleString('pt-BR')} (${percentualImpacto}%)</span>
+                            </div>
+                            
                             <div style="white-space: pre-line;">${relatorio.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>')}</div>
                             <div class="warning">
-                                <strong>⚠️ Importante:</strong> Este relatório foi gerado por IA com base nos dados informados. Sempre consulte um contador profissional para decisões fiscais importantes.
+                                <strong>⚠️ Importante:</strong> Este relatório foi gerado por IA com base nos dados calculados na calculadora. Sempre consulte um contador profissional para decisões fiscais importantes.
                             </div>
                         </body>
                     </html>
                 `);
                 novaJanela.document.close();
-                debugLog('Relatório gerado com sucesso', 'success');
+                debugLog('Relatório baseado em dados reais gerado com sucesso', 'success');
                 
             } catch (error) {
                 document.querySelector('.btn-success').textContent = originalText;
@@ -3300,7 +3583,7 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
             }
         }
 
-        // ========= INICIALIZAÇÃO =========
+        // ========= INICIALIZAÇÃO MELHORADA =========
         document.addEventListener('DOMContentLoaded', function() {
             // Inicializar input habilitado/desabilitado
             const aiInput = document.getElementById('aiInput');
@@ -3324,7 +3607,7 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
                 atualizarIndicadorTransicao('2034', 1);
             }
             
-            debugLog('Sistema inicializado com sucesso', 'success');
+            debugLog('Sistema melhorado inicializado com sucesso', 'success');
         });
     </script>
 </body>
