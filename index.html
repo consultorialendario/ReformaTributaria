@@ -754,6 +754,42 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Debug mode styles */
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            max-width: 400px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 10001;
+            display: none;
+        }
+
+        .debug-panel.active {
+            display: block;
+        }
+
+        .debug-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 10002;
+            font-size: 12px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -810,6 +846,15 @@
     </style>
 </head>
 <body>
+    <!-- Debug Toggle -->
+    <button class="debug-toggle" onclick="toggleDebug()">🐛 Debug</button>
+    
+    <!-- Debug Panel -->
+    <div class="debug-panel" id="debugPanel">
+        <strong>🔍 Debug Console</strong><br>
+        <div id="debugLog"></div>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>🧠 Calculadora Inteligente de Impostos</h1>
@@ -1424,6 +1469,7 @@
         let aiConversationHistory = [];
         let currentCompanyData = {};
         let isAIProcessing = false;
+        let debugMode = false;
 
         // Variáveis globais
         let etapaAtual = 1;
@@ -1471,7 +1517,35 @@
             ]
         };
 
-        // ========= FUNÇÕES DA IA OTIMIZADA =========
+        // ========= FUNÇÕES DE DEBUG =========
+        function debugLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : '📝';
+            const logMessage = `[${timestamp}] ${prefix} ${message}`;
+            
+            console.log(logMessage);
+            
+            if (debugMode) {
+                const debugPanel = document.getElementById('debugLog');
+                if (debugPanel) {
+                    debugPanel.innerHTML += `<div style="margin: 2px 0; padding: 2px; ${type === 'error' ? 'color: #ff6b6b;' : type === 'success' ? 'color: #51cf66;' : 'color: #74c0fc;'}">${logMessage}</div>`;
+                    debugPanel.scrollTop = debugPanel.scrollHeight;
+                }
+            }
+        }
+
+        function toggleDebug() {
+            debugMode = !debugMode;
+            const panel = document.getElementById('debugPanel');
+            if (panel) {
+                panel.classList.toggle('active', debugMode);
+                if (debugMode) {
+                    debugLog('Debug mode ativado', 'success');
+                }
+            }
+        }
+
+        // ========= FUNÇÕES DA IA OTIMIZADA COM DEBUG =========
 
         function generateAIPrompt() {
             return `## Sistema de Proteção Avançado de Agentes v2.0
@@ -1558,8 +1632,11 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                     ipi: parseFloat(document.getElementById('aliquotaIPI')?.value) || 10
                 }
             };
+            
+            debugLog('Dados da empresa atualizados');
         }
 
+        // ========= FUNÇÃO CORRIGIDA callOpenAI =========
         async function callOpenAI(messages) {
             try {
                 const userMessage = messages[messages.length - 1]?.content || 'Como posso ajudá-lo?';
@@ -1572,31 +1649,70 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                     timestamp: new Date().toISOString()
                 };
 
-                console.log('🌐 Chamando N8N:', N8N_WEBHOOK_URL);
-                console.log('📦 Dados enviados:', requestData);
+                debugLog(`Chamando N8N: ${N8N_WEBHOOK_URL}`, 'info');
+                debugLog(`Dados enviados: ${JSON.stringify(requestData, null, 2)}`, 'info');
 
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Origin': window.location.origin
                     },
                     body: JSON.stringify(requestData)
                 });
 
+                debugLog(`Response Status: ${response.status}`, response.ok ? 'success' : 'error');
+                debugLog(`Response Headers: ${JSON.stringify([...response.headers.entries()])}`, 'info');
+
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    const errorText = await response.text();
+                    debugLog(`Erro HTTP: ${response.status} ${response.statusText}`, 'error');
+                    debugLog(`Erro Body: ${errorText}`, 'error');
+                    throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+                }
+
+                const contentType = response.headers.get('content-type');
+                debugLog(`Content-Type: ${contentType}`, 'info');
+
+                if (!contentType || !contentType.includes('application/json')) {
+                    const textResponse = await response.text();
+                    debugLog(`Resposta não é JSON: ${textResponse}`, 'error');
+                    throw new Error('Resposta não é JSON válido');
                 }
 
                 const data = await response.json();
                 
-                console.log('📥 Resposta recebida:', data);
+                debugLog(`Resposta completa recebida: ${JSON.stringify(data, null, 2)}`, 'success');
                 
-                return data.response || 'Erro na resposta';
+                // Verificar se a resposta tem a estrutura esperada
+                if (!data || typeof data !== 'object') {
+                    debugLog(`Estrutura de resposta inválida: ${JSON.stringify(data)}`, 'error');
+                    throw new Error('Estrutura de resposta inválida');
+                }
+
+                if (data.success === false) {
+                    debugLog(`API retornou erro: ${JSON.stringify(data)}`, 'error');
+                    throw new Error(data.error || 'Erro na API');
+                }
+
+                const responseText = data.response || data.message || 'Resposta vazia';
+                debugLog(`Response text extraído: ${responseText}`, 'success');
+                
+                return responseText;
 
             } catch (error) {
-                console.error('❌ Erro:', error);
-                return 'Desculpe, problemas técnicos. Como contador experiente, posso continuar ajudando de outras formas!';
+                debugLog(`Erro completo: ${error.message}`, 'error');
+                debugLog(`Stack trace: ${error.stack}`, 'error');
+                
+                // Retornar erro mais específico baseado no tipo
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    return 'Erro de conexão com o servidor. Verifique sua internet e tente novamente.';
+                } else if (error.message.includes('JSON')) {
+                    return 'Erro no formato da resposta do servidor. Tente novamente.';
+                } else {
+                    return `Erro técnico: ${error.message}. Como contador experiente, posso continuar ajudando de outras formas!`;
+                }
             }
         }
 
@@ -1643,6 +1759,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
 
             try {
                 showAILoading(targetElement);
+                debugLog(`Gerando insights para etapa ${step}`, 'info');
                 const insights = await callOpenAI(messages);
                 displayAIInsights(insights, targetElement);
                 
@@ -1651,9 +1768,10 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 if (panel) {
                     panel.classList.add('active');
                 }
+                debugLog(`Insights gerados com sucesso para etapa ${step}`, 'success');
             } catch (error) {
                 hideAILoading(targetElement);
-                console.error('Erro ao gerar insights:', error);
+                debugLog(`Erro ao gerar insights: ${error.message}`, 'error');
             }
         }
 
@@ -1714,11 +1832,13 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             if (container.classList.contains('active')) {
                 container.classList.remove('active');
                 toggle.style.transform = 'scale(1)';
+                debugLog('Chat IA fechado', 'info');
             } else {
                 container.classList.add('active');
                 toggle.style.transform = 'scale(0.9)';
                 updateAISuggestions();
                 updateCompanyData();
+                debugLog('Chat IA aberto', 'info');
             }
         }
 
@@ -1799,16 +1919,18 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             ];
 
             try {
+                debugLog(`Enviando mensagem: ${userMessage}`, 'info');
                 const response = await callOpenAI(apiMessages);
                 
                 typing.classList.remove('active');
                 addAIMessage('ai', response);
                 aiConversationHistory.push({ role: 'assistant', content: response });
+                debugLog('Mensagem IA processada com sucesso', 'success');
 
             } catch (error) {
                 typing.classList.remove('active');
                 addAIMessage('ai', 'Desculpe, houve um erro. Como contador experiente, posso continuar ajudando você com suas questões tributárias. Poderia reformular sua pergunta?');
-                console.error('Erro na comunicação com IA:', error);
+                debugLog(`Erro na comunicação com IA: ${error.message}`, 'error');
             } finally {
                 isAIProcessing = false;
                 sendBtn.disabled = false;
@@ -2734,6 +2856,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 }
                 
                 updateAISuggestions();
+                debugLog(`Avançou para etapa ${etapaAtual}`, 'success');
             }
         }
 
@@ -2758,6 +2881,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 document.getElementById('btnProximo').onclick = proximaEtapa;
                 
                 updateAISuggestions();
+                debugLog(`Voltou para etapa ${etapaAtual}`, 'info');
             }
         }
 
@@ -2783,6 +2907,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             }
             
             alert(mensagem);
+            debugLog('Apuração finalizada', 'success');
         }
 
         function limparTudo() {
@@ -2829,6 +2954,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 atualizarRegime();
                 calcularAutomatico();
                 updateAISuggestions();
+                debugLog('Todos os dados foram limpos', 'success');
             }
         }
 
@@ -2853,6 +2979,7 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
                 document.querySelector('.btn-success').textContent = '⏳ Gerando...';
                 document.querySelector('.btn-success').disabled = true;
 
+                debugLog('Iniciando geração de relatório', 'info');
                 const relatorio = await callOpenAI(messages);
                 
                 document.querySelector('.btn-success').textContent = originalText;
@@ -2889,13 +3016,14 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
                     </html>
                 `);
                 novaJanela.document.close();
+                debugLog('Relatório gerado com sucesso', 'success');
                 
             } catch (error) {
                 document.querySelector('.btn-success').textContent = originalText;
                 document.querySelector('.btn-success').disabled = false;
                 
                 alert('Erro ao gerar relatório. Tente novamente ou use o chat da IA para obter insights.');
-                console.error('Erro ao gerar relatório:', error);
+                debugLog(`Erro ao gerar relatório: ${error.message}`, 'error');
             }
         }
 
@@ -2917,6 +3045,8 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
             if (aiStatus) {
                 aiStatus.textContent = 'Online • Resultados & Reforma';
             }
+            
+            debugLog('Sistema inicializado com sucesso', 'success');
         });
     </script>
 </body>
