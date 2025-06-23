@@ -1696,9 +1696,75 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                     throw new Error(data.error || 'Erro na API');
                 }
 
-                const responseText = data.response || data.message || 'Resposta vazia';
-                debugLog(`Response text extraído: ${responseText}`, 'success');
+                // 🔥 PARSING ROBUSTO - MÚLTIPLAS TENTATIVAS
+                let responseText = '';
                 
+                // Tentativa 1: Estrutura normal
+                if (data.response && typeof data.response === 'string') {
+                    responseText = data.response;
+                    debugLog(`✅ Resposta extraída (método 1): ${responseText.substring(0, 100)}...`, 'success');
+                }
+                // Tentativa 2: Estrutura malformada do N8N
+                else if (data["="] && typeof data["="] === 'object') {
+                    const nestedData = data["="];
+                    
+                    // Navegar na estrutura malformada
+                    for (const key in nestedData) {
+                        if (nestedData[key] && typeof nestedData[key] === 'object') {
+                            for (const innerKey in nestedData[key]) {
+                                if (nestedData[key][innerKey] && nestedData[key][innerKey].response) {
+                                    responseText = nestedData[key][innerKey].response;
+                                    debugLog(`✅ Resposta extraída (método 2): ${responseText.substring(0, 100)}...`, 'success');
+                                    break;
+                                }
+                            }
+                            if (responseText) break;
+                        }
+                    }
+                }
+                // Tentativa 3: Buscar em qualquer lugar do objeto
+                else {
+                    const findResponse = (obj, depth = 0) => {
+                        if (depth > 5) return null; // Evitar recursão infinita
+                        
+                        if (obj && typeof obj === 'object') {
+                            if (obj.response && typeof obj.response === 'string') {
+                                return obj.response;
+                            }
+                            
+                            for (const key in obj) {
+                                const found = findResponse(obj[key], depth + 1);
+                                if (found) return found;
+                            }
+                        }
+                        return null;
+                    };
+                    
+                    const found = findResponse(data);
+                    if (found) {
+                        responseText = found;
+                        debugLog(`✅ Resposta extraída (método 3): ${responseText.substring(0, 100)}...`, 'success');
+                    }
+                }
+                
+                // Tentativa 4: Verificar outros campos comuns
+                if (!responseText) {
+                    responseText = data.message || data.text || data.content || '';
+                    if (responseText) {
+                        debugLog(`✅ Resposta extraída (método 4): ${responseText.substring(0, 100)}...`, 'success');
+                    }
+                }
+                
+                // Se ainda não encontrou, mostrar estrutura para debug
+                if (!responseText) {
+                    debugLog(`❌ NENHUMA RESPOSTA ENCONTRADA!`, 'error');
+                    debugLog(`🔍 Estrutura completa: ${JSON.stringify(data, null, 2)}`, 'error');
+                    debugLog(`🔍 Chaves disponíveis: ${Object.keys(data)}`, 'error');
+                    
+                    return 'Erro: Resposta da IA não encontrada na estrutura retornada. Verifique os logs de debug.';
+                }
+                
+                debugLog(`🎯 Response final extraído: ${responseText}`, 'success');
                 return responseText;
 
             } catch (error) {
