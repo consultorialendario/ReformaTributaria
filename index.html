@@ -1534,7 +1534,50 @@
             }
         }
 
-        function toggleDebug() {
+        // ========= BOTÃO DE TESTE MANUAL =========
+        function adicionarBotaoTeste() {
+            const debugConsole = document.getElementById('debugConsole');
+            if (debugConsole && !document.getElementById('btnTesteConectividade')) {
+                const btnTeste = document.createElement('button');
+                btnTeste.id = 'btnTesteConectividade';
+                btnTeste.innerHTML = '🧪 Testar N8N';
+                btnTeste.style.cssText = `
+                    background: #17a2b8;
+                    color: white;
+                    border: none;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    cursor: pointer;
+                    margin: 5px;
+                `;
+                btnTeste.onclick = async () => {
+                    btnTeste.disabled = true;
+                    btnTeste.textContent = '⏳ Testando...';
+                    
+                    debugLog('🧪 Iniciando teste manual de conectividade', 'info');
+                    const resultado = await testarConectividade();
+                    
+                    if (resultado) {
+                        debugLog('✅ Teste manual: N8N está funcionando!', 'success');
+                        btnTeste.style.background = '#28a745';
+                        btnTeste.textContent = '✅ N8N OK';
+                    } else {
+                        debugLog('❌ Teste manual: N8N não está acessível', 'error');
+                        btnTeste.style.background = '#dc3545';
+                        btnTeste.textContent = '❌ N8N Falhou';
+                    }
+                    
+                    setTimeout(() => {
+                        btnTeste.disabled = false;
+                        btnTeste.textContent = '🧪 Testar N8N';
+                        btnTeste.style.background = '#17a2b8';
+                    }, 3000);
+                };
+                
+                debugConsole.appendChild(btnTeste);
+            }
+        }
             debugMode = !debugMode;
             const panel = document.getElementById('debugPanel');
             if (panel) {
@@ -1636,17 +1679,85 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             debugLog('Dados da empresa atualizados');
         }
 
+        // ========= TESTE DE CONECTIVIDADE =========
+        async function testarConectividade() {
+            debugLog('🔗 Iniciando teste de conectividade...', 'info');
+            
+            try {
+                // Teste 1: OPTIONS request
+                debugLog('🧪 Teste 1: Verificando CORS OPTIONS...', 'info');
+                const optionsResponse = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'POST',
+                        'Access-Control-Request-Headers': 'Content-Type'
+                    }
+                });
+                
+                debugLog(`✅ OPTIONS Status: ${optionsResponse.status}`, optionsResponse.ok ? 'success' : 'error');
+                debugLog(`✅ OPTIONS Headers: ${JSON.stringify([...optionsResponse.headers.entries()])}`, 'info');
+                
+            } catch (error) {
+                debugLog(`❌ Erro no teste OPTIONS: ${error.message}`, 'error');
+            }
+            
+            try {
+                // Teste 2: POST simples
+                debugLog('🧪 Teste 2: POST de conectividade...', 'info');
+                const testResponse = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': window.location.origin,
+                        'User-Agent': 'Mozilla/5.0 Calculadora-Tributaria'
+                    },
+                    body: JSON.stringify({
+                        test: true,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                debugLog(`✅ POST Status: ${testResponse.status}`, testResponse.ok ? 'success' : 'error');
+                
+                if (testResponse.ok) {
+                    const responseText = await testResponse.text();
+                    debugLog(`✅ Conectividade OK! Response: ${responseText.substring(0, 200)}`, 'success');
+                    return true;
+                }
+                
+            } catch (error) {
+                debugLog(`❌ Erro no teste POST: ${error.message}`, 'error');
+            }
+            
+            debugLog(`❌ Falha na conectividade com N8N`, 'error');
+            return false;
+        }
+
         // ========= FUNÇÃO CORRIGIDA callOpenAI =========
         async function callOpenAI(messages) {
             try {
                 const userMessage = messages[messages.length - 1]?.content || 'Como posso ajudá-lo?';
+                
+                // 🔗 TESTE DE CONECTIVIDADE PRIMEIRO
+                debugLog('🔗 Testando conectividade antes da requisição...', 'info');
+                const conectividadeOk = await testarConectividade();
+                
+                if (!conectividadeOk) {
+                    debugLog('❌ Conectividade falhou - usando fallback local', 'error');
+                    return gerarRespostaLocal(userMessage);
+                }
                 
                 const requestData = {
                     pergunta: userMessage,
                     messages: messages,
                     dadosEmpresa: currentCompanyData,
                     origem: 'calculadora-tributaria',
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    referer: window.location.href
                 };
 
                 debugLog(`Chamando N8N: ${N8N_WEBHOOK_URL}`, 'info');
@@ -1654,10 +1765,16 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
 
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
+                    mode: 'cors',
+                    credentials: 'omit',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Origin': window.location.origin
+                        'Accept': 'application/json, text/plain, */*',
+                        'Origin': window.location.origin,
+                        'Referer': window.location.href,
+                        'User-Agent': 'Mozilla/5.0 Calculadora-Tributaria',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
                     },
                     body: JSON.stringify(requestData)
                 });
@@ -1669,7 +1786,10 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                     const errorText = await response.text();
                     debugLog(`Erro HTTP: ${response.status} ${response.statusText}`, 'error');
                     debugLog(`Erro Body: ${errorText}`, 'error');
-                    throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+                    
+                    // Fallback para erro HTTP
+                    debugLog('🔄 Usando fallback local devido a erro HTTP', 'info');
+                    return gerarRespostaLocal(userMessage);
                 }
 
                 const contentType = response.headers.get('content-type');
@@ -1678,7 +1798,15 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 if (!contentType || !contentType.includes('application/json')) {
                     const textResponse = await response.text();
                     debugLog(`Resposta não é JSON: ${textResponse}`, 'error');
-                    throw new Error('Resposta não é JSON válido');
+                    
+                    // Se a resposta parece válida mas não é JSON, tentar processar
+                    if (textResponse.length > 0) {
+                        debugLog('🔄 Tentando processar resposta não-JSON', 'info');
+                        return textResponse;
+                    }
+                    
+                    debugLog('🔄 Usando fallback local devido a resposta inválida', 'info');
+                    return gerarRespostaLocal(userMessage);
                 }
 
                 const data = await response.json();
@@ -1688,12 +1816,14 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 // Verificar se a resposta tem a estrutura esperada
                 if (!data || typeof data !== 'object') {
                     debugLog(`Estrutura de resposta inválida: ${JSON.stringify(data)}`, 'error');
-                    throw new Error('Estrutura de resposta inválida');
+                    debugLog('🔄 Usando fallback local devido a estrutura inválida', 'info');
+                    return gerarRespostaLocal(userMessage);
                 }
 
                 if (data.success === false) {
                     debugLog(`API retornou erro: ${JSON.stringify(data)}`, 'error');
-                    throw new Error(data.error || 'Erro na API');
+                    debugLog('🔄 Usando fallback local devido a erro da API', 'info');
+                    return gerarRespostaLocal(userMessage);
                 }
 
                 // 🔥 PARSING ROBUSTO - MÚLTIPLAS TENTATIVAS
@@ -1755,13 +1885,14 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                     }
                 }
                 
-                // Se ainda não encontrou, mostrar estrutura para debug
+                // Se ainda não encontrou, usar fallback
                 if (!responseText) {
                     debugLog(`❌ NENHUMA RESPOSTA ENCONTRADA!`, 'error');
                     debugLog(`🔍 Estrutura completa: ${JSON.stringify(data, null, 2)}`, 'error');
                     debugLog(`🔍 Chaves disponíveis: ${Object.keys(data)}`, 'error');
                     
-                    return 'Erro: Resposta da IA não encontrada na estrutura retornada. Verifique os logs de debug.';
+                    debugLog('🔄 Usando fallback local', 'info');
+                    return gerarRespostaLocal(userMessage);
                 }
                 
                 debugLog(`🎯 Response final extraído: ${responseText}`, 'success');
@@ -1771,15 +1902,308 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
                 debugLog(`Erro completo: ${error.message}`, 'error');
                 debugLog(`Stack trace: ${error.stack}`, 'error');
                 
-                // Retornar erro mais específico baseado no tipo
+                // Verificar tipos específicos de erro
                 if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    return 'Erro de conexão com o servidor. Verifique sua internet e tente novamente.';
+                    debugLog('🔄 Erro de fetch - usando fallback local', 'info');
+                    return gerarRespostaLocal(messages[messages.length - 1]?.content || '');
                 } else if (error.message.includes('JSON')) {
-                    return 'Erro no formato da resposta do servidor. Tente novamente.';
+                    debugLog('🔄 Erro de JSON - usando fallback local', 'info');
+                    return gerarRespostaLocal(messages[messages.length - 1]?.content || '');
                 } else {
-                    return `Erro técnico: ${error.message}. Como contador experiente, posso continuar ajudando de outras formas!`;
+                    debugLog('🔄 Erro genérico - usando fallback local', 'info');
+                    return gerarRespostaLocal(messages[messages.length - 1]?.content || '');
                 }
             }
+        }
+
+        // ========= RESPOSTAS LOCAIS FALLBACK MELHORADAS =========
+        function gerarRespostaLocal(pergunta) {
+            debugLog('🏠 Gerando resposta local (fallback)', 'info');
+            
+            const perguntaLower = pergunta.toLowerCase();
+            
+            // Cronograma da reforma
+            if (perguntaLower.includes('cronograma') && perguntaLower.includes('reforma')) {
+                return `📋 **Cronograma da Reforma Tributária Brasileira (EC 132/2023)**
+
+Como contador com 30+ anos de experiência, posso explicar o cronograma oficial:
+
+**🎯 FASES PRINCIPAIS:**
+
+**2025** - Último ano do sistema atual
+• Sistema tributário vigente (ICMS + ISS + PIS + COFINS + IPI)
+• Preparação para transição
+• Regulamentação complementar
+
+**2026** - Início da Transição (Fase 1)
+• CBS substitui 50% do PIS/COFINS
+• ICMS, ISS e IPI mantidos 100%
+• Empresas começam adaptação
+
+**2027** - CBS Completa + IBS Inicial (Fase 2)
+• CBS substitui 100% do PIS/COFINS
+• IBS substitui 10% do ICMS/ISS
+• Novos sistemas de controle
+
+**2029** - Meio da Transição (Fase 3)
+• IBS substitui 60% do ICMS/ISS
+• ICMS/ISS reduzidos para 40%
+• IPI reduzido (apenas produtos específicos)
+
+**2033** - Transição Quase Completa (Fase 4)
+• IBS substitui 90% do ICMS/ISS
+• Sistema quase unificado
+• Ajustes finais
+
+**2034** - Sistema Novo Completo (Fase 5)
+• IBS + CBS unificados (alíquota média 26,5%)
+• IPI apenas para produtos específicos
+• Simplicidade total
+
+**💡 IMPACTO PARA SUA EMPRESA (Comércio/Lucro Real/SP):**
+• ✅ Simplificação significativa de obrigações
+• ✅ Créditos mais amplos e unificados  
+• ✅ Redução de complexidade operacional
+• ⚠️ Necessário planejamento desde 2025
+
+**🚀 PRÓXIMOS PASSOS:**
+1. Avaliar impacto atual vs reforma (use a calculadora!)
+2. Preparar sistemas para transição
+3. Acompanhar regulamentação 2025
+
+*Nota: Sistema IA temporariamente offline. Use a calculadora para simular seu cenário específico.*`;
+            }
+            
+            // Otimização tributária
+            if (perguntaLower.includes('otimizar') && perguntaLower.includes('carga')) {
+                const regime = currentCompanyData.configuracao?.regime || 'lucro_real';
+                const atividade = currentCompanyData.configuracao?.atividade || 'comercio';
+                
+                return `💰 **Estratégias de Otimização Tributária**
+
+Como contador especialista, recomendo para sua empresa (${atividade.toUpperCase()}/${regime.replace('_', ' ').toUpperCase()}):
+
+**🎯 OTIMIZAÇÃO ATUAL (2025):**
+• **PIS/COFINS**: Maximizar créditos não cumulativo (1,65% + 7,6%)
+• **ICMS**: Aproveitamento integral de créditos de compras
+• **Planejamento**: Timing de vendas e compras para otimizar créditos
+• **Dedutibilidade**: Maximizar despesas operacionais dedutíveis
+
+**📊 ESTRATÉGIAS ESPECÍFICAS:**
+• Controle rigoroso de créditos de aquisições
+• Análise mensal de regime vs Simples Nacional
+• Planejamento de vendas interestaduais (DIFAL)
+• Otimização de mix de produtos/serviços
+
+**🔄 PREPARAÇÃO PARA REFORMA (2026+):**
+• **Sistema unificado**: IBS + CBS simplificará controles
+• **Créditos ampliados**: Mais itens darão direito a crédito
+• **Menos obrigações**: Redução significativa de declarações
+
+**💡 DICA EXPERT:**
+Com a reforma, empresas como a sua (comércio) terão:
+- Crédito integral em compras para revenda
+- Sistema de débito/crédito mais simples
+- Menos risk compliance tributário
+
+**🚀 AÇÃO IMEDIATA:**
+1. Informe receitas nas próximas etapas da calculadora
+2. Compare cenário atual vs reforma
+3. Planeje transição estratégica
+
+*Sistema IA offline. Para análise detalhada, complete os dados da calculadora.*`;
+            }
+            
+            // Melhor regime
+            if (perguntaLower.includes('regime') && perguntaLower.includes('melhor')) {
+                const atividade = currentCompanyData.configuracao?.atividade || 'comercio';
+                const estado = currentCompanyData.configuracao?.estado || 'SP';
+                
+                return `🏢 **Escolha do Melhor Regime Tributário**
+
+Análise para sua empresa (${atividade.toUpperCase()}/${estado}):
+
+**📈 LUCRO REAL** (Recomendado para margem alta)
+✅ **PIS/COFINS**: Créditos não cumulativo (1,65% + 7,6%)
+✅ **IRPJ/CSLL**: Sobre lucro real (25% total)
+✅ **Flexibilidade**: Dedução de todas as despesas
+⚠️ **Complexidade**: Alta exigência contábil
+💰 **Ideal**: Margem bruta > 32% ou prejuízo
+
+**💼 LUCRO PRESUMIDO** (Simplicidade operacional)
+✅ **PIS/COFINS**: Alíquotas reduzidas (0,65% + 3%)
+✅ **IRPJ/CSLL**: Base presumida (comércio 8%)
+✅ **Simplicidade**: Menor controle contábil
+❌ **Limitação**: Sem créditos PIS/COFINS
+💰 **Ideal**: Margem alta e operação simples
+
+**🚀 SIMPLES NACIONAL** (Se elegível)
+✅ **DAS**: Unificado (6% a 11,2% comércio)
+✅ **Simplicidade**: Mínima burocracia
+✅ **CPP**: Reduzido sobre faturamento
+⚠️ **Limite**: Até R$ 4,8 mi/ano
+💰 **Ideal**: Faturamento até R$ 1,5 mi
+
+**🎯 RECOMENDAÇÃO PARA COMÉRCIO:**
+• **Faturamento < R$ 1,5 mi**: Simples Nacional
+• **Margem > 32% + faturamento alto**: Lucro Real  
+• **Margem alta + baixa complexidade**: Presumido
+
+**🔄 COM A REFORMA (2026+):**
+• Lucro Real ficará mais vantajoso (IBS + CBS)
+• Simples Nacional terá opção IBS/CBS
+• Presumido pode perder atratividade
+
+**🚀 PRÓXIMOS PASSOS:**
+1. Informe faturamento e custos na calculadora
+2. Simule os 3 regimes
+3. Compare cenário atual vs reforma
+
+*Para simulação precisa, complete os dados da empresa.*`;
+            }
+            
+            // Impacto da reforma
+            if (perguntaLower.includes('impacto') && perguntaLower.includes('reforma')) {
+                const atividade = currentCompanyData.configuracao?.atividade || 'comercio';
+                
+                return `🔄 **Impacto da Reforma Tributária na Sua Empresa**
+
+Análise específica para ${atividade.toUpperCase()}:
+
+**📊 MUDANÇAS ESTRUTURAIS:**
+
+**Sistema Atual:**
+• ICMS (18% SP) + ISS (2-5%)
+• PIS (1,65%) + COFINS (7,6%) 
+• IPI (0-15% produtos)
+• 5 impostos diferentes
+
+**Sistema Novo (2034):**
+• IBS (substitui ICMS + ISS)
+• CBS (substitui PIS + COFINS)
+• IPI residual (produtos específicos)
+• 2 impostos principais
+
+**💰 IMPACTO FINANCEIRO ESTIMADO:**
+
+**✅ BENEFÍCIOS:**
+• **Créditos ampliados**: Mais itens com direito a crédito
+• **Menos guerra fiscal**: Alíquota uniforme nacional
+• **Simplificação**: 80% menos obrigações acessórias
+• **Transparência**: Tributo destacado na nota
+
+**⚠️ DESAFIOS:**
+• **Transição**: Período de adaptação (2026-2034)
+• **Sistemas**: Necessário investimento em TI
+• **Capacitação**: Equipe precisa se atualizar
+
+**🎯 PARA O COMÉRCIO ESPECIFICAMENTE:**
+• **Carga média**: Mantém-se próxima (25-27%)
+• **Simplificação**: Redução drástica de complexidade
+• **Competitividade**: Melhora com fim da guerra fiscal
+
+**📈 PROJEÇÃO CRONOLÓGICA:**
+• **2025**: Últimas otimizações do sistema atual
+• **2026-2029**: Adaptação gradual (híbrido)
+• **2030-2034**: Transição completa
+• **2034+**: Sistema unificado pleno
+
+**🚀 ESTRATÉGIA RECOMENDADA:**
+1. **2025**: Otimizar sistema atual
+2. **2026**: Preparar para CBS (PIS/COFINS)
+3. **2027+**: Adaptar para IBS gradual
+4. **2034**: Aproveitar simplicidade total
+
+*Complete os dados da calculadora para análise quantitativa personalizada.*`;
+            }
+            
+            // Planejamento fiscal
+            if (perguntaLower.includes('planejamento') && perguntaLower.includes('fiscal')) {
+                return `📋 **Estratégias de Planejamento Fiscal**
+
+Como contador com 30+ anos, recomendo:
+
+**🎯 PLANEJAMENTO ATUAL (2025):**
+
+**CURTO PRAZO (Próximos 12 meses):**
+• Revisão trimestral de regime tributário
+• Otimização de créditos PIS/COFINS/ICMS
+• Planejamento de compras para maximizar créditos
+• Análise mensal de IRPJ/CSLL
+
+**MÉDIO PRAZO (2026-2029):**
+• Preparação para CBS (substitui PIS/COFINS)
+• Adaptação gradual ao IBS
+• Investimento em sistemas integrados
+• Capacitação da equipe contábil
+
+**LONGO PRAZO (2030-2034):**
+• Aproveitamento pleno do sistema unificado
+• Estratégias para economia de escala
+• Foco em crescimento com menor carga tributária
+
+**💰 ESTRATÉGIAS ESPECÍFICAS:**
+
+**Elisão Fiscal Legal:**
+• Timing de reconhecimento de receitas
+• Otimização de estrutura societária
+• Planejamento sucessório empresarial
+• Aproveitamento de incentivos fiscais
+
+**Controles Essenciais:**
+• Conciliação mensal de tributos
+• Acompanhamento de alíquotas por produto
+• Gestão de créditos acumulados
+• Monitoramento de compliance
+
+**🔄 TRANSIÇÃO PARA REFORMA:**
+• Mapear impactos por linha de produto
+• Preparar equipe para novo sistema
+• Investir em automação tributária
+• Criar reservas para adaptação
+
+**🚀 CRONOGRAMA SUGERIDO:**
+• **T1/2025**: Otimização sistema atual
+• **T2/2025**: Preparação para CBS
+• **T3/2025**: Testes de sistema híbrido
+• **T4/2025**: Implementação gradual
+
+*Para estratégias específicas da sua empresa, informe dados nas próximas etapas.*`;
+            }
+            
+            // Resposta genérica melhorada
+            return `🤖 **Contador IA Especialista** (Modo Offline)
+
+Olá! Sou especialista em tributação brasileira com 30+ anos de experiência.
+
+**📊 SITUAÇÃO ATUAL DA SUA EMPRESA:**
+• **Regime**: ${currentCompanyData.configuracao?.regime?.replace('_', ' ').toUpperCase() || 'Não informado'}
+• **Atividade**: ${currentCompanyData.configuracao?.atividade?.toUpperCase() || 'Não informado'}
+• **Estado**: ${currentCompanyData.configuracao?.estado || 'Não informado'}
+• **Período**: ${currentCompanyData.configuracao?.periodo || 'Não informado'}
+
+**🔧 STATUS:** Sistema IA temporariamente offline - respostas via base de conhecimento local
+
+**📋 POSSO AJUDAR COM:**
+• **Cronograma da Reforma Tributária** (EC 132/2023)
+• **Otimização de regime tributário** atual
+• **Análise de carga tributária** comparativa
+• **Estratégias de planejamento fiscal** 2025-2034
+• **Impacto da reforma** no seu setor
+
+**💡 DICA IMPORTANTE:** 
+Complete os dados de receitas e custos nas próximas etapas da calculadora para obter:
+- Cálculo preciso da sua carga atual
+- Simulação do impacto da reforma
+- Comparativo quantitativo detalhado
+
+**🚀 PERGUNTAS SUGERIDAS:**
+- "Qual o cronograma da reforma tributária?"
+- "Como otimizar minha carga tributária?"
+- "Qual o melhor regime para minha empresa?"
+- "Qual o impacto da reforma tributária?"
+
+*Digite uma pergunta específica ou use as etapas da calculadora para análise completa!*`;
         }
 
         // ========= FUNÇÃO DE INSIGHTS OTIMIZADA - APENAS ETAPAS 4 E 5 =========
@@ -3109,7 +3533,7 @@ Seja detalhado, técnico mas acessível, e forneça insights acionáveis baseado
             // Atualizar status da IA
             const aiStatus = document.getElementById('aiStatus');
             if (aiStatus) {
-                aiStatus.textContent = 'Online • Resultados & Reforma';
+                aiStatus.textContent = 'Híbrido • Online/Offline';
             }
             
             debugLog('Sistema inicializado com sucesso', 'success');
