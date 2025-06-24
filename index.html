@@ -1317,8 +1317,8 @@
                         A Emenda Constitucional 132/2023 criará dois novos impostos unificados:<br>
                         • <strong>IBS</strong> (Imposto sobre Bens e Serviços) - substitui ICMS e ISS<br>
                         • <strong>CBS</strong> (Contribuição sobre Bens e Serviços) - substitui PIS e COFINS<br>
-                        • <strong>Período de transição:</strong> 2026 a 2032 (sistema dual)<br>
-                        • <strong>Implementação completa:</strong> a partir de 2033<br><br>
+                        • <strong>Período de transição:</strong> 2026 a 2033 (sistema dual)<br>
+                        • <strong>Implementação completa:</strong> a partir de 2034<br><br>
                         
                         <strong>💡 Importante:</strong> O comparativo abaixo considera sua empresa no <strong>regime geral da reforma (IBS + CBS)</strong>, 
                         independente do regime atual, para análise real do impacto da mudança.
@@ -1332,19 +1332,23 @@
                         </div>
                         <div class="timeline-item">
                             <div class="timeline-year">2026</div>
-                            <div>Período de testes (CBS 0,9% + IBS 0,1%)</div>
+                            <div>Início da cobrança da CBS (50% da alíquota) + PIS/COFINS (50%)</div>
                         </div>
                         <div class="timeline-item">
                             <div class="timeline-year">2027</div>
-                            <div>CBS entra em vigor + extinção PIS/COFINS</div>
+                            <div>CBS (100%) + ICMS/ISS (100%) + Início do IBS (10%)</div>
                         </div>
                         <div class="timeline-item">
-                            <div class="timeline-year">2029-2032</div>
-                            <div>Transição gradual (detalhes em regulamentação)</div>
+                            <div class="timeline-year">2029</div>
+                            <div>CBS (100%) + IBS (60%) + ICMS/ISS (40%)</div>
                         </div>
                         <div class="timeline-item">
                             <div class="timeline-year">2033</div>
-                            <div>Sistema novo completo: CBS (100%) + IBS (100%)</div>
+                            <div>CBS (100%) + IBS (90%) + ICMS/ISS (10%)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-year">2034</div>
+                            <div>Sistema novo em vigor: CBS (100%) + IBS (100%)</div>
                         </div>
                     </div>
 
@@ -1357,7 +1361,7 @@
                         </div>
 
                         <div class="regime-card regime-novo">
-                            <div class="regime-title">🔄 Reforma Tributária (<span id="anoReformaNome">2033</span>)</div>
+                            <div class="regime-title">🔄 Reforma Tributária (<span id="anoReformaNome">2034</span>)</div>
                             <div id="resultadosReforma">
                                 <!-- Resultados da reforma -->
                             </div>
@@ -1375,7 +1379,7 @@
                     <div class="alert alert-warning">
                         <strong>⚠️ IMPORTANTE - Estimativas:</strong><br>
                         • Alíquotas da reforma ainda não foram definitivamente regulamentadas<br>
-                        • <strong>Estimativa atual: IBS + CBS = 27,97% a 28% (atualizada jan/2025)</strong><br>
+                        • Estimativa inicial: IBS + CBS = 26,5% (pode variar entre 24% e 28%)<br>
                         • Podem haver alíquotas diferenciadas por setor<br>
                         • Cesta básica e alguns serviços essenciais podem ter alíquota zero<br>
                         • Sistema de créditos será mantido e aprimorado<br>
@@ -1400,7 +1404,7 @@
 
                     <!-- Indicador Dinâmico do Ano de Transição -->
                     <div id="indicadorTransicao" style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center;">
-                        <h3 style="margin-bottom: 15px;">📅 <span id="anoSelecionado">2033</span> - <span id="statusTransicao">Sistema Novo Completo</span></h3>
+                        <h3 style="margin-bottom: 15px;">📅 <span id="anoSelecionado">2034</span> - <span id="statusTransicao">Sistema Novo Completo</span></h3>
                         <div id="detalhesAno" style="font-size: 1.1em; line-height: 1.6;">
                             IBS (100%) + CBS (100%) - Reforma tributária implementada completamente
                         </div>
@@ -1412,17 +1416,18 @@
                     <div class="input-group" style="margin-top: 20px;">
                         <div class="input-field">
                             <label>🎯 Alíquota IBS + CBS Estimada (%):</label>
-                            <input type="number" id="aliquotaReforma" value="27.97" min="20" max="35" step="0.01" placeholder="27,97%" oninput="calcularReforma()">
-                            <small style="color: #6c757d; margin-top: 5px;">💡 Estimativa atual: 27,97% a 28% (atualizada jan/2025)</small>
+                            <input type="number" id="aliquotaReforma" value="26.5" min="20" max="35" step="0.1" placeholder="26,5%" oninput="calcularReforma()">
+                            <small style="color: #6c757d; margin-top: 5px;">💡 Estimativa inicial: 26,5% (pode variar entre 24% e 28%)</small>
                         </div>
                         <div class="input-field">
                             <label>📅 Ano de Análise da Transição:</label>
                             <select id="anoTransicao" onchange="calcularReforma()">
                                 <option value="2025">2025 - Sistema Atual (100%)</option>
-                                <option value="2026">2026 - Período de Testes</option>
-                                <option value="2027">2027 - CBS Total + ICMS/ISS</option>
-                                <option value="2029">2029-2032 - Transição Gradual</option>
-                                <option value="2033" selected>2033 - Reforma Completa (100%)</option>
+                                <option value="2026">2026 - Início da CBS (50%/50%)</option>
+                                <option value="2027">2027 - CBS Total + IBS 10%</option>
+                                <option value="2029">2029 - Meio da Transição</option>
+                                <option value="2033">2033 - Quase Completa</option>
+                                <option value="2034" selected>2034 - Reforma Completa (100%)</option>
                             </select>
                             <small style="color: #6c757d; margin-top: 5px;">💡 Veja acima como fica a legislação em cada ano selecionado</small>
                         </div>
@@ -1852,7 +1857,7 @@ Responda sempre como esse contador experiente, oferecendo insights valiosos base
             
             const perguntaLower = pergunta.toLowerCase();
             
-            // Cronograma da reforma - CORRIGIDO
+            // Cronograma da reforma
             if (perguntaLower.includes('cronograma') && perguntaLower.includes('reforma')) {
                 return `📋 **Cronograma da Reforma Tributária Brasileira (EC 132/2023)**
 
@@ -1866,21 +1871,27 @@ A reforma tributária estabelece o seguinte cronograma:
 • Regulamentação complementar
 
 **2026** - Início da Transição (Fase 1)
-• Período de testes (CBS 0,9% + IBS 0,1%)
+• CBS substitui 50% do PIS/COFINS
 • ICMS, ISS e IPI mantidos 100%
 • Empresas começam adaptação
 
 **2027** - CBS Completa + IBS Inicial (Fase 2)
 • CBS substitui 100% do PIS/COFINS
-• CBS entra em vigor + extinção PIS/COFINS
+• IBS substitui 10% do ICMS/ISS
 • Novos sistemas de controle
 
-**2029-2032** - Meio da Transição (Fase 3)
-• Transição gradual (detalhes em regulamentação)
+**2029** - Meio da Transição (Fase 3)
+• IBS substitui 60% do ICMS/ISS
+• ICMS/ISS reduzidos para 40%
 • IPI reduzido (apenas produtos específicos)
 
-**2033** - Sistema Novo Completo (Fase 4)
-• IBS + CBS unificados (alíquota média 27,97% a 28%)
+**2033** - Transição Quase Completa (Fase 4)
+• IBS substitui 90% do ICMS/ISS
+• Sistema quase unificado
+• Ajustes finais
+
+**2034** - Sistema Novo Completo (Fase 5)
+• IBS + CBS unificados (alíquota média 26,5%)
 • IPI apenas para produtos específicos
 • Simplicidade total
 
@@ -1975,7 +1986,7 @@ Com a reforma, empresas como a sua terão:
 *Para simulação precisa, complete os dados da empresa.*`;
             }
             
-            // Impacto da reforma - CORRIGIDO
+            // Impacto da reforma
             if (perguntaLower.includes('impacto') && perguntaLower.includes('reforma')) {
                 return `🔄 **Impacto da Reforma Tributária na Sua Empresa**
 
@@ -1987,7 +1998,7 @@ Com a reforma, empresas como a sua terão:
 • IPI (0-15% produtos)
 • 5 impostos diferentes
 
-**Sistema Novo (2033):**
+**Sistema Novo (2034):**
 • IBS (substitui ICMS + ISS)
 • CBS (substitui PIS + COFINS)
 • IPI residual (produtos específicos)
@@ -2002,25 +2013,1602 @@ Com a reforma, empresas como a sua terão:
 • **Transparência**: Tributo destacado na nota
 
 **⚠️ DESAFIOS:**
-• **Transição**: Período de adaptação (2026-2033)
+• **Transição**: Período de adaptação (2026-2034)
 • **Sistemas**: Necessário investimento em TI
 • **Capacitação**: Equipe precisa se atualizar
 
 **🎯 PARA O COMÉRCIO ESPECIFICAMENTE:**
-• **Carga média**: Mantém-se próxima (27,97% a 28%)
+• **Carga média**: Mantém-se próxima (25-27%)
 • **Simplificação**: Redução drástica de complexidade
 • **Competitividade**: Melhora com fim da guerra fiscal
 
 **📈 PROJEÇÃO CRONOLÓGICA:**
 • **2025**: Últimas otimizações do sistema atual
 • **2026-2029**: Adaptação gradual (híbrido)
-• **2030-2032**: Transição completa
-• **2033+**: Sistema unificado pleno
+• **2030-2034**: Transição completa
+• **2034+**: Sistema unificado pleno
 
 **🚀 ESTRATÉGIA RECOMENDADA:**
 1. **2025**: Otimizar sistema atual
 2. **2026**: Preparar para CBS (PIS/COFINS)
 3. **2027+**: Adaptar para IBS gradual
-4. **2033**: Aproveitar simplicidade total
+4. **2034**: Aproveitar simplicidade total
 
 *Complete os dados da calculadora para análise quantitativa personalizada.*`;
+            }
+            
+            // Resposta genérica melhorada
+            return `🤖 **Contador IA Especialista** (Modo Híbrido)
+
+Olá! Sou especialista em tributação brasileira.
+
+**📊 SITUAÇÃO ATUAL DA SUA EMPRESA:**
+• **Regime**: ${currentCompanyData.configuracao?.regime?.replace('_', ' ').toUpperCase() || 'Não informado'}
+• **Atividade**: ${currentCompanyData.configuracao?.atividade?.toUpperCase() || 'Não informado'}
+• **Estado**: ${currentCompanyData.configuracao?.estado || 'Não informado'}
+• **Período**: ${currentCompanyData.configuracao?.periodo || 'Não informado'}
+
+**🔧 STATUS:** Sistema híbrido - respostas especializadas sempre disponíveis
+
+**📋 POSSO AJUDAR COM:**
+• **Cronograma da Reforma Tributária** (EC 132/2023)
+• **Otimização de regime tributário** atual
+• **Análise de carga tributária** comparativa
+• **Estratégias de planejamento fiscal** 2025-2034
+• **Impacto da reforma** no seu setor
+
+**💡 DICA IMPORTANTE:** 
+Complete os dados de receitas e custos nas próximas etapas da calculadora para obter:
+- Cálculo preciso da sua carga atual
+- Simulação do impacto da reforma
+- Comparativo quantitativo detalhado
+
+**🚀 PERGUNTAS SUGERIDAS:**
+- "Qual o cronograma da reforma tributária?"
+- "Como otimizar minha carga tributária?"
+- "Qual o melhor regime para minha empresa?"
+- "Qual o impacto da reforma tributária?"
+
+*Digite uma pergunta específica ou use as etapas da calculadora para análise completa!*`;
+        }
+
+        // ========= FUNÇÃO DE INSIGHTS MELHORADA - MÁXIMO 4 INSIGHTS =========
+        async function generateAIInsights(step) {
+            // 🔥 MUDANÇA: Só gerar insights para etapas 4 e 5
+            if (step !== 4 && step !== 5) {
+                return;
+            }
+
+            updateCompanyData();
+            
+            let insightPrompt = '';
+            let targetElement = '';
+
+            switch(step) {
+                case 4:
+                    insightPrompt = `Com base nos resultados calculados (total: R$ ${formatarMoeda(totalAtual).replace('R$ ', '')}), gere EXATAMENTE 4 insights específicos:
+                    1. Se a carga tributária está dentro do esperado para o setor
+                    2. Principal oportunidade de redução identificada
+                    3. Próximo passo estratégico mais importante
+                    4. Recomendação específica para o regime atual
+                    
+                    Use dados reais dos cálculos. Seja objetivo e acionável.`;
+                    targetElement = 'aiInsightsContent4';
+                    break;
+
+                case 5:
+                    insightPrompt = `Analisando o impacto da reforma tributária para esta empresa, gere EXATAMENTE 4 insights específicos:
+                    1. Principal benefício ou risco da transição
+                    2. Estratégia de preparação mais importante
+                    3. Timing ideal para ações específicas
+                    4. Oportunidade única da reforma para esta empresa
+                    
+                    Foque no impacto específico dos dados calculados.`;
+                    targetElement = 'aiInsightsContent5';
+                    break;
+            }
+
+            if (!insightPrompt) return;
+
+            const messages = [
+                { role: 'system', content: generateAIPrompt() },
+                { role: 'user', content: insightPrompt }
+            ];
+
+            try {
+                showAILoading(targetElement);
+                debugLog(`Gerando insights para etapa ${step}`, 'info');
+                const insights = await callOpenAI(messages);
+                displayAIInsights(insights, targetElement);
+                
+                // Mostrar o painel de insights
+                const panel = document.getElementById(`aiInsights${step}`);
+                if (panel) {
+                    panel.classList.add('active');
+                }
+                debugLog(`Insights gerados com sucesso para etapa ${step}`, 'success');
+            } catch (error) {
+                hideAILoading(targetElement);
+                debugLog(`Erro ao gerar insights: ${error.message}`, 'error');
+            }
+        }
+
+        function showAILoading(targetElement) {
+            const element = document.getElementById(targetElement);
+            if (element) {
+                element.innerHTML = `
+                    <div class="ai-loading">
+                        <div class="spinner"></div>
+                        Gerando insights personalizados...
+                    </div>
+                `;
+            }
+        }
+
+        function hideAILoading(targetElement) {
+            const element = document.getElementById(targetElement);
+            if (element) {
+                element.innerHTML = '';
+            }
+        }
+
+        // 🔥 FUNÇÃO MELHORADA - MÁXIMO 4 INSIGHTS INTELIGENTES
+        function displayAIInsights(insights, targetElement) {
+            const element = document.getElementById(targetElement);
+            if (!element) return;
+
+            // Parsear insights e criar exatamente 4 cards
+            const lines = insights.split('\n').filter(line => line.trim().length > 0);
+            const insightCards = [];
+            
+            let currentInsight = null;
+            
+            for (let line of lines) {
+                const cleanLine = line.trim();
+                
+                // Detectar início de novo insight
+                if (cleanLine.match(/^\d+\.|^[•\-\*]|impacto|estratégia|timing|oportunidade|benefício|risco/i)) {
+                    if (currentInsight) {
+                        insightCards.push(currentInsight);
+                    }
+                    
+                    // Determinar tipo e urgência do insight
+                    let type = 'info';
+                    let urgency = '';
+                    let icon = '📊';
+                    
+                    if (cleanLine.includes('crítico') || cleanLine.includes('urgente') || cleanLine.includes('alto impacto')) {
+                        type = 'urgente';
+                        urgency = 'URGENTE';
+                        icon = '🚨';
+                    } else if (cleanLine.includes('importante') || cleanLine.includes('recomendo') || cleanLine.includes('estratégia')) {
+                        type = 'importante';
+                        urgency = 'IMPORTANTE';
+                        icon = '⚠️';
+                    } else if (cleanLine.includes('oportunidade') || cleanLine.includes('vantagem') || cleanLine.includes('benefício')) {
+                        type = 'vantagem';
+                        urgency = 'VANTAGEM';
+                        icon = '✅';
+                    }
+                    
+                    // Extrair título
+                    let title = cleanLine.replace(/^\d+\.\s*/, '').replace(/^[•\-\*]\s*/, '');
+                    if (title.includes(':')) {
+                        title = title.split(':')[0];
+                    }
+                    
+                    currentInsight = {
+                        type: type,
+                        urgency: urgency,
+                        icon: icon,
+                        title: title.substring(0, 50) + (title.length > 50 ? '...' : ''),
+                        content: cleanLine
+                    };
+                } else if (currentInsight && cleanLine.length > 10) {
+                    // Adicionar conteúdo ao insight atual
+                    currentInsight.content += ' ' + cleanLine;
+                }
+            }
+            
+            // Adicionar último insight
+            if (currentInsight) {
+                insightCards.push(currentInsight);
+            }
+            
+            // Limitar a exatamente 4 insights
+            const finalInsights = insightCards.slice(0, 4);
+            
+            // Gerar HTML
+            let html = '';
+            finalInsights.forEach((insight, index) => {
+                html += `
+                    <div class="ai-insight-card ${insight.type}">
+                        <div class="ai-insight-header">
+                            <span class="ai-insight-icon">${insight.icon}</span>
+                            <div class="ai-insight-title">${insight.title}</div>
+                            ${insight.urgency ? `<span class="urgency-badge ${insight.type}">${insight.urgency}</span>` : ''}
+                        </div>
+                        <div class="ai-insight-content">${insight.content}</div>
+                    </div>
+                `;
+            });
+
+            // Se não temos 4 insights, adicionar genéricos baseados nos dados
+            while (finalInsights.length < 4) {
+                const genericInsight = generateGenericInsight(finalInsights.length, targetElement === 'aiInsightsContent5');
+                html += genericInsight;
+                finalInsights.push({});
+            }
+
+            element.innerHTML = html;
+        }
+
+        function generateGenericInsight(index, isReforma) {
+            const genericInsights = {
+                4: [ // Insights para resultados
+                    {
+                        icon: '📊',
+                        title: 'Monitoramento Tributário',
+                        content: 'Acompanhe mensalmente os resultados para identificar variações e oportunidades de otimização.',
+                        type: 'info'
+                    },
+                    {
+                        icon: '💰',
+                        title: 'Gestão de Créditos',
+                        content: 'Certifique-se de aproveitar todos os créditos tributários disponíveis no seu regime.',
+                        type: 'importante'
+                    },
+                    {
+                        icon: '📅',
+                        title: 'Planejamento 2025',
+                        content: 'Use 2025 para otimizar ao máximo o sistema atual antes da reforma.',
+                        type: 'importante'
+                    }
+                ],
+                5: [ // Insights para reforma
+                    {
+                        icon: '🔄',
+                        title: 'Adaptação Gradual',
+                        content: 'A transição será gradual. Prepare-se para cada fase do cronograma da reforma.',
+                        type: 'info'
+                    },
+                    {
+                        icon: '💡',
+                        title: 'Sistema Unificado',
+                        content: 'O sistema unificado IBS + CBS trará simplicidade operacional significativa.',
+                        type: 'vantagem'
+                    },
+                    {
+                        icon: '📋',
+                        title: 'Menos Burocracia',
+                        content: 'Espere redução de até 80% nas obrigações acessórias com a reforma.',
+                        type: 'vantagem'
+                    }
+                ]
+            };
+
+            const step = isReforma ? 5 : 4;
+            const insights = genericInsights[step];
+            
+            if (index < insights.length) {
+                const insight = insights[index];
+                return `
+                    <div class="ai-insight-card ${insight.type}">
+                        <div class="ai-insight-header">
+                            <span class="ai-insight-icon">${insight.icon}</span>
+                            <div class="ai-insight-title">${insight.title}</div>
+                        </div>
+                        <div class="ai-insight-content">${insight.content}</div>
+                    </div>
+                `;
+            }
+            
+            return '';
+        }
+
+        // ========= FUNÇÕES DA IA INTERFACE MELHORADAS =========
+        function toggleAI() {
+            const container = document.getElementById('aiChatContainer');
+            const toggle = document.getElementById('aiToggle');
+            
+            if (container.classList.contains('active')) {
+                container.classList.remove('active');
+                toggle.style.transform = 'scale(1)';
+                debugLog('Chat IA fechado', 'info');
+            } else {
+                container.classList.add('active');
+                toggle.style.transform = 'scale(0.9)';
+                updateAISuggestions();
+                updateCompanyData();
+                debugLog('Chat IA aberto', 'info');
+            }
+        }
+
+        // ========= SUGESTÕES CONTEXTUAIS MELHORADAS =========
+        function updateAISuggestions() {
+            const suggestions = document.getElementById('aiSuggestions');
+            if (!suggestions) return;
+
+            // 🔥 ESCONDER SUGESTÕES SE JÁ HOUVE PRIMEIRA INTERAÇÃO
+            if (primeiraInteracaoAI) {
+                suggestions.classList.add('hidden');
+                return;
+            }
+
+            let contextualSuggestions = [];
+
+            // Sugestões contextuais baseadas na etapa
+            if (etapaAtual === 4) {
+                // Etapa 4: Focar nos resultados calculados
+                if (totalAtual > 0) {
+                    const percFaturamento = currentCompanyData.receitas ? 
+                        ((totalAtual / (Object.values(currentCompanyData.receitas).reduce((a, b) => a + b, 0))) * 100).toFixed(1) : 0;
+                    
+                    contextualSuggestions = [
+                        `Minha carga de ${percFaturamento}% está alta?`,
+                        'Como reduzir os impostos calculados?',
+                        'Estratégias de otimização imediata',
+                        'Próximos passos recomendados'
+                    ];
+                } else {
+                    contextualSuggestions = [
+                        'Analisar os resultados calculados',
+                        'Como otimizar minha carga tributária?',
+                        'Estratégias de planejamento tributário',
+                        'Próximos passos recomendados'
+                    ];
+                }
+            } else if (etapaAtual === 5) {
+                // Etapa 5: Focar na reforma tributária
+                const impacto = totalReforma - totalAtual;
+                if (Math.abs(impacto) > 1000) {
+                    const tipoImpacto = impacto > 0 ? 'aumento' : 'redução';
+                    contextualSuggestions = [
+                        `Como preparar para ${tipoImpacto} tributário?`,
+                        'Estratégias para a transição',
+                        'Vantagens e riscos da reforma',
+                        'Cronograma de implementação'
+                    ];
+                } else {
+                    contextualSuggestions = [
+                        'Como a reforma afeta minha empresa?',
+                        'Devo me preparar para a transição?',
+                        'Vantagens e riscos da reforma',
+                        'Cronograma de implementação'
+                    ];
+                }
+            } else {
+                // Etapas 1-3: Sugestões gerais focadas em resultados e reforma
+                contextualSuggestions = [
+                    'Como otimizar minha carga tributária?',
+                    'Qual o melhor regime para minha empresa?',
+                    'Impacto da reforma tributária',
+                    'Estratégias de planejamento fiscal'
+                ];
+            }
+
+            suggestions.innerHTML = contextualSuggestions.map(suggestion => 
+                `<button class="ai-suggestion-btn" onclick="sendAISuggestion('${suggestion}')">
+                    ${suggestion}
+                </button>`
+            ).join('');
+        }
+
+        function sendAISuggestion(suggestion) {
+            document.getElementById('aiInput').value = suggestion;
+            sendAIMessage();
+        }
+
+        function handleAIKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendAIMessage();
+            }
+        }
+
+        async function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const messages = document.getElementById('aiMessages');
+            const sendBtn = document.getElementById('aiSend');
+            const typing = document.getElementById('aiTyping');
+
+            const userMessage = input.value.trim();
+            if (!userMessage || isAIProcessing) return;
+
+            updateCompanyData();
+
+            // 🔥 MARCAR PRIMEIRA INTERAÇÃO E ESCONDER SUGESTÕES
+            if (!primeiraInteracaoAI) {
+                primeiraInteracaoAI = true;
+                const suggestions = document.getElementById('aiSuggestions');
+                if (suggestions) {
+                    suggestions.classList.add('hidden');
+                }
+                debugLog('Primeira interação IA - sugestões escondidas', 'info');
+            }
+
+            addAIMessage('user', userMessage);
+            input.value = '';
+            sendBtn.disabled = true;
+
+            typing.classList.add('active');
+            isAIProcessing = true;
+
+            aiConversationHistory.push({ role: 'user', content: userMessage });
+
+            const apiMessages = [
+                { role: 'system', content: generateAIPrompt() },
+                ...aiConversationHistory.slice(-10)
+            ];
+
+            try {
+                debugLog(`Enviando mensagem: ${userMessage}`, 'info');
+                const response = await callOpenAI(apiMessages);
+                
+                typing.classList.remove('active');
+                addAIMessage('ai', response);
+                aiConversationHistory.push({ role: 'assistant', content: response });
+                debugLog('Mensagem IA processada com sucesso', 'success');
+
+            } catch (error) {
+                typing.classList.remove('active');
+                addAIMessage('ai', 'Erro técnico: ' + error.message + '. Posso continuar ajudando de outras formas!');
+                debugLog(`Erro na comunicação com IA: ${error.message}`, 'error');
+            } finally {
+                isAIProcessing = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+
+        function addAIMessage(sender, content) {
+            const messages = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            
+            if (sender === 'ai') {
+                const formattedContent = content
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/\n/g, '<br>');
+                messageDiv.innerHTML = formattedContent;
+            } else {
+                messageDiv.textContent = content;
+            }
+            
+            messages.appendChild(messageDiv);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // ========= FUNÇÕES ORIGINAIS DA CALCULADORA =========
+
+        function atualizarPeriodo() {
+            const tipoPeriodo = document.getElementById('tipoPeriodo').value;
+            const labelPeriodo = document.getElementById('labelPeriodo');
+            const inputPeriodo = document.getElementById('periodo');
+            
+            if (tipoPeriodo === 'anual') {
+                labelPeriodo.textContent = 'Ano:';
+                inputPeriodo.type = 'number';
+                inputPeriodo.value = '2025';
+                inputPeriodo.min = '2020';
+                inputPeriodo.max = '2030';
+            } else {
+                labelPeriodo.textContent = 'Mês/Ano:';
+                inputPeriodo.type = 'month';
+                inputPeriodo.value = '2025-06';
+                inputPeriodo.removeAttribute('min');
+                inputPeriodo.removeAttribute('max');
+            }
+            calcularAutomatico();
+        }
+
+        function validarAliquotaISS() {
+            const aliquotaInput = document.getElementById('aliquotaISS');
+            const valor = parseFloat(aliquotaInput.value);
+            
+            if (valor < 2) {
+                aliquotaInput.value = 2;
+                alert('⚠️ Alíquota mínima do ISS é 2,00%');
+            } else if (valor > 5) {
+                aliquotaInput.value = 5;
+                alert('⚠️ Alíquota máxima do ISS é 5,00%');
+            }
+        }
+
+        function validarAliquotaICMS() {
+            const aliquotaInput = document.getElementById('aliquotaICMSInterna');
+            const valor = parseFloat(aliquotaInput.value);
+            
+            if (valor < 7) {
+                aliquotaInput.value = 7;
+                alert('⚠️ Alíquota mínima do ICMS interno é 7,00%');
+            } else if (valor > 25) {
+                aliquotaInput.value = 25;
+                alert('⚠️ Alíquota máxima do ICMS interno é 25,00%');
+            }
+        }
+
+        function validarAliquotaICMSInter() {
+            const aliquotaInput = document.getElementById('aliquotaICMSInter');
+            const valor = parseFloat(aliquotaInput.value);
+            
+            if (valor < 4) {
+                aliquotaInput.value = 4;
+                alert('⚠️ Alíquota mínima do ICMS interestadual é 4,00%');
+            } else if (valor > 12) {
+                aliquotaInput.value = 12;
+                alert('⚠️ Alíquota máxima do ICMS interestadual é 12,00%');
+            }
+        }
+
+        function formatarMoeda(valor) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valor || 0);
+        }
+
+        function obterAliquotaSimples(faturamento12Meses, anexo) {
+            const tabela = tabelasSimples[anexo];
+            if (!tabela) return 0;
+            
+            for (let faixa of tabela) {
+                if (faturamento12Meses >= faixa.min && faturamento12Meses <= faixa.max) {
+                    return faixa.aliquota;
+                }
+            }
+            return 0;
+        }
+
+        function atualizarRegime() {
+            const regime = document.getElementById('regime').value;
+            const infoElement = document.getElementById('regimeInfo');
+            
+            const simplesConfig = document.getElementById('simplesConfig');
+            const creditosFields = document.querySelectorAll('.creditos-fields');
+            const saldosFields = document.querySelectorAll('.saldos-fields');
+            const simplesAviso = document.querySelector('.simples-aviso');
+            const icmsFields = document.querySelectorAll('.icms-fields');
+            const ipiFields = document.querySelectorAll('.ipi-fields');
+            const issFields = document.querySelectorAll('.iss-fields');
+            const pisSaldo = document.querySelectorAll('.pis-saldo');
+            const cofinsSaldo = document.querySelectorAll('.cofins-saldo');
+            
+            let info = '';
+            switch(regime) {
+                case 'lucro_real':
+                    info = 'Lucro Real - Permite créditos de PIS/COFINS não cumulativo (1,65% e 7,6%)';
+                    simplesConfig.classList.add('hidden');
+                    creditosFields.forEach(el => el.classList.remove('hidden'));
+                    saldosFields.forEach(el => el.classList.remove('hidden'));
+                    simplesAviso.classList.add('hidden');
+                    icmsFields.forEach(el => el.classList.remove('hidden'));
+                    ipiFields.forEach(el => el.classList.remove('hidden'));
+                    issFields.forEach(el => el.classList.remove('hidden'));
+                    pisSaldo.forEach(el => el.classList.remove('hidden'));
+                    cofinsSaldo.forEach(el => el.classList.remove('hidden'));
+                    break;
+                case 'lucro_presumido':
+                    info = 'Lucro Presumido - PIS/COFINS cumulativo (0,65% e 3,0%), sem direito a créditos PIS/COFINS';
+                    simplesConfig.classList.add('hidden');
+                    creditosFields.forEach(el => el.classList.remove('hidden'));
+                    saldosFields.forEach(el => el.classList.remove('hidden'));
+                    simplesAviso.classList.add('hidden');
+                    icmsFields.forEach(el => el.classList.remove('hidden'));
+                    ipiFields.forEach(el => el.classList.remove('hidden'));
+                    issFields.forEach(el => el.classList.remove('hidden'));
+                    pisSaldo.forEach(el => el.classList.add('hidden'));
+                    cofinsSaldo.forEach(el => el.classList.add('hidden'));
+                    break;
+                case 'simples':
+                    info = 'Simples Nacional - DAS unificado com alíquotas baseadas no faturamento dos últimos 12 meses';
+                    simplesConfig.classList.remove('hidden');
+                    creditosFields.forEach(el => el.classList.add('hidden'));
+                    saldosFields.forEach(el => el.classList.add('hidden'));
+                    simplesAviso.classList.remove('hidden');
+                    icmsFields.forEach(el => el.classList.add('hidden'));
+                    ipiFields.forEach(el => el.classList.add('hidden'));
+                    issFields.forEach(el => el.classList.add('hidden'));
+                    break;
+            }
+            
+            infoElement.innerHTML = `<strong>🎯 Regime Selecionado:</strong> ${info}`;
+            
+            const basePisCofinslabel = document.getElementById('basePisCofinslabel');
+            if (regime === 'simples') {
+                basePisCofinslabel.textContent = 'Base para DAS do Simples Nacional';
+            } else {
+                basePisCofinslabel.textContent = 'Base automática para PIS/COFINS';
+            }
+            
+            calcularAutomatico();
+        }
+
+        function atualizarAtividade() {
+            calcularAutomatico();
+        }
+
+        function calcularAutomatico() {
+            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+            const exportacoes = parseFloat(document.getElementById('exportacoes')?.value) || 0;
+            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+            const servicosExterior = parseFloat(document.getElementById('servicosExterior')?.value) || 0;
+            const receitasFinanceiras = parseFloat(document.getElementById('receitasFinanceiras')?.value) || 0;
+            const outrasReceitas = parseFloat(document.getElementById('outrasReceitas')?.value) || 0;
+
+            const totalProdutos = vendasInternas + vendasInterestaduais + exportacoes + vendasIPI;
+            const totalServicos = servicosMunicipio + servicosOutros + servicosExterior;
+            const faturamentoTotal = totalProdutos + totalServicos + receitasFinanceiras + outrasReceitas;
+            const basePisCofins = totalProdutos + totalServicos;
+
+            if (document.getElementById('totalProdutos')) {
+                document.getElementById('totalProdutos').textContent = formatarMoeda(totalProdutos);
+            }
+            if (document.getElementById('totalServicos')) {
+                document.getElementById('totalServicos').textContent = formatarMoeda(totalServicos);
+            }
+            if (document.getElementById('faturamentoTotal')) {
+                document.getElementById('faturamentoTotal').textContent = formatarMoeda(faturamentoTotal);
+            }
+            if (document.getElementById('basePisCofins')) {
+                document.getElementById('basePisCofins').textContent = formatarMoeda(basePisCofins);
+            }
+
+            if (etapaAtual === 4) {
+                calcularTodosImpostos();
+            } else if (etapaAtual === 5) {
+                calcularTodosImpostos();
+                calcularReforma();
+            }
+        }
+
+        function calcularTodosImpostos() {
+            const regime = document.getElementById('regime').value;
+            
+            if (regime === 'simples') {
+                calcularSimplesNacional();
+            } else {
+                calcularRegimeTradicional();
+            }
+        }
+
+        function calcularSimplesNacional() {
+            const atividade = document.getElementById('atividade').value;
+            const faturamento12Meses = parseFloat(document.getElementById('faturamento12Meses')?.value) || 0;
+            
+            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+            
+            const totalComercio = vendasInternas + vendasInterestaduais;
+            const totalIndustria = vendasIPI;
+            const totalServicos = servicosMunicipio + servicosOutros;
+            const faturamentoPeriodo = totalComercio + totalIndustria + totalServicos;
+            
+            let resultados = [];
+            let dasTotal = 0;
+            let composicaoDetalhada = '';
+            
+            if (faturamento12Meses === 0) {
+                resultados.push({
+                    nome: 'Aviso',
+                    valor: 0,
+                    detalhes: 'Informe o faturamento dos últimos 12 meses para calcular o DAS'
+                });
+            } else {
+                if (atividade === 'misto') {
+                    let composicao = [];
+                    
+                    if (totalComercio > 0) {
+                        const aliquotaComercio = obterAliquotaSimples(faturamento12Meses, 'anexo1');
+                        const dasComercio = totalComercio * (aliquotaComercio / 100);
+                        dasTotal += dasComercio;
+                        composicao.push(`Comércio: ${formatarMoeda(dasComercio)} (${aliquotaComercio}%)`);
+                    }
+                    
+                    if (totalIndustria > 0) {
+                        const aliquotaIndustria = obterAliquotaSimples(faturamento12Meses, 'anexo2');
+                        const dasIndustria = totalIndustria * (aliquotaIndustria / 100);
+                        dasTotal += dasIndustria;
+                        composicao.push(`Indústria: ${formatarMoeda(dasIndustria)} (${aliquotaIndustria}%)`);
+                    }
+                    
+                    if (totalServicos > 0) {
+                        const aliquotaServicos = obterAliquotaSimples(faturamento12Meses, 'anexo3');
+                        const dasServicos = totalServicos * (aliquotaServicos / 100);
+                        dasTotal += dasServicos;
+                        composicao.push(`Serviços: ${formatarMoeda(dasServicos)} (${aliquotaServicos}%)`);
+                    }
+                    
+                    composicaoDetalhada = composicao.join(' | ');
+                } else {
+                    let anexo = '';
+                    switch(atividade) {
+                        case 'comercio': anexo = 'anexo1'; break;
+                        case 'industria': anexo = 'anexo2'; break;
+                        case 'servicos': anexo = 'anexo3'; break;
+                    }
+                    
+                    const aliquota = obterAliquotaSimples(faturamento12Meses, anexo);
+                    dasTotal = faturamentoPeriodo * (aliquota / 100);
+                    composicaoDetalhada = `Alíquota: ${aliquota}% | Base: ${formatarMoeda(faturamentoPeriodo)}`;
+                }
+                
+                resultados.push({
+                    nome: 'DAS - Simples Nacional',
+                    valor: dasTotal,
+                    detalhes: `Faturamento 12 meses: ${formatarMoeda(faturamento12Meses)} | ${composicaoDetalhada}`,
+                    simples: true
+                });
+            }
+            
+            resultadosAtualCalculados = resultados;
+            exibirResultadosSimples(resultados);
+        }
+
+        function calcularRegimeTradicional() {
+            const regime = document.getElementById('regime').value;
+            
+            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+            
+            const basePisCofins = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
+            
+            const aquisicoesRevenda = parseFloat(document.getElementById('aquisicoesRevenda')?.value) || 0;
+            const materiasPrimas = parseFloat(document.getElementById('materiasPrimas')?.value) || 0;
+            const energiaEletrica = parseFloat(document.getElementById('energiaEletrica')?.value) || 0;
+            const telecomunicacoes = parseFloat(document.getElementById('telecomunicacoes')?.value) || 0;
+            const alugueis = parseFloat(document.getElementById('alugueis')?.value) || 0;
+            const ativoImobilizado = parseFloat(document.getElementById('ativoImobilizado')?.value) || 0;
+            
+            const saldoICMS = parseFloat(document.getElementById('saldoICMS')?.value) || 0;
+            const saldoIPI = parseFloat(document.getElementById('saldoIPI')?.value) || 0;
+            const saldoPIS = parseFloat(document.getElementById('saldoPIS')?.value) || 0;
+            const saldoCOFINS = parseFloat(document.getElementById('saldoCOFINS')?.value) || 0;
+            
+            const issRetido = parseFloat(document.getElementById('issRetido')?.value) || 0;
+            const deducoesISS = parseFloat(document.getElementById('deducoesISS')?.value) || 0;
+
+            let resultados = [];
+
+            // ICMS
+            if (vendasInternas > 0 || vendasInterestaduais > 0) {
+                const aliquotaInterna = parseFloat(document.getElementById('aliquotaICMSInterna')?.value) || 18;
+                const aliquotaInter = parseFloat(document.getElementById('aliquotaICMSInter')?.value) || 12;
+                
+                const icmsInternas = vendasInternas * (aliquotaInterna / 100);
+                const icmsInterestaduais = vendasInterestaduais * (aliquotaInter / 100);
+                const icmsDebito = icmsInternas + icmsInterestaduais;
+                
+                const icmsCredito = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + ativoImobilizado) * 0.18 + saldoICMS;
+                const icmsAPagar = icmsDebito - icmsCredito;
+                
+                resultados.push({
+                    nome: 'ICMS',
+                    valor: icmsAPagar,
+                    detalhes: `Débito: ${formatarMoeda(icmsDebito)} (Interna: ${aliquotaInterna}%, Inter: ${aliquotaInter}%) | Crédito: ${formatarMoeda(icmsCredito)}`
+                });
+            }
+
+            // IPI
+            if (vendasIPI > 0) {
+                const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
+                const ipiDebito = vendasIPI * (aliquotaIPI / 100);
+                
+                const ipiCredito = (materiasPrimas * (aliquotaIPI / 100) * 0.5) + saldoIPI;
+                const ipiAPagar = ipiDebito - ipiCredito;
+                
+                resultados.push({
+                    nome: 'IPI',
+                    valor: ipiAPagar,
+                    detalhes: `Base: ${formatarMoeda(vendasIPI)} | Alíquota: ${aliquotaIPI}% | Crédito Total: ${formatarMoeda(ipiCredito)}`
+                });
+            }
+
+            // ISS
+            if (servicosMunicipio > 0 || servicosOutros > 0) {
+                const aliquotaISS = parseFloat(document.getElementById('aliquotaISS')?.value) || 5;
+                const baseISS = (servicosMunicipio + servicosOutros) - deducoesISS;
+                const issDevido = baseISS * (aliquotaISS / 100);
+                const issAPagar = Math.max(0, issDevido - issRetido);
+                
+                resultados.push({
+                    nome: 'ISS',
+                    valor: issAPagar,
+                    detalhes: `Base: ${formatarMoeda(baseISS)} | Alíquota: ${aliquotaISS}% | Retido: ${formatarMoeda(issRetido)}`
+                });
+            }
+
+            // PIS
+            if (basePisCofins > 0) {
+                const aliqPIS = regime === 'lucro_real' ? aliquotas.pis.nao_cumulativo : aliquotas.pis.cumulativo;
+                const pisDebito = basePisCofins * (aliqPIS / 100);
+                
+                let pisCredito = regime === 'lucro_real' ? saldoPIS : 0;
+                if (regime === 'lucro_real') {
+                    pisCredito += (aquisicoesRevenda + materiasPrimas + energiaEletrica + alugueis + ativoImobilizado) * 0.0165;
+                }
+                
+                const pisAPagar = pisDebito - pisCredito;
+                
+                resultados.push({
+                    nome: 'PIS',
+                    valor: pisAPagar,
+                    detalhes: `Base: ${formatarMoeda(basePisCofins)} | Alíquota: ${aliqPIS}% | Crédito: ${formatarMoeda(pisCredito)}`
+                });
+            }
+
+            // COFINS
+            if (basePisCofins > 0) {
+                const aliqCOFINS = regime === 'lucro_real' ? aliquotas.cofins.nao_cumulativo : aliquotas.cofins.cumulativo;
+                const cofinsDebito = basePisCofins * (aliqCOFINS / 100);
+                
+                let cofinsCredito = regime === 'lucro_real' ? saldoCOFINS : 0;
+                if (regime === 'lucro_real') {
+                    cofinsCredito += (aquisicoesRevenda + materiasPrimas + energiaEletrica + alugueis + ativoImobilizado) * 0.076;
+                }
+                
+                const cofinsAPagar = cofinsDebito - cofinsCredito;
+                
+                resultados.push({
+                    nome: 'COFINS',
+                    valor: cofinsAPagar,
+                    detalhes: `Base: ${formatarMoeda(basePisCofins)} | Alíquota: ${aliqCOFINS}% | Crédito: ${formatarMoeda(cofinsCredito)}`
+                });
+            }
+
+            resultadosAtualCalculados = resultados;
+            exibirResultados(resultados);
+        }
+
+        function exibirResultados(resultados) {
+            const container = document.getElementById('resultadosImpostos');
+            let html = '';
+            totalAtual = 0;
+
+            resultados.forEach(resultado => {
+                let classe, status, icon;
+                
+                if (resultado.valor > 0) {
+                    classe = 'devedor';
+                    status = 'devedor';
+                    icon = '📤';
+                    totalAtual += resultado.valor;
+                } else if (resultado.valor < 0) {
+                    classe = 'credor';
+                    status = 'credor';
+                    icon = '📥';
+                } else {
+                    classe = 'neutro';
+                    status = 'neutro';
+                    icon = '⚖️';
+                }
+
+                const valorDisplay = Math.abs(resultado.valor);
+                const statusText = resultado.valor > 0 ? 'A Recolher' : resultado.valor < 0 ? 'Saldo Credor' : 'Sem Movimento';
+
+                html += `
+                    <div class="imposto-card ${classe}">
+                        <div class="imposto-header">
+                            <div class="imposto-nome">${icon} ${resultado.nome} - ${statusText}</div>
+                            <div class="imposto-valor ${status}">${formatarMoeda(valorDisplay)}</div>
+                        </div>
+                        <div class="calculo-detalhes">${resultado.detalhes}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            document.getElementById('totalRecolher').textContent = formatarMoeda(totalAtual);
+            
+            if (etapaAtual === 4) {
+                setTimeout(() => generateAIInsights(4), 1000);
+            }
+        }
+
+        function exibirResultadosSimples(resultados) {
+            const container = document.getElementById('resultadosImpostos');
+            let html = '';
+            totalAtual = 0;
+
+            resultados.forEach(resultado => {
+                if (resultado.simples) {
+                    totalAtual += resultado.valor;
+                    
+                    html += `
+                        <div class="imposto-card simples">
+                            <div class="imposto-header">
+                                <div class="imposto-nome">📋 ${resultado.nome}</div>
+                                <div class="imposto-valor simples">${formatarMoeda(resultado.valor)}</div>
+                            </div>
+                            <div class="calculo-detalhes">${resultado.detalhes}</div>
+                            <div class="composicao-das">
+                                <strong>📊 Composição do DAS:</strong><br>
+                                <small>IRPJ, CSLL, PIS, COFINS, IPI, ICMS, ISS e CPP unificados</small>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="imposto-card neutro">
+                            <div class="imposto-header">
+                                <div class="imposto-nome">⚠️ ${resultado.nome}</div>
+                                <div class="imposto-valor neutro">-</div>
+                            </div>
+                            <div class="calculo-detalhes">${resultado.detalhes}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+            document.getElementById('totalRecolher').textContent = formatarMoeda(totalAtual);
+            
+            const textoTotalRecolher = document.getElementById('textoTotalRecolher');
+            const proximosPassos = document.getElementById('proximosPassos');
+            
+            if (document.getElementById('regime').value === 'simples') {
+                textoTotalRecolher.textContent = 'Valor total do DAS a recolher no período';
+                proximosPassos.textContent = 'Gerar DAS via Portal do Simples Nacional';
+            } else {
+                textoTotalRecolher.textContent = 'Soma de todos os impostos a recolher no período';
+                proximosPassos.textContent = 'Gerar guias de recolhimento';
+            }
+            
+            if (etapaAtual === 4) {
+                setTimeout(() => generateAIInsights(4), 1000);
+            }
+        }
+
+        function calcularReforma() {
+            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+            
+            const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
+            
+            const aquisicoesRevenda = parseFloat(document.getElementById('aquisicoesRevenda')?.value) || 0;
+            const materiasPrimas = parseFloat(document.getElementById('materiasPrimas')?.value) || 0;
+            const energiaEletrica = parseFloat(document.getElementById('energiaEletrica')?.value) || 0;
+            const telecomunicacoes = parseFloat(document.getElementById('telecomunicacoes')?.value) || 0;
+            const alugueis = parseFloat(document.getElementById('alugueis')?.value) || 0;
+            const ativoImobilizado = parseFloat(document.getElementById('ativoImobilizado')?.value) || 0;
+            
+            const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 26.5;
+            const anoTransicao = document.getElementById('anoTransicao')?.value || '2034';
+            
+            let percentualNovo = 1;
+            
+            switch(anoTransicao) {
+                case '2025': percentualNovo = 0; break;
+                case '2026': percentualNovo = 0.5; break;
+                case '2027': percentualNovo = 0.6; break;
+                case '2029': percentualNovo = 0.8; break;
+                case '2033': percentualNovo = 0.95; break;
+                case '2034': default: percentualNovo = 1; break;
+            }
+            
+            const debito = baseReforma * (aliquotaReforma / 100) * percentualNovo;
+            const creditos = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + alugueis + ativoImobilizado) * (aliquotaReforma / 100) * percentualNovo;
+            const impostoUnificado = debito - creditos;
+            
+            let ipiResidual = 0;
+            if (vendasIPI > 0) {
+                const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
+                ipiResidual = (vendasIPI * (aliquotaIPI / 100) * 0.1) * percentualNovo;
+            }
+            
+            totalReforma = impostoUnificado + ipiResidual;
+            
+            let totalSistemaAntigo = 0;
+            if (percentualNovo < 1) {
+                totalSistemaAntigo = totalAtual * (1 - percentualNovo);
+            }
+            
+            const totalFinalReforma = totalReforma + totalSistemaAntigo;
+            
+            atualizarIndicadorTransicao(anoTransicao, percentualNovo);
+            exibirResultadosReforma(impostoUnificado, ipiResidual, totalFinalReforma, anoTransicao, percentualNovo);
+            exibirDiferenca(totalFinalReforma - totalAtual);
+            atualizarResumoExecutivo(totalFinalReforma);
+            
+            if (etapaAtual === 5) {
+                setTimeout(() => generateAIInsights(5), 1000);
+            }
+        }
+
+        function atualizarIndicadorTransicao(ano, percentual) {
+            const anoElement = document.getElementById('anoSelecionado');
+            const statusElement = document.getElementById('statusTransicao');
+            const detalhesElement = document.getElementById('detalhesAno');
+            const impactoElement = document.getElementById('impactoVisual');
+            const indicadorElement = document.getElementById('indicadorTransicao');
+            
+            let status, detalhes, impacto, cor;
+            
+            switch(ano) {
+                case '2025':
+                    status = 'Sistema Atual (Último Ano)';
+                    detalhes = 'ICMS + ISS + PIS + COFINS + IPI conforme legislação vigente';
+                    impacto = '⚠️ Último ano do sistema tributário atual - prepare-se para a transição';
+                    cor = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                    break;
+                    
+                case '2026':
+                    status = 'Início da Transição';
+                    detalhes = 'CBS (50%) + PIS/COFINS (50%) | ICMS + ISS + IPI (100%)';
+                    impacto = '🔄 Primeiro ano da reforma - CBS substitui gradualmente PIS/COFINS';
+                    cor = 'linear-gradient(135deg, #f39c12, #e67e22)';
+                    break;
+                    
+                case '2027':
+                    status = 'CBS Completa + IBS Inicial';
+                    detalhes = 'CBS (100%) + IBS (10%) + ICMS/ISS (100%) + IPI (100%)';
+                    impacto = '📈 CBS já substituiu PIS/COFINS - IBS começa a substituir ICMS/ISS';
+                    cor = 'linear-gradient(135deg, #f39c12, #d68910)';
+                    break;
+                    
+                case '2029':
+                    status = 'Meio da Transição';
+                    detalhes = 'CBS (100%) + IBS (60%) + ICMS/ISS (40%) + IPI (residual)';
+                    impacto = '⚖️ Ponto médio da transição - maior parte já no novo sistema';
+                    cor = 'linear-gradient(135deg, #8e44ad, #7d3c98)';
+                    break;
+                    
+                case '2033':
+                    status = 'Transição Quase Completa';
+                    detalhes = 'CBS (100%) + IBS (90%) + ICMS/ISS (10%) + IPI (residual)';
+                    impacto = '🎯 Quase no sistema final - últimos ajustes da transição';
+                    cor = 'linear-gradient(135deg, #27ae60, #229954)';
+                    break;
+                    
+                case '2034':
+                default:
+                    status = 'Sistema Novo Completo';
+                    detalhes = 'IBS (100%) + CBS (100%) + IPI (apenas produtos específicos)';
+                    impacto = '✅ Reforma completamente implementada - sistema tributário unificado';
+                    cor = 'linear-gradient(135deg, #3498db, #2980b9)';
+                    break;
+            }
+            
+            if (anoElement) anoElement.textContent = ano;
+            if (statusElement) statusElement.textContent = status;
+            if (detalhesElement) detalhesElement.textContent = detalhes;
+            if (impactoElement) impactoElement.textContent = impacto;
+            if (indicadorElement) indicadorElement.style.background = cor;
+        }
+
+        function atualizarResumoExecutivo(totalReforma) {
+            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+            const exportacoes = parseFloat(document.getElementById('exportacoes')?.value) || 0;
+            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+            const servicosExterior = parseFloat(document.getElementById('servicosExterior')?.value) || 0;
+            const receitasFinanceiras = parseFloat(document.getElementById('receitasFinanceiras')?.value) || 0;
+            const outrasReceitas = parseFloat(document.getElementById('outrasReceitas')?.value) || 0;
+            
+            const faturamentoTotal = vendasInternas + vendasInterestaduais + exportacoes + vendasIPI + 
+                                   servicosMunicipio + servicosOutros + servicosExterior + receitasFinanceiras + outrasReceitas;
+            
+            if (faturamentoTotal === 0) {
+                document.getElementById('resumoFaturamento').textContent = 'R$ 0,00';
+                document.getElementById('resumoAtual').textContent = 'R$ 0,00';
+                document.getElementById('resumoReforma').textContent = 'R$ 0,00';
+                document.getElementById('resumoImpacto').textContent = 'R$ 0,00';
+                document.getElementById('resumoPercAtual').textContent = 'Aguardando dados';
+                document.getElementById('resumoPercReforma').textContent = 'Aguardando dados';
+                document.getElementById('resumoPercImpacto').textContent = 'Aguardando dados';
+                
+                document.getElementById('breakdownAtual').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">Informe as receitas nas etapas anteriores</div>';
+                document.getElementById('breakdownReforma').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">Informe as receitas nas etapas anteriores</div>';
+                return;
+            }
+            
+            const percAtual = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
+            const percReforma = faturamentoTotal > 0 ? (totalReforma / faturamentoTotal * 100).toFixed(2) : 0;
+            const diferenca = totalReforma - totalAtual;
+            const percImpacto = faturamentoTotal > 0 ? (Math.abs(diferenca) / faturamentoTotal * 100).toFixed(2) : 0;
+            
+            document.getElementById('resumoFaturamento').textContent = formatarMoeda(faturamentoTotal);
+            document.getElementById('resumoAtual').textContent = formatarMoeda(totalAtual);
+            document.getElementById('resumoReforma').textContent = formatarMoeda(totalReforma);
+            document.getElementById('resumoImpacto').textContent = formatarMoeda(Math.abs(diferenca));
+            
+            document.getElementById('resumoPercAtual').textContent = `${percAtual}% do faturamento`;
+            document.getElementById('resumoPercReforma').textContent = `${percReforma}% do faturamento`;
+            document.getElementById('resumoPercImpacto').textContent = `${percImpacto}% ${diferenca >= 0 ? 'de acréscimo' : 'de economia'}`;
+            
+            const tipoPeriodo = document.getElementById('tipoPeriodo').value;
+            const periodo = document.getElementById('periodo').value;
+            document.getElementById('resumoPeriodo').textContent = tipoPeriodo === 'anual' ? `Ano ${periodo}` : `Período ${periodo}`;
+            
+            atualizarBreakdowns(faturamentoTotal, totalReforma);
+        }
+
+        function atualizarBreakdowns(faturamentoTotal, totalReforma) {
+            const regime = document.getElementById('regime').value;
+            
+            if (faturamentoTotal === 0 || resultadosAtualCalculados.length === 0) {
+                document.getElementById('breakdownAtual').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">📊 Informe as receitas nas etapas anteriores para ver o breakdown detalhado</div>';
+                document.getElementById('breakdownReforma').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">📊 Informe as receitas nas etapas anteriores para ver o breakdown detalhado</div>';
+                return;
+            }
+            
+            let htmlAtual = '';
+            if (regime === 'simples') {
+                const perc = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
+                htmlAtual = `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <span>📋 DAS Simples Nacional</span>
+                        <span style="font-weight: bold;">${perc}%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; color: #6c757d; font-size: 0.9em;">
+                        <span>Valor absoluto</span>
+                        <span>${formatarMoeda(totalAtual)}</span>
+                    </div>
+                `;
+            } else {
+                resultadosAtualCalculados.forEach(resultado => {
+                    if (resultado.valor > 0) {
+                        const perc = faturamentoTotal > 0 ? (resultado.valor / faturamentoTotal * 100).toFixed(2) : 0;
+                        htmlAtual += `
+                            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                                <span>${resultado.nome}</span>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: bold;">${perc}%</div>
+                                    <div style="font-size: 0.8em; color: #6c757d;">${formatarMoeda(resultado.valor)}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                const percTotal = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
+                htmlAtual += `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 10px; border-top: 2px solid #e74c3c; font-weight: bold;">
+                        <span>🔢 TOTAL</span>
+                        <span style="color: #e74c3c;">${percTotal}%</span>
+                    </div>
+                `;
+            }
+            
+            const percIBS = faturamentoTotal > 0 ? ((totalReforma * 0.9) / faturamentoTotal * 100).toFixed(2) : 0;
+            const percIPI = faturamentoTotal > 0 ? ((totalReforma * 0.1) / faturamentoTotal * 100).toFixed(2) : 0;
+            const percTotalReforma = faturamentoTotal > 0 ? (totalReforma / faturamentoTotal * 100).toFixed(2) : 0;
+            
+            let htmlReforma = `
+                <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                    <span>🔄 IBS + CBS (Unificado)</span>
+                    <div style="text-align: right;">
+                        <div style="font-weight: bold;">${percIBS}%</div>
+                        <div style="font-size: 0.8em; color: #6c757d;">${formatarMoeda(totalReforma * 0.9)}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (totalReforma * 0.1 > 0) {
+                htmlReforma += `
+                    <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                        <span>🏭 IPI Residual</span>
+                        <div style="text-align: right;">
+                            <div style="font-weight: bold;">${percIPI}%</div>
+                            <div style="font-size: 0.8em; color: #6c757d;">${formatarMoeda(totalReforma * 0.1)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            htmlReforma += `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 10px; border-top: 2px solid #27ae60; font-weight: bold;">
+                    <span>🔢 TOTAL</span>
+                    <span style="color: #27ae60;">${percTotalReforma}%</span>
+                </div>
+            `;
+            
+            document.getElementById('breakdownAtual').innerHTML = htmlAtual;
+            document.getElementById('breakdownReforma').innerHTML = htmlReforma;
+        }
+
+        function exibirResultadosReforma(impostoUnificado, ipiResidual, totalReforma, ano, percentual) {
+            const container = document.getElementById('resultadosReforma');
+            let html = '';
+            
+            let classe = impostoUnificado > 0 ? 'reforma' : impostoUnificado < 0 ? 'credor' : 'neutro';
+            let status = impostoUnificado > 0 ? 'reforma' : impostoUnificado < 0 ? 'credor' : 'neutro';
+            let icon = impostoUnificado > 0 ? '🔄' : impostoUnificado < 0 ? '📥' : '⚖️';
+            let nomeImposto = ano === '2034' ? 'IBS + CBS (Unificado)' : `Sistema Misto (${Math.round(percentual * 100)}% Novo)`;
+            
+            html += `
+                <div class="imposto-card ${classe}">
+                    <div class="imposto-header">
+                        <div class="imposto-nome">${icon} ${nomeImposto}</div>
+                        <div class="imposto-valor ${status}">${formatarMoeda(Math.abs(impostoUnificado))}</div>
+                    </div>
+                    <div class="calculo-detalhes">Substitui ICMS + ISS + PIS + COFINS em imposto único - ${formatarMoeda(impostoUnificado)}</div>
+                </div>
+            `;
+            
+            if (ipiResidual > 0) {
+                html += `
+                    <div class="imposto-card devedor">
+                        <div class="imposto-header">
+                            <div class="imposto-nome">🏭 IPI Residual</div>
+                            <div class="imposto-valor devedor">${formatarMoeda(ipiResidual)}</div>
+                        </div>
+                        <div class="calculo-detalhes">IPI com escopo muito reduzido (apenas produtos específicos)</div>
+                    </div>
+                `;
+            }
+            
+            html += `
+                <div class="summary-total" style="margin-top: 20px;">
+                    <h3>💰 TOTAL REFORMA (${ano})</h3>
+                    <div class="valor">${formatarMoeda(totalReforma)}</div>
+                    <p style="margin-top: 10px; opacity: 0.9;">
+                        Carga tributária unificada (IBS + CBS)
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            document.getElementById('anoReformaNome').textContent = ano;
+            exibirResumoAtual();
+        }
+
+        function exibirResumoAtual() {
+            const container = document.getElementById('resultadosAtual');
+            const regime = document.getElementById('regime').value;
+            let html = '';
+            
+            let nomeRegime = '';
+            switch(regime) {
+                case 'simples': nomeRegime = 'Simples Nacional'; break;
+                case 'lucro_presumido': nomeRegime = 'Lucro Presumido'; break;
+                case 'lucro_real': nomeRegime = 'Lucro Real'; break;
+            }
+            document.getElementById('regimeAtualNome').textContent = nomeRegime;
+            
+            if (regime === 'simples') {
+                html = `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                        <span>DAS Simples Nacional</span>
+                        <span style="font-weight: bold;">${formatarMoeda(totalAtual)}</span>
+                    </div>
+                `;
+            } else {
+                resultadosAtualCalculados.forEach(resultado => {
+                    if (resultado.valor > 0) {
+                        html += `
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                                <span>${resultado.nome}</span>
+                                <span style="font-weight: bold;">${formatarMoeda(resultado.valor)}</span>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            html += `
+                <div class="summary-total" style="margin-top: 15px;">
+                    <h3>💰 TOTAL ATUAL</h3>
+                    <div class="valor">${formatarMoeda(totalAtual)}</div>
+                    <p style="margin-top: 10px; opacity: 0.9;">
+                        ${nomeRegime}
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function exibirDiferenca(diferenca) {
+            const card = document.getElementById('diferencaCard');
+            const valor = document.getElementById('diferencaValor');
+            const texto = document.getElementById('diferencaTexto');
+            
+            if (diferenca > 0) {
+                card.className = 'diferenca-card diferenca-negativa';
+                valor.textContent = `+ ${formatarMoeda(diferenca)}`;
+                texto.textContent = 'Acréscimo na carga tributária com a reforma';
+            } else if (diferenca < 0) {
+                card.className = 'diferenca-card diferenca-positiva';
+                valor.textContent = `- ${formatarMoeda(Math.abs(diferenca))}`;
+                texto.textContent = 'Economia na carga tributária com a reforma';
+            } else {
+                card.className = 'diferenca-card';
+                valor.textContent = formatarMoeda(0);
+                texto.textContent = 'Carga tributária equivalente';
+            }
+            
+            const percentual = totalAtual > 0 ? (diferenca / totalAtual * 100).toFixed(1) : 0;
+            texto.textContent += ` (${Math.abs(percentual)}%)`;
+        }
+
+        function proximaEtapa() {
+            if (etapaAtual < totalEtapas) {
+                document.getElementById(`step${etapaAtual}`).className = 'step completed';
+                document.getElementById(`secao${etapaAtual}`).classList.remove('active');
+                
+                etapaAtual++;
+                
+                document.getElementById(`secao${etapaAtual}`).classList.add('active');
+                document.getElementById(`step${etapaAtual}`).className = 'step active';
+                
+                const progress = (etapaAtual / totalEtapas) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+                
+                document.getElementById('btnAnterior').disabled = false;
+                if (etapaAtual === totalEtapas) {
+                    document.getElementById('btnProximo').textContent = '✅ Finalizar';
+                    document.getElementById('btnProximo').onclick = finalizarApuracao;
+                    calcularTodosImpostos();
+                    calcularReforma();
+                }
+
+                if (etapaAtual === 2 || etapaAtual === 3) {
+                    calcularAutomatico();
+                } else if (etapaAtual === 4) {
+                    calcularTodosImpostos();
+                } else if (etapaAtual === 5) {
+                    calcularTodosImpostos();
+                    calcularReforma();
+                }
+                
+                updateAISuggestions();
+                debugLog(`Avançou para etapa ${etapaAtual}`, 'success');
+            }
+        }
+
+        function voltarEtapa() {
+            if (etapaAtual > 1) {
+                document.getElementById(`step${etapaAtual}`).className = 'step pending';
+                document.getElementById(`secao${etapaAtual}`).classList.remove('active');
+                
+                etapaAtual--;
+                
+                document.getElementById(`secao${etapaAtual}`).classList.add('active');
+                document.getElementById(`step${etapaAtual}`).className = 'step active';
+                
+                const progress = (etapaAtual / totalEtapas) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+                
+                if (etapaAtual === 1) {
+                    document.getElementById('btnAnterior').disabled = true;
+                }
+                
+                document.getElementById('btnProximo').textContent = 'Próximo ➡️';
+                document.getElementById('btnProximo').onclick = proximaEtapa;
+                
+                updateAISuggestions();
+                debugLog(`Voltou para etapa ${etapaAtual}`, 'info');
+            }
+        }
+
+        function finalizarApuracao() {
+            if (etapaAtual === 5) {
+                calcularTodosImpostos();
+                calcularReforma();
+            }
+            
+            const regime = document.getElementById('regime').value;
+            let mensagem = '🎉 Análise completa finalizada!\n\n';
+            
+            if (regime === 'simples') {
+                mensagem += `📋 DAS Simples Nacional: ${formatarMoeda(totalAtual)}\n`;
+                mensagem += '🔄 Compare com o sistema unificado da reforma (IBS + CBS)\n\n';
+                mensagem += 'A reforma mantém opção simplificada, mas com sistema IBS + CBS como alternativa.\n\n';
+                mensagem += '🤖 Use o Assistente IA para estratégias personalizadas!';
+            } else {
+                mensagem += `📊 Sistema Atual: ${formatarMoeda(totalAtual)}\n`;
+                mensagem += '🔄 Sistema Reforma: Veja o comparativo IBS + CBS\n\n';
+                mensagem += 'Use essas informações para planejamento tributário estratégico.\n\n';
+                mensagem += '🤖 Consulte o Contador IA para insights especializados!';
+            }
+            
+            alert(mensagem);
+            debugLog('Apuração finalizada', 'success');
+        }
+
+        function limparTudo() {
+            if (confirm('⚠️ Tem certeza que deseja limpar todos os dados?')) {
+                document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+                document.getElementById('tipoPeriodo').value = 'mensal';
+                document.getElementById('regime').value = 'lucro_real';
+                document.getElementById('atividade').value = 'comercio';
+                
+                etapaAtual = 1;
+                
+                document.querySelectorAll('.section').forEach(secao => secao.classList.remove('active'));
+                document.getElementById('secao1').classList.add('active');
+                
+                document.querySelectorAll('.step').forEach(step => step.className = 'step pending');
+                document.getElementById('step1').className = 'step active';
+                
+                document.getElementById('progressFill').style.width = '20%';
+                
+                document.getElementById('btnAnterior').disabled = true;
+                document.getElementById('btnProximo').textContent = 'Próximo ➡️';
+                document.getElementById('btnProximo').onclick = proximaEtapa;
+                
+                document.querySelectorAll('.ai-insights-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                
+                // 🔥 RESETAR ESTADO DA IA
+                primeiraInteracaoAI = false;
+                aiConversationHistory = [];
+                
+                // Resetar mensagens do chat
+                document.getElementById('aiMessages').innerHTML = `
+                    <div class="ai-message ai">
+                        <strong>👋 Olá!</strong> Sou seu Contador IA Especialista em tributação brasileira.
+                        <br><br>
+                        Estou aqui para ajudar especificamente com:
+                        <br>• <strong>Análise dos resultados calculados</strong>
+                        <br>• <strong>Estratégias de otimização tributária</strong>
+                        <br>• <strong>Impacto da reforma tributária</strong>
+                        <br>• <strong>Planejamento fiscal estratégico</strong>
+                        <br><br>
+                        <strong>Como posso ajudá-lo hoje?</strong>
+                    </div>
+                `;
+                
+                // Mostrar sugestões novamente
+                const suggestions = document.getElementById('aiSuggestions');
+                if (suggestions) {
+                    suggestions.classList.remove('hidden');
+                }
+                
+                atualizarPeriodo();
+                atualizarRegime();
+                calcularAutomatico();
+                updateAISuggestions();
+                debugLog('Todos os dados foram limpos', 'success');
+            }
+        }
+
+        // 🔥 FUNÇÃO MELHORADA: RELATÓRIO BASEADO EM DADOS REAIS
+        async function gerarRelatorio() {
+            updateCompanyData();
+            
+            // Verificar se há dados suficientes
+            const temDadosSuficientes = totalAtual > 0 || Object.values(currentCompanyData.receitas).some(v => v > 0);
+            
+            if (!temDadosSuficientes) {
+                alert('⚠️ Por favor, complete os dados nas etapas 2 e 3 antes de gerar o relatório.');
+                return;
+            }
+            
+            const impactoReforma = totalReforma - totalAtual;
+            const percentualImpacto = totalAtual > 0 ? (impactoReforma / totalAtual * 100).toFixed(1) : 0;
+            
+            const messages = [
+                { role: 'system', content: generateAIPrompt() },
+                { role: 'user', content: `Gere um relatório executivo completo baseado nos dados REAIS da empresa analisada. 
+
+DADOS REAIS DA EMPRESA:
+- Faturamento Total: R$ ${Object.values(currentCompanyData.receitas).reduce((a, b) => a + b, 0).toLocaleString('pt-BR')}
+- Sistema Atual: R$ ${totalAtual.toLocaleString('pt-BR')} 
+- Reforma Tributária: R$ ${totalReforma.toLocaleString('pt-BR')}
+- Impacto: ${impactoReforma >= 0 ? '+' : ''}R$ ${impactoReforma.toLocaleString('pt-BR')} (${percentualImpacto}%)
+- Regime: ${currentCompanyData.configuracao.regime}
+- Atividade: ${currentCompanyData.configuracao.atividade}
+
+O relatório deve incluir:
+
+1. **Resumo Executivo** - Situação atual da empresa com dados específicos
+2. **Análise Tributária Atual** - Breakdown detalhado dos impostos calculados
+3. **Impacto da Reforma Tributária** - Comparativo quantitativo real
+4. **Recomendações Estratégicas** - Ações práticas baseadas no impacto real
+5. **Próximos Passos** - Cronograma específico para esta empresa
+
+Seja específico, use os dados reais calculados, e forneça insights acionáveis. Não use frases como "Como contador com 30+ anos de experiência".` }
+            ];
+
+            try {
+                const originalText = document.querySelector('.btn-success').textContent;
+                document.querySelector('.btn-success').textContent = '⏳ Gerando...';
+                document.querySelector('.btn-success').disabled = true;
+
+                debugLog('Iniciando geração de relatório baseado em dados reais', 'info');
+                const relatorio = await callOpenAI(messages);
+                
+                document.querySelector('.btn-success').textContent = originalText;
+                document.querySelector('.btn-success').disabled = false;
+                
+                const novaJanela = window.open('', '_blank');
+                novaJanela.document.write(`
+                    <html>
+                        <head>
+                            <title>Relatório Tributário IA - ${new Date().toLocaleDateString()}</title>
+                            <style>
+                                body { font-family: 'Segoe UI', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+                                h1, h2, h3 { color: #2c3e50; }
+                                h1 { border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+                                h2 { border-left: 4px solid #27ae60; padding-left: 15px; background: #f8f9fa; padding: 10px; }
+                                .highlight { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; }
+                                .data-box { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 10px 0; }
+                                .warning { background: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 15px 0; }
+                                .impacto-positivo { color: #28a745; font-weight: bold; }
+                                .impacto-negativo { color: #dc3545; font-weight: bold; }
+                                .dados-reais { background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0; }
+                                @media print { body { margin: 0; } }
+                            </style>
+                        </head>
+                        <body>
+                            <h1>📊 Relatório Tributário Inteligente</h1>
+                            <div class="highlight">
+                                <strong>Gerado por:</strong> Contador IA Especialista<br>
+                                <strong>Data:</strong> ${new Date().toLocaleDateString('pt-BR')}<br>
+                                <strong>Empresa:</strong> ${currentCompanyData.configuracao?.regime || 'Não informado'} - ${currentCompanyData.configuracao?.atividade || 'Não informado'}
+                            </div>
+                            
+                            <div class="dados-reais">
+                                <h3>📈 Dados Calculados da Empresa</h3>
+                                <strong>Faturamento Total:</strong> R$ ${Object.values(currentCompanyData.receitas).reduce((a, b) => a + b, 0).toLocaleString('pt-BR')}<br>
+                                <strong>Sistema Atual:</strong> R$ ${totalAtual.toLocaleString('pt-BR')}<br>
+                                <strong>Reforma Tributária:</strong> R$ ${totalReforma.toLocaleString('pt-BR')}<br>
+                                <strong>Impacto:</strong> <span class="${impactoReforma >= 0 ? 'impacto-negativo' : 'impacto-positivo'}">${impactoReforma >= 0 ? '+' : ''}R$ ${impactoReforma.toLocaleString('pt-BR')} (${percentualImpacto}%)</span>
+                            </div>
+                            
+                            <div style="white-space: pre-line;">${relatorio.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>')}</div>
+                            <div class="warning">
+                                <strong>⚠️ Importante:</strong> Este relatório foi gerado por IA com base nos dados calculados na calculadora. Sempre consulte um contador profissional para decisões fiscais importantes.
+                            </div>
+                        </body>
+                    </html>
+                `);
+                novaJanela.document.close();
+                debugLog('Relatório baseado em dados reais gerado com sucesso', 'success');
+                
+            } catch (error) {
+                document.querySelector('.btn-success').textContent = originalText;
+                document.querySelector('.btn-success').disabled = false;
+                
+                alert('Erro ao gerar relatório. Tente novamente ou use o chat da IA para obter insights.');
+                debugLog(`Erro ao gerar relatório: ${error.message}`, 'error');
+            }
+        }
+
+        // ========= INICIALIZAÇÃO MELHORADA =========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar input habilitado/desabilitado
+            const aiInput = document.getElementById('aiInput');
+            const aiSend = document.getElementById('aiSend');
+            
+            if (aiInput && aiSend) {
+                aiInput.addEventListener('input', function() {
+                    aiSend.disabled = this.value.trim().length === 0 || isAIProcessing;
+                });
+            }
+
+            atualizarPeriodo();
+            atualizarRegime();
+            calcularAutomatico();
+            
+            if (document.getElementById('resumoFaturamento')) {
+                atualizarResumoExecutivo(0);
+            }
+            
+            if (document.getElementById('indicadorTransicao')) {
+                atualizarIndicadorTransicao('2034', 1);
+            }
+            
+            debugLog('Sistema melhorado inicializado com sucesso', 'success');
+        });
+    </script>
+</body>
+</html>
