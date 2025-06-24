@@ -1318,7 +1318,7 @@
                         • <strong>IBS</strong> (Imposto sobre Bens e Serviços) - substitui ICMS e ISS<br>
                         • <strong>CBS</strong> (Contribuição sobre Bens e Serviços) - substitui PIS e COFINS<br>
                         • <strong>Período de transição:</strong> 2026 a 2033 (sistema dual)<br>
-                        • <strong>Implementação completa:</strong> a partir de 2034<br><br>
+                        • <strong>Implementação completa:</strong> a partir de 2033<br><br>
                         
                         <strong>💡 Importante:</strong> O comparativo abaixo considera sua empresa no <strong>regime geral da reforma (IBS + CBS)</strong>, 
                         independente do regime atual, para análise real do impacto da mudança.
@@ -1347,8 +1347,8 @@
                             <div>CBS (100%) + IBS (90%) + ICMS/ISS (10%)</div>
                         </div>
                         <div class="timeline-item">
-                            <div class="timeline-year">2034</div>
-                            <div>Sistema novo em vigor: CBS (100%) + IBS (100%)</div>
+                            <div class="timeline-year">2033</div>
+                            <div>Sistema novo completo: CBS (100%) + IBS (100%)</div>
                         </div>
                     </div>
 
@@ -1379,7 +1379,7 @@
                     <div class="alert alert-warning">
                         <strong>⚠️ IMPORTANTE - Estimativas:</strong><br>
                         • Alíquotas da reforma ainda não foram definitivamente regulamentadas<br>
-                        • Estimativa inicial: IBS + CBS = 26,5% (pode variar entre 24% e 28%)<br>
+                        • Estimativa atual: IBS + CBS = 27,97% a 28%<br>
                         • Podem haver alíquotas diferenciadas por setor<br>
                         • Cesta básica e alguns serviços essenciais podem ter alíquota zero<br>
                         • Sistema de créditos será mantido e aprimorado<br>
@@ -1416,8 +1416,8 @@
                     <div class="input-group" style="margin-top: 20px;">
                         <div class="input-field">
                             <label>🎯 Alíquota IBS + CBS Estimada (%):</label>
-                            <input type="number" id="aliquotaReforma" value="26.5" min="20" max="35" step="0.1" placeholder="26,5%" oninput="calcularReforma()">
-                            <small style="color: #6c757d; margin-top: 5px;">💡 Estimativa inicial: 26,5% (pode variar entre 24% e 28%)</small>
+                            <input type="number" id="aliquotaReforma" value="27.97" min="20" max="35" step="0.1" placeholder="26,5%" oninput="calcularReforma()">
+                            <small style="color: #6c757d; margin-top: 5px;">💡 Estimativa atual: 27,97% a 28% (atualizada jan/2025)</small>
                         </div>
                         <div class="input-field">
                             <label>📅 Ano de Análise da Transição:</label>
@@ -2985,8 +2985,8 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
             const alugueis = parseFloat(document.getElementById('alugueis')?.value) || 0;
             const ativoImobilizado = parseFloat(document.getElementById('ativoImobilizado')?.value) || 0;
             
-            const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 26.5;
-            const anoTransicao = document.getElementById('anoTransicao')?.value || '2034';
+            const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 27.97;
+            const anoTransicao = document.getElementById('anoTransicao')?.value || '2033';
             
             let percentualNovo = 1;
             
@@ -2995,8 +2995,9 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
                 case '2026': percentualNovo = 0.5; break;
                 case '2027': percentualNovo = 0.6; break;
                 case '2029': percentualNovo = 0.8; break;
-                case '2033': percentualNovo = 0.95; break;
-                case '2034': default: percentualNovo = 1; break;
+                case '2033': percentualNovo = 1; break;        // ✅ 2033 = 100%
+                case '2034': 
+                default: percentualNovo = 1; break;           // ✅ 2034+ = 100%
             }
             
             const debito = baseReforma * (aliquotaReforma / 100) * percentualNovo;
@@ -3046,39 +3047,39 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
                     break;
                     
                 case '2026':
-                    status = 'Início da Transição';
-                    detalhes = 'CBS (50%) + PIS/COFINS (50%) | ICMS + ISS + IPI (100%)';
-                    impacto = '🔄 Primeiro ano da reforma - CBS substitui gradualmente PIS/COFINS';
+                    status = 'Período de Testes';
+                    detalhes = 'CBS (0,9%) + IBS (0,1%) + Sistema atual em paralelo';
+                    impacto = '🧪 Fase de testes da reforma - implementação gradual começando';
                     cor = 'linear-gradient(135deg, #f39c12, #e67e22)';
                     break;
                     
                 case '2027':
-                    status = 'CBS Completa + IBS Inicial';
-                    detalhes = 'CBS (100%) + IBS (10%) + ICMS/ISS (100%) + IPI (100%)';
-                    impacto = '📈 CBS já substituiu PIS/COFINS - IBS começa a substituir ICMS/ISS';
+                    status = 'CBS Entra em Vigor';
+                    detalhes = 'CBS substituindo PIS/COFINS + Extinção gradual dos tributos antigos';
+                    impacto = '📈 CBS já em vigor - PIS/COFINS sendo substituídos';
                     cor = 'linear-gradient(135deg, #f39c12, #d68910)';
                     break;
                     
                 case '2029':
-                    status = 'Meio da Transição';
-                    detalhes = 'CBS (100%) + IBS (60%) + ICMS/ISS (40%) + IPI (residual)';
-                    impacto = '⚖️ Ponto médio da transição - maior parte já no novo sistema';
+                    status = 'Transição Gradual';
+                    detalhes = 'Transição em andamento (detalhes conforme regulamentação)';
+                    impacto = '⚖️ Meio da transição - sistema misto em funcionamento';
                     cor = 'linear-gradient(135deg, #8e44ad, #7d3c98)';
                     break;
                     
                 case '2033':
-                    status = 'Transição Quase Completa';
-                    detalhes = 'CBS (100%) + IBS (90%) + ICMS/ISS (10%) + IPI (residual)';
-                    impacto = '🎯 Quase no sistema final - últimos ajustes da transição';
-                    cor = 'linear-gradient(135deg, #27ae60, #229954)';
-                    break;
-                    
-                case '2034':
-                default:
                     status = 'Sistema Novo Completo';
                     detalhes = 'IBS (100%) + CBS (100%) + IPI (apenas produtos específicos)';
                     impacto = '✅ Reforma completamente implementada - sistema tributário unificado';
                     cor = 'linear-gradient(135deg, #3498db, #2980b9)';
+                    break;
+                    
+                case '2034':
+                default:
+                    status = 'Sistema Consolidado';
+                    detalhes = 'IBS + CBS consolidados + Ajustes pós-implementação';
+                    impacto = '🔄 Sistema já consolidado - operação plena da reforma';
+                    cor = 'linear-gradient(135deg, #27ae60, #229954)';
                     break;
             }
             
