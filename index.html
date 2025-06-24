@@ -1332,7 +1332,7 @@
                         </div>
                         <div class="timeline-item">
                             <div class="timeline-year">2026</div>
-                            <div>Início da cobrança da CBS (50% da alíquota) + PIS/COFINS (50%)</div>
+                            <div>Fase de testes - IBS (0,1%) + CBS (0,9%) - Dispensa para quem cumprir obrigações acessórias</div>
                         </div>
                         <div class="timeline-item">
                             <div class="timeline-year">2027</div>
@@ -2992,7 +2992,7 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
             
             switch(anoTransicao) {
                 case '2025': percentualNovo = 0; break;
-                case '2026': percentualNovo = 0.5; break;
+                case '2026': percentualNovo = 0; break;  // 0% porque é só teste, sem cobrança efetiva
                 case '2027': percentualNovo = 0.6; break;
                 case '2029': percentualNovo = 0.8; break;
                 case '2033': percentualNovo = 1; break;        // ✅ 2033 = 100%
@@ -3047,9 +3047,9 @@ Complete os dados de receitas e custos nas próximas etapas da calculadora para 
                     break;
                     
                 case '2026':
-                    status = 'Período de Testes';
-                    detalhes = 'CBS (0,9%) + IBS (0,1%) + Sistema atual em paralelo';
-                    impacto = '🧪 Fase de testes da reforma - implementação gradual começando';
+                    status = 'Fase de Testes (Sem Cobrança Efetiva)';
+                    detalhes = 'IBS (0,1%) + CBS (0,9%) - Dispensa para quem cumprir obrigações acessórias';
+                    impacto = '🧪 Apenas teste de sistemas - PIS/COFINS continuam normalmente';
                     cor = 'linear-gradient(135deg, #f39c12, #e67e22)';
                     break;
                     
