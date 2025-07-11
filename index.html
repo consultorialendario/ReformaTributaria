@@ -2051,60 +2051,36 @@
         let primeiraInteracaoAI = false;
 
         // ========= VARIÁVEIS GLOBAIS SPED REAL v2.1 =========
-       let dadosSPEDReal = {
-    processado: false,
-    arquivos: {
-        efd_icms: {
-            carregado: false,
-            nome: '',
-            registros: {
-                e110: null, // ICMS apurado
-                e520: null, // IPI apurado
-                c170: [],   // 🔥 NOVO: Compras item a item
-                c190: [],   // 🔥 NOVO: Resumo compras por CST
-                d190: []    // 🔥 NOVO: Serviços de transporte
-            }
-        },
-        efd_contrib: {
-            carregado: false,
-            nome: '',
-            registros: {
-                m200: null, // PIS apurado
-                m600: null, // COFINS apurado
-                c170: [],   // 🔥 NOVO: Compras item a item (PIS/COFINS)
-                a170: [],   // 🔥 NOVO: Serviços contratados
-                f100: []    // 🔥 NOVO: Outras despesas
-            }
-        }
-    },
-    impostos: {
-        pis: 0,
-        cofins: 0,
-        icms: 0,
-        ipi: 0,
-        total: 0
-    },
-    // 🔥 NOVO: Créditos extraídos
-    creditos: {
-        comprasMercadorias: 0,
-        servicosContratados: 0,
-        transportes: 0,
-        energiaEletrica: 0,
-        alugueis: 0,
-        ativoImobilizado: 0,
-        totalCreditos: 0,
-        detalhado: {
-            aquisicoesRevenda: 0,
-            materiasPrimas: 0,
-            energiaEletrica: 0,
-            telecomunicacoes: 0,
-            alugueis: 0,
-            ativoImobilizado: 0
-        }
-    },
-    valido: false,
-    erros: []
-};
+        let dadosSPEDReal = {
+            processado: false,
+            arquivos: {
+                efd_icms: {
+                    carregado: false,
+                    nome: '',
+                    registros: {
+                        e110: null, // ICMS apurado
+                        e520: null  // IPI apurado
+                    }
+                },
+                efd_contrib: {
+                    carregado: false,
+                    nome: '',
+                    registros: {
+                        m200: null, // PIS apurado
+                        m600: null  // COFINS apurado
+                    }
+                }
+            },
+            impostos: {
+                pis: 0,
+                cofins: 0,
+                icms: 0,
+                ipi: 0,
+                total: 0
+            },
+            valido: false,
+            erros: []
+        };
 
         let conformidadeValidadaReal = false;
         let fonteDadosSelecionada = 'sped'; // manual, sped, hibrido
@@ -2222,124 +2198,6 @@
 
         // ========= FUNÇÕES SPED REAL v2.1 =========
 
-        function processarEFDICMS(conteudo, nomeArquivo) {
-    debugLog('Processando EFD ICMS/IPI - buscando registros E110, E520 e créditos C170, C190, D190', 'info');
-    
-    const linhas = conteudo.split('\n');
-    let registrosEncontrados = 0;
-    let creditosEncontrados = {
-        comprasMercadorias: 0,
-        transportes: 0,
-        totalItens: 0
-    };
-    
-    // Buscar registro E110 (ICMS)
-    for (let linha of linhas) {
-        if (linha.startsWith('|E110|')) {
-            const campos = linha.split('|');
-            dadosSPEDReal.arquivos.efd_icms.registros.e110 = {
-                registro: 'E110',
-                icmsARecolher: parseFloat(campos[12]) || 0,
-                saldoCredorTransportar: parseFloat(campos[13]) || 0,
-                linhaCompleta: linha
-            };
-            registrosEncontrados++;
-            debugLog(`E110 encontrado: ICMS a recolher = R$ ${dadosSPEDReal.arquivos.efd_icms.registros.e110.icmsARecolher}`, 'success');
-            break;
-        }
-    }
-    
-    // Buscar registro E520 (IPI)
-    for (let linha of linhas) {
-        if (linha.startsWith('|E520|')) {
-            const campos = linha.split('|');
-            dadosSPEDReal.arquivos.efd_icms.registros.e520 = {
-                registro: 'E520',
-                ipiARecolher: parseFloat(campos[8]) || 0,
-                saldoCredor: parseFloat(campos[7]) || 0,
-                linhaCompleta: linha
-            };
-            registrosEncontrados++;
-            debugLog(`E520 encontrado: IPI a recolher = R$ ${dadosSPEDReal.arquivos.efd_icms.registros.e520.ipiARecolher}`, 'success');
-            break;
-        }
-    }
-    
-    dadosSPEDReal.arquivos.efd_icms.carregado = true;
-    dadosSPEDReal.arquivos.efd_icms.nome = nomeArquivo;
-    
-    // Atualizar interface
-    const uploadDiv = document.getElementById('uploadEFDICMS');
-    const statusBadge = document.getElementById('statusEFDICMS');
-    
-    uploadDiv.classList.add('uploaded');
-    statusBadge.classList.add('show');
-    statusBadge.textContent = `✅ ${registrosEncontrados}/2 registros`;
-    
-    if (registrosEncontrados < 2) {
-        statusBadge.classList.add('error');
-        statusBadge.textContent = `⚠️ ${registrosEncontrados}/2 registros`;
-        debugLog(`Apenas ${registrosEncontrados} registros encontrados no EFD ICMS/IPI`, 'warning');
-    }
-    
-    verificarProcessamentoCompleto();
-}
-
-(conteudo, nomeArquivo) {
-    debugLog('Processando EFD-Contribuições - buscando registros M200, M600', 'info');
-    
-    const linhas = conteudo.split('\n');
-    let registrosEncontrados = 0;
-    
-    // Buscar registro M200 (PIS)
-    for (let linha of linhas) {
-        if (linha.startsWith('|M200|')) {
-            const campos = linha.split('|');
-            dadosSPEDReal.arquivos.efd_contrib.registros.m200 = {
-                registro: 'M200',
-                pisARecolher: parseFloat(campos[13]) || 0,
-                linhaCompleta: linha
-            };
-            registrosEncontrados++;
-            debugLog(`M200 encontrado: PIS a recolher = R$ ${dadosSPEDReal.arquivos.efd_contrib.registros.m200.pisARecolher}`, 'success');
-            break;
-        }
-    }
-    
-    // Buscar registro M600 (COFINS)
-    for (let linha of linhas) {
-        if (linha.startsWith('|M600|')) {
-            const campos = linha.split('|');
-            dadosSPEDReal.arquivos.efd_contrib.registros.m600 = {
-                registro: 'M600',
-                cofinsARecolher: parseFloat(campos[13]) || 0,
-                linhaCompleta: linha
-            };
-            registrosEncontrados++;
-            debugLog(`M600 encontrado: COFINS a recolher = R$ ${dadosSPEDReal.arquivos.efd_contrib.registros.m600.cofinsARecolher}`, 'success');
-            break;
-        }
-    }
-    
-    dadosSPEDReal.arquivos.efd_contrib.carregado = true;
-    dadosSPEDReal.arquivos.efd_contrib.nome = nomeArquivo;
-    
-    // Atualizar interface
-    const uploadDiv = document.getElementById('uploadEFDContrib');
-    const statusBadge = document.getElementById('statusEFDContrib');
-    
-    uploadDiv.classList.add('uploaded');
-    statusBadge.classList.add('show');
-    statusBadge.textContent = `✅ ${registrosEncontrados}/2 registros`;
-    
-    if (registrosEncontrados < 2) {
-        statusBadge.classList.add('error');
-        statusBadge.textContent = `⚠️ ${registrosEncontrados}/2 registros`;
-        debugLog(`Apenas ${registrosEncontrados} registros encontrados no EFD-Contribuições`, 'warning');
-    }
-    
-    verificarProcessamentoCompleto();
-}
         function processarArquivoSPEDReal(input, tipo) {
             const file = input.files[0];
             if (!file) return;
@@ -2347,153 +2205,130 @@
             debugLog(`Processando arquivo SPED Real: ${file.name} (${tipo})`, 'info');
             
             const reader = new FileReader();
-          reader.onload = function(e) {
-    const conteudo = e.target.result;
-    
-    if (tipo === 'efd_icms') {
-        processarEFDICMS(conteudo, file.name);
-    } else if (tipo === 'efd_contrib') {
-        processarEFDContrib(conteudo, file.name);
-    }
-};
-   
+            reader.onload = function(e) {
+                const conteudo = e.target.result;
+                
+                if (tipo === 'efd_icms') {
+                    processarEFDICMS(conteudo, file.name);
+                } else if (tipo === 'efd_contrib') {
+                    processarEFDContrib(conteudo, file.name);
+                }
+                
+                verificarProcessamentoCompleto();
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function processarEFDICMS(conteudo, nomeArquivo) {
+            debugLog('Processando EFD ICMS/IPI - buscando registros E110 e E520', 'info');
+            
+            const linhas = conteudo.split('\n');
+            let registrosEncontrados = 0;
+            
+            // Buscar registro E110 (ICMS)
+            for (let linha of linhas) {
+                if (linha.startsWith('|E110|')) {
+                    const campos = linha.split('|');
+                    dadosSPEDReal.arquivos.efd_icms.registros.e110 = {
+                        registro: 'E110',
+                        icmsARecolher: parseFloat(campos[12]) || 0, // Campo VL_ICMS_RECOLHER
+                        saldoCredorTransportar: parseFloat(campos[13]) || 0,
+                        linhaCompleta: linha
+                    };
+                    registrosEncontrados++;
+                    debugLog(`E110 encontrado: ICMS a recolher = R$ ${dadosSPEDReal.arquivos.efd_icms.registros.e110.icmsARecolher}`, 'success');
+                    break;
+                }
+            }
+            
+            // Buscar registro E520 (IPI)
+            for (let linha of linhas) {
+                if (linha.startsWith('|E520|')) {
+                    const campos = linha.split('|');
+                    dadosSPEDReal.arquivos.efd_icms.registros.e520 = {
+                        registro: 'E520',
+                        ipiARecolher: parseFloat(campos[8]) || 0, // Campo VL_SD_IPI
+                        saldoCredor: parseFloat(campos[7]) || 0,
+                        linhaCompleta: linha
+                    };
+                    registrosEncontrados++;
+                    debugLog(`E520 encontrado: IPI a recolher = R$ ${dadosSPEDReal.arquivos.efd_icms.registros.e520.ipiARecolher}`, 'success');
+                    break;
+                }
+            }
+            
+            dadosSPEDReal.arquivos.efd_icms.carregado = true;
+            dadosSPEDReal.arquivos.efd_icms.nome = nomeArquivo;
+            
+            // Atualizar interface
+            const uploadDiv = document.getElementById('uploadEFDICMS');
+            const statusBadge = document.getElementById('statusEFDICMS');
+            
+            uploadDiv.classList.add('uploaded');
+            statusBadge.classList.add('show');
+            statusBadge.textContent = `✅ ${registrosEncontrados}/2 registros`;
+            
+            if (registrosEncontrados < 2) {
+                statusBadge.classList.add('error');
+                statusBadge.textContent = `⚠️ ${registrosEncontrados}/2 registros`;
+                debugLog(`Apenas ${registrosEncontrados} registros encontrados no EFD ICMS/IPI`, 'warning');
+            }
+        }
+
         function processarEFDContrib(conteudo, nomeArquivo) {
-    debugLog('Processando EFD-Contribuições - buscando registros M200, M600 e créditos C170, A170, F100', 'info');
-    
-    const linhas = conteudo.split('\n');
-    let registrosEncontrados = 0;
-    let creditosEncontrados = {
-        comprasMercadorias: 0,
-        servicosContratados: 0,
-        outrasAquisicoes: 0,
-        totalItens: 0
-    };
-    
-    // Buscar registro M200 (PIS)
-    for (let linha of linhas) {
-        if (linha.startsWith('|M200|')) {
-            const campos = linha.split('|');
-            dadosSPEDReal.arquivos.efd_contrib.registros.m200 = {
-                registro: 'M200',
-                pisARecolher: parseFloat(campos[13]) || 0,
-                linhaCompleta: linha
-            };
-            registrosEncontrados++;
-            debugLog(`M200 encontrado: PIS a recolher = R$ ${dadosSPEDReal.arquivos.efd_contrib.registros.m200.pisARecolher}`, 'success');
-            break;
-        }
-    }
-    
-    // Buscar registro M600 (COFINS)
-    for (let linha of linhas) {
-        if (linha.startsWith('|M600|')) {
-            const campos = linha.split('|');
-            dadosSPEDReal.arquivos.efd_contrib.registros.m600 = {
-                registro: 'M600',
-                cofinsARecolher: parseFloat(campos[13]) || 0,
-                linhaCompleta: linha
-            };
-            registrosEncontrados++;
-            debugLog(`M600 encontrado: COFINS a recolher = R$ ${dadosSPEDReal.arquivos.efd_contrib.registros.m600.cofinsARecolher}`, 'success');
-            break;
-        }
-    }
-    
-    // 🔥 NOVO: Processar C170 (Compras item a item) para créditos PIS/COFINS
-    for (let linha of linhas) {
-        if (linha.startsWith('|C170|')) {
-            const campos = linha.split('|');
-            const valorItem = parseFloat(campos[7]) || 0; // VL_ITEM
-            const valorDesc = parseFloat(campos[8]) || 0; // VL_DESC
-            const valorFrete = parseFloat(campos[9]) || 0; // VL_FRT
-            const basePIS = parseFloat(campos[11]) || 0; // VL_BC_PIS
-            const valorPIS = parseFloat(campos[13]) || 0; // VL_PIS
-            const baseCOFINS = parseFloat(campos[15]) || 0; // VL_BC_COFINS
-            const valorCOFINS = parseFloat(campos[17]) || 0; // VL_COFINS
+            debugLog('Processando EFD-Contribuições - buscando registros M200 e M600', 'info');
             
-            if (valorItem > 0) {
-                const itemCredito = {
-                    item: campos[2], // NUM_ITEM
-                    valorItem: valorItem,
-                    valorDesconto: valorDesc,
-                    valorFrete: valorFrete,
-                    basePIS: basePIS,
-                    creditoPIS: valorPIS,
-                    baseCOFINS: baseCOFINS,
-                    creditoCOFINS: valorCOFINS
-                };
-                
-                dadosSPEDReal.arquivos.efd_contrib.registros.c170.push(itemCredito);
-                creditosEncontrados.comprasMercadorias += valorPIS + valorCOFINS;
-                creditosEncontrados.totalItens++;
+            const linhas = conteudo.split('\n');
+            let registrosEncontrados = 0;
+            
+            // Buscar registro M200 (PIS)
+            for (let linha of linhas) {
+                if (linha.startsWith('|M200|')) {
+                    const campos = linha.split('|');
+                    dadosSPEDReal.arquivos.efd_contrib.registros.m200 = {
+                        registro: 'M200',
+                        pisARecolher: parseFloat(campos[13]) || 0, // Campo VL_TOT_CONT_REC
+                        linhaCompleta: linha
+                    };
+                    registrosEncontrados++;
+                    debugLog(`M200 encontrado: PIS a recolher = R$ ${dadosSPEDReal.arquivos.efd_contrib.registros.m200.pisARecolher}`, 'success');
+                    break;
+                }
+            }
+            
+            // Buscar registro M600 (COFINS)
+            for (let linha of linhas) {
+                if (linha.startsWith('|M600|')) {
+                    const campos = linha.split('|');
+                    dadosSPEDReal.arquivos.efd_contrib.registros.m600 = {
+                        registro: 'M600',
+                        cofinsARecolher: parseFloat(campos[13]) || 0, // Campo VL_TOT_CONT_REC
+                        linhaCompleta: linha
+                    };
+                    registrosEncontrados++;
+                    debugLog(`M600 encontrado: COFINS a recolher = R$ ${dadosSPEDReal.arquivos.efd_contrib.registros.m600.cofinsARecolher}`, 'success');
+                    break;
+                }
+            }
+            
+            dadosSPEDReal.arquivos.efd_contrib.carregado = true;
+            dadosSPEDReal.arquivos.efd_contrib.nome = nomeArquivo;
+            
+            // Atualizar interface
+            const uploadDiv = document.getElementById('uploadEFDContrib');
+            const statusBadge = document.getElementById('statusEFDContrib');
+            
+            uploadDiv.classList.add('uploaded');
+            statusBadge.classList.add('show');
+            statusBadge.textContent = `✅ ${registrosEncontrados}/2 registros`;
+            
+            if (registrosEncontrados < 2) {
+                statusBadge.classList.add('error');
+                statusBadge.textContent = `⚠️ ${registrosEncontrados}/2 registros`;
+                debugLog(`Apenas ${registrosEncontrados} registros encontrados no EFD-Contribuições`, 'warning');
             }
         }
-    }
-    
-    // 🔥 NOVO: Processar A170 (Serviços contratados)
-    for (let linha of linhas) {
-        if (linha.startsWith('|A170|')) {
-            const campos = linha.split('|');
-            const valorItem = parseFloat(campos[7]) || 0; // VL_ITEM
-            const valorDesc = parseFloat(campos[8]) || 0; // VL_DESC
-            const valorPIS = parseFloat(campos[11]) || 0; // VL_PIS
-            const valorCOFINS = parseFloat(campos[13]) || 0; // VL_COFINS
-            
-            if (valorItem > 0) {
-                const servicoCredito = {
-                    item: campos[2], // NUM_ITEM
-                    valorItem: valorItem,
-                    valorDesconto: valorDesc,
-                    creditoPIS: valorPIS,
-                    creditoCOFINS: valorCOFINS
-                };
-                
-                dadosSPEDReal.arquivos.efd_contrib.registros.a170.push(servicoCredito);
-                creditosEncontrados.servicosContratados += valorPIS + valorCOFINS;
-            }
-        }
-    }
-    
-    // 🔥 NOVO: Processar F100 (Outras despesas)
-    for (let linha of linhas) {
-        if (linha.startsWith('|F100|')) {
-            const campos = linha.split('|');
-            const valorTotal = parseFloat(campos[3]) || 0; // VL_TOT_REC
-            const valorPIS = parseFloat(campos[5]) || 0; // VL_TOT_DED
-            const valorCOFINS = parseFloat(campos[6]) || 0; // VL_TOT_CONT_NP
-            
-            if (valorTotal > 0) {
-                creditosEncontrados.outrasAquisicoes += valorPIS + valorCOFINS;
-            }
-        }
-    }
-    
-    dadosSPEDReal.arquivos.efd_contrib.carregado = true;
-    dadosSPEDReal.arquivos.efd_contrib.nome = nomeArquivo;
-    
-    // Atualizar totais de créditos
-    dadosSPEDReal.creditos.comprasMercadorias += creditosEncontrados.comprasMercadorias;
-    dadosSPEDReal.creditos.servicosContratados += creditosEncontrados.servicosContratados;
-    dadosSPEDReal.creditos.alugueis += creditosEncontrados.outrasAquisicoes * 0.6; // Estimativa
-    dadosSPEDReal.creditos.energiaEletrica += creditosEncontrados.outrasAquisicoes * 0.3; // Estimativa
-    dadosSPEDReal.creditos.ativoImobilizado += creditosEncontrados.outrasAquisicoes * 0.1; // Estimativa
-    
-    // Atualizar interface
-    const uploadDiv = document.getElementById('uploadEFDContrib');
-    const statusBadge = document.getElementById('statusEFDContrib');
-    
-    uploadDiv.classList.add('uploaded');
-    statusBadge.classList.add('show');
-    statusBadge.textContent = `✅ ${registrosEncontrados}/2 + ${creditosEncontrados.totalItens} itens`;
-    
-    if (registrosEncontrados < 2) {
-        statusBadge.classList.add('error');
-        statusBadge.textContent = `⚠️ ${registrosEncontrados}/2 registros`;
-        debugLog(`Apenas ${registrosEncontrados} registros encontrados no EFD-Contribuições`, 'warning');
-    } else {
-        debugLog(`EFD-Contribuições processado: ${registrosEncontrados} registros + ${creditosEncontrados.totalItens} itens de compras/serviços`, 'success');
-    }
-}
 
         function verificarProcessamentoCompleto() {
             const efdICMSCompleto = dadosSPEDReal.arquivos.efd_icms.carregado;
@@ -2527,98 +2362,49 @@
         }
 
         function exibirStatusParser() {
-    const statusDiv = document.getElementById('spedParserStatus');
-    const detailsDiv = document.getElementById('parserDetails');
-    
-    statusDiv.style.display = 'block';
-    
-    // Calcular totais de créditos
-    dadosSPEDReal.creditos.totalCreditos = 
-        dadosSPEDReal.creditos.comprasMercadorias + 
-        dadosSPEDReal.creditos.servicosContratados + 
-        dadosSPEDReal.creditos.transportes + 
-        dadosSPEDReal.creditos.energiaEletrica + 
-        dadosSPEDReal.creditos.alugueis + 
-        dadosSPEDReal.creditos.ativoImobilizado;
-    
-    let html = '';
-    
-    // EFD ICMS/IPI
-    html += `
-        <div class="parser-detail">
-            <strong>📄 EFD ICMS/IPI:</strong>
-            <span class="parser-success">${dadosSPEDReal.arquivos.efd_icms.nome}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• E110 (ICMS):</span>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.icms).replace('R$ ', '')}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• E520 (IPI):</span>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.ipi).replace('R$ ', '')}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• C170 (Compras):</span>
-            <span class="parser-success">${dadosSPEDReal.arquivos.efd_icms.registros.c170.length} itens</span>
-        </div>
-        <hr style="margin: 10px 0;">
-        <div class="parser-detail">
-            <strong>📊 EFD-Contribuições:</strong>
-            <span class="parser-success">${dadosSPEDReal.arquivos.efd_contrib.nome}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• M200 (PIS):</span>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.pis).replace('R$ ', '')}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• M600 (COFINS):</span>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.cofins).replace('R$ ', '')}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• C170 (Compras):</span>
-            <span class="parser-success">${dadosSPEDReal.arquivos.efd_contrib.registros.c170.length} itens</span>
-        </div>
-        <div class="parser-detail">
-            <span>• A170 (Serviços):</span>
-            <span class="parser-success">${dadosSPEDReal.arquivos.efd_contrib.registros.a170.length} itens</span>
-        </div>
-        <hr style="margin: 10px 0;">
-        <div class="parser-detail">
-            <strong>💰 Total SPED Real:</strong>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.total).replace('R$ ', '')}</span>
-        </div>
-        <hr style="margin: 10px 0;">
-    `;
-    
-    // 🔥 NOVO: Seção de Créditos Extraídos
-    html += `
-        <div class="parser-detail">
-            <strong>💳 Créditos Extraídos do SPED Real:</strong>
-        </div>
-        <div class="parser-detail">
-            <span>• Compras de Mercadorias:</span>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.creditos.comprasMercadorias).replace('R$ ', '')}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• Serviços Contratados:</span>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.creditos.servicosContratados).replace('R$ ', '')}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• Transportes:</span>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.creditos.transportes).replace('R$ ', '')}</span>
-        </div>
-        <div class="parser-detail">
-            <span>• Outras Aquisições:</span>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.creditos.energiaEletrica + dadosSPEDReal.creditos.alugueis + dadosSPEDReal.creditos.ativoImobilizado).replace('R$ ', '')}</span>
-        </div>
-        <div class="parser-detail" style="border-top: 2px solid #27ae60; padding-top: 8px; margin-top: 8px;">
-            <strong>💰 Total de Créditos:</strong>
-            <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.creditos.totalCreditos).replace('R$ ', '')}</span>
-        </div>
-    `;
-    
-    detailsDiv.innerHTML = html;
-}
+            const statusDiv = document.getElementById('spedParserStatus');
+            const detailsDiv = document.getElementById('parserDetails');
+            
+            statusDiv.style.display = 'block';
+            
+            let html = '';
+            
+            // EFD ICMS/IPI
+            html += `
+                <div class="parser-detail">
+                    <strong>📄 EFD ICMS/IPI:</strong>
+                    <span class="parser-success">${dadosSPEDReal.arquivos.efd_icms.nome}</span>
+                </div>
+                <div class="parser-detail">
+                    <span>• E110 (ICMS):</span>
+                    <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.icms).replace('R$ ', '')}</span>
+                </div>
+                <div class="parser-detail">
+                    <span>• E520 (IPI):</span>
+                    <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.ipi).replace('R$ ', '')}</span>
+                </div>
+                <hr style="margin: 10px 0;">
+                <div class="parser-detail">
+                    <strong>📊 EFD-Contribuições:</strong>
+                    <span class="parser-success">${dadosSPEDReal.arquivos.efd_contrib.nome}</span>
+                </div>
+                <div class="parser-detail">
+                    <span>• M200 (PIS):</span>
+                    <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.pis).replace('R$ ', '')}</span>
+                </div>
+                <div class="parser-detail">
+                    <span>• M600 (COFINS):</span>
+                    <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.cofins).replace('R$ ', '')}</span>
+                </div>
+                <hr style="margin: 10px 0;">
+                <div class="parser-detail">
+                    <strong>💰 Total SPED Real:</strong>
+                    <span class="parser-success">R$ ${formatarMoeda(dadosSPEDReal.impostos.total).replace('R$ ', '')}</span>
+                </div>
+            `;
+            
+            detailsDiv.innerHTML = html;
+        }
 
         function simularDadosSPEDReal() {
             debugLog('Simulando parser SPED Real com registros estruturados', 'info');
@@ -2627,90 +2413,53 @@
             btn.disabled = true;
             btn.textContent = '⏳ Simulando Parser...';
             
-        setTimeout(() => {
-            // Simular registros reais estruturados
-            dadosSPEDReal.arquivos.efd_icms = {
-            carregado: true,
-            nome: 'EFD_ICMS_IPI_Demo.txt',
-            registros: {
-                e110: {
-                    registro: 'E110',
-                    icmsARecolher: 8500.00,
-                    saldoCredorTransportar: 0,
-            linhaCompleta: '|E110|15000.00|0|0|0|6500.00|0|0|0|0|0|0|8500.00|0|'
-            },
-            e520: {
-                registro: 'E520',
-                ipiARecolher: 1200.00,
-                saldoCredor: 0,
-                linhaCompleta: '|E520|0|2500.00|1300.00|0|0|0|1200.00|'
-            },
-            c170: [
-                {item: '001', valorItem: 50000, creditoICMS: 9000},
-                {item: '002', valorItem: 30000, creditoICMS: 5400},
-                {item: '003', valorItem: 20000, creditoICMS: 3600}
-            ]
-        }
-    };
-    
-        dadosSPEDReal.arquivos.efd_contrib = {
-            carregado: true,
-            nome: 'EFD_Contribuicoes_Demo.txt',
-            registros: {
-            m200: {
-                registro: 'M200',
-                pisARecolher: 2475.00,
-                linhaCompleta: '|M200|2500.00|25.00|0|2475.00|0|0|2475.00|0|0|0|0|2475.00|'
-            },
-            m600: {
-                registro: 'M600',
-                cofinsARecolher: 11400.00,
-                linhaCompleta: '|M600|11500.00|100.00|0|11400.00|0|0|11400.00|0|0|0|0|11400.00|'
-            },
-            c170: [
-                {item: '001', valorItem: 50000, creditoPIS: 825, creditoCOFINS: 3800},
-                {item: '002', valorItem: 30000, creditoPIS: 495, creditoCOFINS: 2280}
-            ],
-            a170: [
-                {item: 'S001', valorItem: 15000, creditoPIS: 247.5, creditoCOFINS: 1140},
-                {item: 'S002', valorItem: 10000, creditoPIS: 165, creditoCOFINS: 760}
-            ],
-            f100: [
-                {tipo: 'Energia', valorTotal: 12000, creditoPIS: 198, creditoCOFINS: 912},
-                {tipo: 'Aluguéis', valorTotal: 36000, creditoPIS: 594, creditoCOFINS: 2736},
-                {tipo: 'Imobilizado', valorTotal: 15000, creditoPIS: 247.5, creditoCOFINS: 1140}
-            ]
-        }
-    };
-    
-        // Calcular totais
-        dadosSPEDReal.impostos.icms = 8500.00;
-        dadosSPEDReal.impostos.ipi = 1200.00;
-        dadosSPEDReal.impostos.pis = 2475.00;
-        dadosSPEDReal.impostos.cofins = 11400.00;
-        dadosSPEDReal.impostos.total = 23575.00;
-    
-        // Simular créditos extraídos
-        dadosSPEDReal.creditos = {
-            comprasMercadorias: 15800.00,
-            servicosContratados: 2400.00,
-            transportes: 800.00,
-            energiaEletrica: 1200.00,
-            alugueis: 3600.00,
-            ativoImobilizado: 1500.00,
-            totalCreditos: 25300.00,
-            detalhado: {
-                aquisicoesRevenda: 12000.00,
-                materiasPrimas: 3800.00,
-                energiaEletrica: 1200.00,
-                telecomunicacoes: 960.00,
-                alugueis: 3600.00,
-                ativoImobilizado: 1500.00
-        }
-    };
-    
-    dadosSPEDReal.processado = true;
-    dadosSPEDReal.valido = true;
+            setTimeout(() => {
+                // Simular registros reais estruturados
+                dadosSPEDReal.arquivos.efd_icms = {
+                    carregado: true,
+                    nome: 'EFD_ICMS_IPI_Demo.txt',
+                    registros: {
+                        e110: {
+                            registro: 'E110',
+                            icmsARecolher: 8500.00,
+                            saldoCredorTransportar: 0,
+                            linhaCompleta: '|E110|15000.00|0|0|0|6500.00|0|0|0|0|0|0|8500.00|0|'
+                        },
+                        e520: {
+                            registro: 'E520',
+                            ipiARecolher: 1200.00,
+                            saldoCredor: 0,
+                            linhaCompleta: '|E520|0|2500.00|1300.00|0|0|0|1200.00|'
+                        }
+                    }
+                };
+                
+                dadosSPEDReal.arquivos.efd_contrib = {
+                    carregado: true,
+                    nome: 'EFD_Contribuicoes_Demo.txt',
+                    registros: {
+                        m200: {
+                            registro: 'M200',
+                            pisARecolher: 2475.00,
+                            linhaCompleta: '|M200|2500.00|25.00|0|2475.00|0|0|2475.00|0|0|0|0|2475.00|'
+                        },
+                        m600: {
+                            registro: 'M600',
+                            cofinsARecolher: 11400.00,
+                            linhaCompleta: '|M600|11500.00|100.00|0|11400.00|0|0|11400.00|0|0|0|0|11400.00|'
+                        }
+                    }
+                };
+                
+                // Calcular totais
+                dadosSPEDReal.impostos.icms = 8500.00;
+                dadosSPEDReal.impostos.ipi = 1200.00;
+                dadosSPEDReal.impostos.pis = 2475.00;
+                dadosSPEDReal.impostos.cofins = 11400.00;
+                dadosSPEDReal.impostos.total = 23575.00;
+                
+                dadosSPEDReal.processado = true;
+                dadosSPEDReal.valido = true;
                 
                 // Atualizar interface
                 const uploadEFDICMS = document.getElementById('uploadEFDICMS');
@@ -2738,83 +2487,46 @@
                 btn.style.background = 'linear-gradient(135deg, #27ae60, #229954)';
                 
                 debugLog('Simulação SPED Real concluída com registros estruturados', 'success');
-                  verificarProcessamentoCompleto();
-    }, 2000);
-}
+            }, 2000);
+        }
 
         // ========= FUNÇÕES DE PREENCHIMENTO INTELIGENTE =========
 
         function preencherCamposComSPEDReal() {
-    if (!dadosSPEDReal.processado || fonteDadosSelecionada === 'manual') {
-        return;
-    }
-    
-    debugLog('Preenchendo campos com dados SPED Real extraídos + créditos detalhados', 'info');
-    
-    // Preencher receitas com base nos impostos SPED
-    if (etapaAtual >= 2) {
-        const regime = document.getElementById('regime').value;
-        
-        // Estimar receitas baseadas nos impostos apurados
-        let aliqPIS, aliqCOFINS;
-        if (regime === 'lucro_real') {
-            aliqPIS = 1.65;
-            aliqCOFINS = 7.6;
-        } else {
-            aliqPIS = 0.65;
-            aliqCOFINS = 3.0;
+            if (!dadosSPEDReal.processado || fonteDadosSelecionada === 'manual') {
+                return;
+            }
+            
+            debugLog('Preenchendo campos com dados SPED Real extraídos', 'info');
+            
+            // Preencher receitas com base nos impostos SPED
+            if (etapaAtual >= 2) {
+                // Estimar receitas baseadas nos impostos apurados
+                const regime = document.getElementById('regime').value;
+                
+                // Estimar base PIS/COFINS
+                let aliqPIS, aliqCOFINS;
+                if (regime === 'lucro_real') {
+                    aliqPIS = 1.65;
+                    aliqCOFINS = 7.6;
+                } else {
+                    aliqPIS = 0.65;
+                    aliqCOFINS = 3.0;
+                }
+                
+                const receitaEstimadaPIS = dadosSPEDReal.impostos.pis / (aliqPIS / 100);
+                const receitaEstimadaCOFINS = dadosSPEDReal.impostos.cofins / (aliqCOFINS / 100);
+                const receitaMedia = (receitaEstimadaPIS + receitaEstimadaCOFINS) / 2;
+                
+                // Distribuir receitas estimadas
+                preencherCampoSPEDReal('vendasInternas', receitaMedia * 0.6);
+                preencherCampoSPEDReal('vendasInterestaduais', receitaMedia * 0.25);
+                preencherCampoSPEDReal('servicosMunicipio', receitaMedia * 0.15);
+            }
+            
+            calcularAutomatico();
         }
-        
-        const receitaEstimadaPIS = dadosSPEDReal.impostos.pis / (aliqPIS / 100);
-        const receitaEstimadaCOFINS = dadosSPEDReal.impostos.cofins / (aliqCOFINS / 100);
-        const receitaMedia = (receitaEstimadaPIS + receitaEstimadaCOFINS) / 2;
-        
-        // Distribuir receitas estimadas
-        preencherCampoSPEDReal('vendasInternas', receitaMedia * 0.6);
-        preencherCampoSPEDReal('vendasInterestaduais', receitaMedia * 0.25);
-        preencherCampoSPEDReal('servicosMunicipio', receitaMedia * 0.15);
-    }
-    
-    // 🔥 NOVO: Preencher custos com base nos créditos extraídos
-    if (etapaAtual >= 3) {
-        // Estimar valores base dos créditos (reverse engineering)
-        const regime = document.getElementById('regime').value;
-        
-        if (regime === 'lucro_real') {
-            // Para Lucro Real, estimar base dos créditos
-            const aliqPISCredito = 1.65;
-            const aliqCOFINSCredito = 7.6;
-            
-            // Calcular base estimada das compras
-            const baseCompras = dadosSPEDReal.creditos.comprasMercadorias / ((aliqPISCredito + aliqCOFINSCredito) / 100);
-            
-            // Distribuir entre categorias com base nos dados extraídos
-            if (dadosSPEDReal.arquivos.efd_contrib.registros.c170.length > 0) {
-                preencherCampoSPEDReal('aquisicoesRevenda', baseCompras * 0.6);
-                preencherCampoSPEDReal('materiasPrimas', baseCompras * 0.3);
-            }
-            
-            if (dadosSPEDReal.arquivos.efd_contrib.registros.a170.length > 0) {
-                const baseServicos = dadosSPEDReal.creditos.servicosContratados / ((aliqPISCredito + aliqCOFINSCredito) / 100);
-                preencherCampoSPEDReal('telecomunicacoes', baseServicos * 0.4);
-                preencherCampoSPEDReal('alugueis', baseServicos * 0.6);
-            }
-            
-            // Outras categorias estimadas
-            if (dadosSPEDReal.creditos.energiaEletrica > 0) {
-                const baseEnergia = dadosSPEDReal.creditos.energiaEletrica / ((aliqPISCredito + aliqCOFINSCredito) / 100);
-                preencherCampoSPEDReal('energiaEletrica', baseEnergia);
-            }
-            
-            if (dadosSPEDReal.creditos.ativoImobilizado > 0) {
-                const baseAtivo = dadosSPEDReal.creditos.ativoImobilizado / ((aliqPISCredito + aliqCOFINSCredito) / 100);
-                preencherCampoSPEDReal('ativoImobilizado', baseAtivo);
-            }
-        }
-    }
-    
-    calcularAutomatico();
-}
+
         function preencherCampoSPEDReal(fieldId, valor) {
             const input = document.getElementById(fieldId);
             const badge = document.getElementById(`badge${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`);
@@ -3038,45 +2750,6 @@ Seja específico sobre as divergências encontradas e forneça recomendações p
                                 .dados-sped-real { background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0; }
                                 .registros-sped { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 15px 0; }
                                 @media print { body { margin: 0; } }
-                                        /* 🔥 NOVO: Estilos para Créditos SPED Real */
-        .creditos-sped-container {
-            background: linear-gradient(135deg, rgba(22, 160, 133, 0.1), rgba(26, 188, 156, 0.05));
-            border: 2px solid #16a085;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .credito-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(22, 160, 133, 0.2);
-        }
-
-        .credito-item.total-creditos {
-            border-top: 2px solid #16a085;
-            border-bottom: none;
-            font-weight: bold;
-            color: #16a085;
-            margin-top: 10px;
-            padding-top: 15px;
-        }
-
-        .credito-item:last-child:not(.total-creditos) {
-            border-bottom: none;
-        }
-
-        .parser-detail {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .parser-detail:last-child {
-            border-bottom: none;
-        }
                             </style>
                         </head>
                         <body>
