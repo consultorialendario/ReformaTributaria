@@ -4201,65 +4201,67 @@ TODAS as respostas são personalizadas para ${nomeEmpresa}. Não mais textos gen
         }
 
         function calcularReforma() {
-            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
-            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
-            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
-            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
-            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
-            
-            const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
-            
-            const aquisicoesRevenda = parseFloat(document.getElementById('aquisicoesRevenda')?.value) || 0;
-            const materiasPrimas = parseFloat(document.getElementById('materiasPrimas')?.value) || 0;
-            const energiaEletrica = parseFloat(document.getElementById('energiaEletrica')?.value) || 0;
-            const telecomunicacoes = parseFloat(document.getElementById('telecomunicacoes')?.value) || 0;
-            const alugueis = parseFloat(document.getElementById('alugueis')?.value) || 0;
-            const ativoImobilizado = parseFloat(document.getElementById('ativoImobilizado')?.value) || 0;
-            
-            const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 27.97;
-            const anoTransicao = document.getElementById('anoTransicao')?.value || '2034';
-            
-            let percentualNovo = 1;
-            
-            switch(anoTransicao) {
-                case '2025': percentualNovo = 0; break;
-                case '2026': percentualNovo = 0; break;
-                case '2027': percentualNovo = 0.6; break;
-                case '2029': percentualNovo = 0.8; break;
-                case '2033': percentualNovo = 1; break;
-                case '2034': 
-                default: percentualNovo = 1; break;
-            }
-            
-            const debito = baseReforma * (aliquotaReforma / 100) * percentualNovo;
-            const creditos = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + alugueis + ativoImobilizado) * (aliquotaReforma / 100) * percentualNovo;
-            const impostoUnificado = debito - creditos;
-            
-            let ipiResidual = 0;
-            if (vendasIPI > 0) {
-                const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
-                ipiResidual = (vendasIPI * (aliquotaIPI / 100) * 0.1) * percentualNovo;
-            }
-            
-            totalReforma = impostoUnificado + ipiResidual;
-            
-            let totalSistemaAntigo = 0;
-            if (percentualNovo < 1) {
-                totalSistemaAntigo = totalAtual * (1 - percentualNovo);
-            }
-            
-            const totalFinalReforma = totalReforma + totalSistemaAntigo;
-            
-            atualizarIndicadorTransicao(anoTransicao, percentualNovo);
-            exibirResultadosReforma(impostoUnificado, ipiResidual, totalFinalReforma, anoTransicao, percentualNovo);
-            exibirDiferenca(totalFinalReforma - totalAtual);
-            atualizarResumoExecutivo(totalFinalReforma);
-            
-            if (etapaAtual === 5) {
-                // 🔥 v2.2: Gerar insights personalizados
-                setTimeout(() => generateRealPersonalizedInsights('aiInsightsContent5'), 1000);
-            }
-        }
+    const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+    const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+    const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+    const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+    const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+    
+    const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
+    
+    const aquisicoesRevenda = parseFloat(document.getElementById('aquisicoesRevenda')?.value) || 0;
+    const materiasPrimas = parseFloat(document.getElementById('materiasPrimas')?.value) || 0;
+    const energiaEletrica = parseFloat(document.getElementById('energiaEletrica')?.value) || 0;
+    const telecomunicacoes = parseFloat(document.getElementById('telecomunicacoes')?.value) || 0;
+    const alugueis = parseFloat(document.getElementById('alugueis')?.value) || 0;
+    const ativoImobilizado = parseFloat(document.getElementById('ativoImobilizado')?.value) || 0;
+    
+    const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 27.97;
+    const anoTransicao = document.getElementById('anoTransicao')?.value || '2034';
+    
+    let percentualNovo = 1;
+    
+    switch(anoTransicao) {
+        case '2025': percentualNovo = 0; break;
+        case '2026': percentualNovo = 0; break;
+        case '2027': percentualNovo = 0.6; break;
+        case '2029': percentualNovo = 0.8; break;
+        case '2033': percentualNovo = 1; break;
+        case '2034': 
+        default: percentualNovo = 1; break;
+    }
+    
+    const debito = baseReforma * (aliquotaReforma / 100) * percentualNovo;
+    const creditos = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + alugueis + ativoImobilizado) * (aliquotaReforma / 100) * percentualNovo;
+    const impostoUnificado = debito - creditos;
+    
+    let ipiResidual = 0;
+    if (vendasIPI > 0) {
+        const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
+        ipiResidual = (vendasIPI * (aliquotaIPI / 100) * 0.1) * percentualNovo;
+    }
+    
+    // IMPORTANTE: Manter o valor real (pode ser negativo para o cálculo correto)
+    totalReforma = impostoUnificado + ipiResidual;
+    
+    let totalSistemaAntigo = 0;
+    if (percentualNovo < 1) {
+        totalSistemaAntigo = totalAtual * (1 - percentualNovo);
+    }
+    
+    const totalFinalReforma = totalReforma + totalSistemaAntigo;
+    
+    atualizarIndicadorTransicao(anoTransicao, percentualNovo);
+    exibirResultadosReforma(impostoUnificado, ipiResidual, totalReforma, anoTransicao, percentualNovo);
+    exibirDiferenca(totalReforma - totalAtual);
+    
+    // Passar o valor real (não o totalFinalReforma) para o resumo executivo
+    atualizarResumoExecutivo(totalReforma);
+    
+    if (etapaAtual === 5) {
+        setTimeout(() => generateRealPersonalizedInsights('aiInsightsContent5'), 1000);
+    }
+}
 
         function atualizarIndicadorTransicao(ano, percentual) {
             const anoElement = document.getElementById('anoSelecionado');
@@ -4322,184 +4324,244 @@ TODAS as respostas são personalizadas para ${nomeEmpresa}. Não mais textos gen
             if (indicadorElement) indicadorElement.style.background = cor;
         }
 
-        function atualizarResumoExecutivo(totalReforma) {
-            const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
-            const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
-            const exportacoes = parseFloat(document.getElementById('exportacoes')?.value) || 0;
-            const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
-            const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
-            const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
-            const servicosExterior = parseFloat(document.getElementById('servicosExterior')?.value) || 0;
-            const receitasFinanceiras = parseFloat(document.getElementById('receitasFinanceiras')?.value) || 0;
-            const outrasReceitas = parseFloat(document.getElementById('outrasReceitas')?.value) || 0;
-            
-            const faturamentoTotal = vendasInternas + vendasInterestaduais + exportacoes + vendasIPI + 
-                                   servicosMunicipio + servicosOutros + servicosExterior + receitasFinanceiras + outrasReceitas;
-            
-            if (faturamentoTotal === 0) {
-                document.getElementById('resumoFaturamento').textContent = 'R$ 0,00';
-                document.getElementById('resumoAtual').textContent = 'R$ 0,00';
-                document.getElementById('resumoReforma').textContent = 'R$ 0,00';
-                document.getElementById('resumoImpacto').textContent = 'R$ 0,00';
-                document.getElementById('resumoPercAtual').textContent = 'Aguardando dados';
-                document.getElementById('resumoPercReforma').textContent = 'Aguardando dados';
-                document.getElementById('resumoPercImpacto').textContent = 'Aguardando dados';
-                
-                document.getElementById('breakdownAtual').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">Use o parser SPED Real para preencher dados nas etapas anteriores</div>';
-                document.getElementById('breakdownReforma').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">Use o parser SPED Real para preencher dados nas etapas anteriores</div>';
-                return;
-            }
-            
-            const percAtual = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
-            const percReforma = faturamentoTotal > 0 ? (totalReforma / faturamentoTotal * 100).toFixed(2) : 0;
-            const diferenca = totalReforma - totalAtual;
-            const percImpacto = faturamentoTotal > 0 ? (Math.abs(diferenca) / faturamentoTotal * 100).toFixed(2) : 0;
-            
-            document.getElementById('resumoFaturamento').textContent = formatarMoeda(faturamentoTotal);
-            document.getElementById('resumoAtual').textContent = formatarMoeda(totalAtual);
-            document.getElementById('resumoReforma').textContent = formatarMoeda(totalReforma);
-            document.getElementById('resumoImpacto').textContent = formatarMoeda(Math.abs(diferenca));
-            
-            document.getElementById('resumoPercAtual').textContent = `${percAtual}% do faturamento`;
-            document.getElementById('resumoPercReforma').textContent = `${percReforma}% do faturamento`;
-            document.getElementById('resumoPercImpacto').textContent = `${percImpacto}% ${diferenca >= 0 ? 'de acréscimo' : 'de economia'}`;
-            
-            const tipoPeriodo = document.getElementById('tipoPeriodo').value;
-            const periodo = document.getElementById('periodo').value;
-            document.getElementById('resumoPeriodo').textContent = tipoPeriodo === 'anual' ? `Ano ${periodo}` : `Período ${periodo}`;
-            
-            atualizarBreakdowns(faturamentoTotal, totalReforma);
-        }
+        function atualizarResumoExecutivo(totalReformaParam) {
+    const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+    const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+    const exportacoes = parseFloat(document.getElementById('exportacoes')?.value) || 0;
+    const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+    const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+    const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+    const servicosExterior = parseFloat(document.getElementById('servicosExterior')?.value) || 0;
+    const receitasFinanceiras = parseFloat(document.getElementById('receitasFinanceiras')?.value) || 0;
+    const outrasReceitas = parseFloat(document.getElementById('outrasReceitas')?.value) || 0;
+    
+    const faturamentoTotal = vendasInternas + vendasInterestaduais + exportacoes + vendasIPI + 
+                           servicosMunicipio + servicosOutros + servicosExterior + receitasFinanceiras + outrasReceitas;
+    
+    // Usar o valor correto da reforma baseado na alíquota informada
+    const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 27.97;
+    const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
+    
+    // Recalcular totalReforma baseado na alíquota atual
+    const aquisicoesRevenda = parseFloat(document.getElementById('aquisicoesRevenda')?.value) || 0;
+    const materiasPrimas = parseFloat(document.getElementById('materiasPrimas')?.value) || 0;
+    const energiaEletrica = parseFloat(document.getElementById('energiaEletrica')?.value) || 0;
+    const telecomunicacoes = parseFloat(document.getElementById('telecomunicacoes')?.value) || 0;
+    const alugueis = parseFloat(document.getElementById('alugueis')?.value) || 0;
+    const ativoImobilizado = parseFloat(document.getElementById('ativoImobilizado')?.value) || 0;
+    
+    const debito = baseReforma * (aliquotaReforma / 100);
+    const creditos = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + alugueis + ativoImobilizado) * (aliquotaReforma / 100);
+    const impostoUnificado = debito - creditos;
+    
+    // Para o resumo, usar o valor absoluto se for negativo (crédito)
+    const totalReformaDisplay = impostoUnificado < 0 ? impostoUnificado : totalReformaParam;
+    
+    if (faturamentoTotal === 0) {
+        document.getElementById('resumoFaturamento').textContent = 'R$ 0,00';
+        document.getElementById('resumoAtual').textContent = 'R$ 0,00';
+        document.getElementById('resumoReforma').textContent = 'R$ 0,00';
+        document.getElementById('resumoImpacto').textContent = 'R$ 0,00';
+        document.getElementById('resumoPercAtual').textContent = 'Aguardando dados';
+        document.getElementById('resumoPercReforma').textContent = 'Aguardando dados';
+        document.getElementById('resumoPercImpacto').textContent = 'Aguardando dados';
+        
+        document.getElementById('breakdownAtual').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">Use o parser SPED Real para preencher dados nas etapas anteriores</div>';
+        document.getElementById('breakdownReforma').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">Use o parser SPED Real para preencher dados nas etapas anteriores</div>';
+        return;
+    }
+    
+    const percAtual = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
+    const percReforma = faturamentoTotal > 0 ? (totalReformaDisplay / faturamentoTotal * 100).toFixed(2) : 0;
+    const diferenca = totalReformaDisplay - totalAtual;
+    const percImpacto = faturamentoTotal > 0 ? (Math.abs(diferenca) / faturamentoTotal * 100).toFixed(2) : 0;
+    
+    document.getElementById('resumoFaturamento').textContent = formatarMoeda(faturamentoTotal);
+    document.getElementById('resumoAtual').textContent = formatarMoeda(totalAtual);
+    document.getElementById('resumoReforma').textContent = totalReformaDisplay < 0 ? '-' + formatarMoeda(Math.abs(totalReformaDisplay)) : formatarMoeda(totalReformaDisplay);
+    document.getElementById('resumoImpacto').textContent = formatarMoeda(Math.abs(diferenca));
+    
+    document.getElementById('resumoPercAtual').textContent = `${percAtual}% do faturamento`;
+    document.getElementById('resumoPercReforma').textContent = `${percReforma}% do faturamento`;
+    document.getElementById('resumoPercImpacto').textContent = `${percImpacto}% ${diferenca >= 0 ? 'de acréscimo' : 'de economia'}`;
+    
+    const tipoPeriodo = document.getElementById('tipoPeriodo').value;
+    const periodo = document.getElementById('periodo').value;
+    document.getElementById('resumoPeriodo').textContent = tipoPeriodo === 'anual' ? `Ano ${periodo}` : `Período ${periodo}`;
+    
+    atualizarBreakdowns(faturamentoTotal, totalReformaDisplay);
+}
 
-        function atualizarBreakdowns(faturamentoTotal, totalReforma) {
-            const regime = document.getElementById('regime').value;
-            
-            if (faturamentoTotal === 0 || resultadosAtualCalculados.length === 0) {
-                document.getElementById('breakdownAtual').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">📊 Use o parser SPED Real nas etapas anteriores para ver o breakdown detalhado</div>';
-                document.getElementById('breakdownReforma').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">📊 Use o parser SPED Real nas etapas anteriores para ver o breakdown detalhado</div>';
-                return;
-            }
-            
-            let htmlAtual = '';
-            if (regime === 'simples') {
-                const perc = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
-                htmlAtual = `
-                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
-                        <span>📋 DAS Simples Nacional</span>
-                        <span style="font-weight: bold;">${perc}%</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 8px 0; color: #6c757d; font-size: 0.9em;">
-                        <span>Valor absoluto</span>
-                        <span>${formatarMoeda(totalAtual)}</span>
-                    </div>
-                `;
-            } else {
-                resultadosAtualCalculados.forEach(resultado => {
-                    if (resultado.valor > 0) {
-                        const perc = faturamentoTotal > 0 ? (resultado.valor / faturamentoTotal * 100).toFixed(2) : 0;
-                        htmlAtual += `
-                            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
-                                <span>${resultado.nome}</span>
-                                <div style="text-align: right;">
-                                    <div style="font-weight: bold;">${perc}%</div>
-                                    <div style="font-size: 0.8em; color: #6c757d;">${formatarMoeda(resultado.valor)}</div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                
-                const percTotal = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
+function atualizarBreakdowns(faturamentoTotal, totalReformaParam) {
+    const regime = document.getElementById('regime').value;
+    
+    if (faturamentoTotal === 0 || resultadosAtualCalculados.length === 0) {
+        document.getElementById('breakdownAtual').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">📊 Use o parser SPED Real nas etapas anteriores para ver o breakdown detalhado</div>';
+        document.getElementById('breakdownReforma').innerHTML = '<div style="text-align: center; color: #6c757d; padding: 20px;">📊 Use o parser SPED Real nas etapas anteriores para ver o breakdown detalhado</div>';
+        return;
+    }
+    
+    let htmlAtual = '';
+    if (regime === 'simples') {
+        const perc = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
+        htmlAtual = `
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                <span>📋 DAS Simples Nacional</span>
+                <span style="font-weight: bold;">${perc}%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; color: #6c757d; font-size: 0.9em;">
+                <span>Valor absoluto</span>
+                <span>${formatarMoeda(totalAtual)}</span>
+            </div>
+        `;
+    } else {
+        resultadosAtualCalculados.forEach(resultado => {
+            if (resultado.valor > 0) {
+                const perc = faturamentoTotal > 0 ? (resultado.valor / faturamentoTotal * 100).toFixed(2) : 0;
                 htmlAtual += `
-                    <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 10px; border-top: 2px solid #e74c3c; font-weight: bold;">
-                        <span>🔢 TOTAL</span>
-                        <span style="color: #e74c3c;">${percTotal}%</span>
-                    </div>
-                `;
-            }
-            
-            const percIBS = faturamentoTotal > 0 ? ((totalReforma * 0.9) / faturamentoTotal * 100).toFixed(2) : 0;
-            const percIPI = faturamentoTotal > 0 ? ((totalReforma * 0.1) / faturamentoTotal * 100).toFixed(2) : 0;
-            const percTotalReforma = faturamentoTotal > 0 ? (totalReforma / faturamentoTotal * 100).toFixed(2) : 0;
-            
-            let htmlReforma = `
-                <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
-                    <span>🔄 IBS + CBS (Unificado)</span>
-                    <div style="text-align: right;">
-                        <div style="font-weight: bold;">${percIBS}%</div>
-                        <div style="font-size: 0.8em; color: #6c757d;">${formatarMoeda(totalReforma * 0.9)}</div>
-                    </div>
-                </div>
-            `;
-            
-            if (totalReforma * 0.1 > 0) {
-                htmlReforma += `
                     <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
-                        <span>🏭 IPI Residual</span>
+                        <span>${resultado.nome}</span>
                         <div style="text-align: right;">
-                            <div style="font-weight: bold;">${percIPI}%</div>
-                            <div style="font-size: 0.8em; color: #6c757d;">${formatarMoeda(totalReforma * 0.1)}</div>
+                            <div style="font-weight: bold;">${perc}%</div>
+                            <div style="font-size: 0.8em; color: #6c757d;">${formatarMoeda(resultado.valor)}</div>
                         </div>
                     </div>
                 `;
             }
-            
-            htmlReforma += `
-                <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 10px; border-top: 2px solid #27ae60; font-weight: bold;">
-                    <span>🔢 TOTAL</span>
-                    <span style="color: #27ae60;">${percTotalReforma}%</span>
+        });
+        
+        const percTotal = faturamentoTotal > 0 ? (totalAtual / faturamentoTotal * 100).toFixed(2) : 0;
+        htmlAtual += `
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 10px; border-top: 2px solid #e74c3c; font-weight: bold;">
+                <span>🔢 TOTAL</span>
+                <span style="color: #e74c3c;">${percTotal}%</span>
+            </div>
+        `;
+    }
+    
+    // Usar o valor absoluto para cálculos de percentual quando negativo
+    const totalReformaAbs = Math.abs(totalReformaParam);
+    const percTotalReforma = faturamentoTotal > 0 ? (totalReformaAbs / faturamentoTotal * 100).toFixed(2) : 0;
+    
+    // Calcular corretamente com base na alíquota
+    const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 27.97;
+    
+    let htmlReforma = `
+    <div style="padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+        <div style="display: flex; justify-content: space-between;">
+            <span>🔄 IBS + CBS (${aliquotaReforma}% nominal)</span>
+            <div style="text-align: right;">
+                <div style="font-weight: bold;">${totalReformaParam < 0 ? '-' : ''}${percTotalReforma}%</div>
+                <div style="font-size: 0.8em; color: #6c757d;">${totalReformaParam < 0 ? '-' : ''}${formatarMoeda(totalReformaAbs)}</div>
+            </div>
+        </div>
+        <div style="font-size: 0.75em; color: #6c757d; padding-left: 20px; margin-top: 3px;">
+            Alíquota efetiva após créditos
+        </div>
+    </div>
+`;
+    
+    const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+    if (vendasIPI > 0) {
+        const aliquotaIPI = parseFloat(document.getElementById('aliquotaIPI')?.value) || 10;
+        const ipiResidual = (vendasIPI * (aliquotaIPI / 100) * 0.1);
+        const percIPI = faturamentoTotal > 0 ? (ipiResidual / faturamentoTotal * 100).toFixed(2) : 0;
+        
+        htmlReforma += `
+            <div style="display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #f0f0f0;">
+                <span>🏭 IPI Residual</span>
+                <div style="text-align: right;">
+                    <div style="font-weight: bold;">${percIPI}%</div>
+                    <div style="font-size: 0.8em; color: #6c757d;">${formatarMoeda(ipiResidual)}</div>
                 </div>
-            `;
-            
-            document.getElementById('breakdownAtual').innerHTML = htmlAtual;
-            document.getElementById('breakdownReforma').innerHTML = htmlReforma;
-        }
+            </div>
+        `;
+    }
+    
+    htmlReforma += `
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; margin-top: 10px; border-top: 2px solid ${totalReformaParam < 0 ? '#dc3545' : '#27ae60'}; font-weight: bold;">
+            <span>🔢 TOTAL</span>
+            <span style="color: ${totalReformaParam < 0 ? '#dc3545' : '#27ae60'};">${totalReformaParam < 0 ? '-' : ''}${percTotalReforma}%</span>
+        </div>
+    `;
+    
+    document.getElementById('breakdownAtual').innerHTML = htmlAtual;
+    document.getElementById('breakdownReforma').innerHTML = htmlReforma;
+}
 
-        function exibirResultadosReforma(impostoUnificado, ipiResidual, totalReforma, ano, percentual) {
-            const container = document.getElementById('resultadosReforma');
-            let html = '';
-            
-            let classe = impostoUnificado > 0 ? 'reforma' : impostoUnificado < 0 ? 'credor' : 'neutro';
-            let status = impostoUnificado > 0 ? 'reforma' : impostoUnificado < 0 ? 'credor' : 'neutro';
-            let icon = impostoUnificado > 0 ? '🔄' : impostoUnificado < 0 ? '📥' : '⚖️';
-            let nomeImposto = ano === '2034' ? 'IBS + CBS (Unificado)' : `Sistema Misto (${Math.round(percentual * 100)}% Novo)`;
-            
-            html += `
-                <div class="imposto-card ${classe}">
-                    <div class="imposto-header">
-                        <div class="imposto-nome">${icon} ${nomeImposto}</div>
-                        <div class="imposto-valor ${status}">${formatarMoeda(Math.abs(impostoUnificado))}</div>
-                    </div>
-                    <div class="calculo-detalhes">Substitui ICMS + ISS + PIS + COFINS em imposto único - ${formatarMoeda(impostoUnificado)}</div>
+function exibirResultadosReforma(impostoUnificado, ipiResidual, totalReforma, ano, percentual) {
+    const container = document.getElementById('resultadosReforma');
+    let html = '';
+    
+    // Obter valores para cálculo detalhado
+    const vendasInternas = parseFloat(document.getElementById('vendasInternas')?.value) || 0;
+    const vendasInterestaduais = parseFloat(document.getElementById('vendasInterestaduais')?.value) || 0;
+    const vendasIPI = parseFloat(document.getElementById('vendasIPI')?.value) || 0;
+    const servicosMunicipio = parseFloat(document.getElementById('servicosMunicipio')?.value) || 0;
+    const servicosOutros = parseFloat(document.getElementById('servicosOutros')?.value) || 0;
+    
+    const baseReforma = vendasInternas + vendasInterestaduais + vendasIPI + servicosMunicipio + servicosOutros;
+    
+    const aquisicoesRevenda = parseFloat(document.getElementById('aquisicoesRevenda')?.value) || 0;
+    const materiasPrimas = parseFloat(document.getElementById('materiasPrimas')?.value) || 0;
+    const energiaEletrica = parseFloat(document.getElementById('energiaEletrica')?.value) || 0;
+    const telecomunicacoes = parseFloat(document.getElementById('telecomunicacoes')?.value) || 0;
+    const alugueis = parseFloat(document.getElementById('alugueis')?.value) || 0;
+    const ativoImobilizado = parseFloat(document.getElementById('ativoImobilizado')?.value) || 0;
+    
+    const aliquotaReforma = parseFloat(document.getElementById('aliquotaReforma')?.value) || 27.97;
+    
+    const debito = baseReforma * (aliquotaReforma / 100) * percentual;
+    const creditos = (aquisicoesRevenda + materiasPrimas + energiaEletrica + telecomunicacoes + alugueis + ativoImobilizado) * (aliquotaReforma / 100) * percentual;
+    
+    let classe = impostoUnificado > 0 ? 'reforma' : impostoUnificado < 0 ? 'credor' : 'neutro';
+    let status = impostoUnificado > 0 ? 'reforma' : impostoUnificado < 0 ? 'credor' : 'neutro';
+    let icon = impostoUnificado > 0 ? '🔄' : impostoUnificado < 0 ? '📥' : '⚖️';
+    let nomeImposto = ano === '2034' ? 'IBS + CBS (Unificado)' : `Sistema Misto (${Math.round(percentual * 100)}% Novo)`;
+    
+    html += `
+        <div class="imposto-card ${classe}">
+            <div class="imposto-header">
+                <div class="imposto-nome">${icon} ${nomeImposto}</div>
+                <div class="imposto-valor ${status}">${formatarMoeda(Math.abs(impostoUnificado))}</div>
+            </div>
+            <div class="calculo-detalhes">
+                <strong>Alíquota aplicada: ${aliquotaReforma}%</strong><br>
+                Base de cálculo: ${formatarMoeda(baseReforma)}<br>
+                <span style="color: #e74c3c;">Débito (${aliquotaReforma}%):</span> ${formatarMoeda(debito)}<br>
+                <span style="color: #27ae60;">Crédito (${aliquotaReforma}%):</span> ${formatarMoeda(creditos)}<br>
+                <strong>Valor líquido:</strong> ${formatarMoeda(impostoUnificado)}
+            </div>
+        </div>
+    `;
+    
+    if (ipiResidual > 0) {
+        html += `
+            <div class="imposto-card devedor">
+                <div class="imposto-header">
+                    <div class="imposto-nome">🏭 IPI Residual</div>
+                    <div class="imposto-valor devedor">${formatarMoeda(ipiResidual)}</div>
                 </div>
-            `;
-            
-            if (ipiResidual > 0) {
-                html += `
-                    <div class="imposto-card devedor">
-                        <div class="imposto-header">
-                            <div class="imposto-nome">🏭 IPI Residual</div>
-                            <div class="imposto-valor devedor">${formatarMoeda(ipiResidual)}</div>
-                        </div>
-                        <div class="calculo-detalhes">IPI com escopo muito reduzido (apenas produtos específicos)</div>
-                    </div>
-                `;
-            }
-            
-            html += `
-                <div class="summary-total" style="margin-top: 20px;">
-                    <h3>💰 TOTAL REFORMA (${ano})</h3>
-                    <div class="valor">${formatarMoeda(totalReforma)}</div>
-                    <p style="margin-top: 10px; opacity: 0.9;">
-                        Carga tributária unificada (IBS + CBS)
-                    </p>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-            document.getElementById('anoReformaNome').textContent = ano;
-            exibirResumoAtual();
-        }
+                <div class="calculo-detalhes">IPI com escopo muito reduzido (apenas produtos específicos)</div>
+            </div>
+        `;
+    }
+    
+    html += `
+        <div class="summary-total" style="margin-top: 20px;">
+            <h3>💰 TOTAL REFORMA (${ano})</h3>
+            <div class="valor">${formatarMoeda(totalReforma)}</div>
+            <p style="margin-top: 10px; opacity: 0.9;">
+                Carga tributária unificada (IBS + CBS)<br>
+                <small>Alíquota nominal: ${aliquotaReforma}% | Alíquota efetiva: ${((totalReforma / (vendasInternas + vendasInterestaduais + exportacoes + vendasIPI + servicosMunicipio + servicosOutros + servicosExterior + receitasFinanceiras + outrasReceitas)) * 100).toFixed(2)}%</small>
+            </p>
+        </div>
+    `;
+    
+    container.innerHTML = html;
+    document.getElementById('anoReformaNome').textContent = ano;
+    exibirResumoAtual();
+}
 
         function exibirResumoAtual() {
             const container = document.getElementById('resultadosAtual');
